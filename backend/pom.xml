@@ -84,6 +84,23 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.34.0</version>
+				<configuration>
+					<java>
+						<eclipse>
+							<file>${project.basedir}/src/main/resources/config/intellij-java-style.xml</file>
+						</eclipse>
+
+						<removeUnusedImports/>
+						<trimTrailingWhitespace/>
+						<endWithNewline/>
+					</java>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
