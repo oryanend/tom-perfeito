@@ -95,7 +95,6 @@
 							<file>${project.basedir}/src/main/resources/config/intellij-java-style.xml</file>
 						</eclipse>
 
-						<removeUnusedImports/>
 						<trimTrailingWhitespace/>
 						<endWithNewline/>
 					</java>
