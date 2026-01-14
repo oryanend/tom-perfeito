@@ -2,22 +2,39 @@ package com.oryanend.tom_perfeito_api.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.oryanend.tom_perfeito_api.entities.User;
-import org.springframework.security.core.GrantedAuthority;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @JsonPropertyOrder({
         "id", "username", "roles", "email", "createdAt", "updatedAt"
 })
 public class UserDTO {
     private UUID id;
+
+    @NotNull(message = "Username cannot be null")
+    @Size(message = "Username must be between 3 and 40 characters", min = 3, max = 40)
     private String username;
+
+    @Email(message = "Email should be valid")
+    @Size(message = "Email must be between 5 and 254 characters", min = 5, max = 254)
+    @NotNull(message = "Email cannot be null")
     private String email;
+
+    @Size(message = "Password must have 5 characters at least", min = 5)
+    @NotNull(message = "Password cannot be null")
     private String password;
     private Instant createdAt;
     private Instant updatedAt;
     private Set<RoleDTO> roles = new HashSet<>();
+
+    public UserDTO() {
+    }
 
     public UserDTO(String username, String email, String password, Instant createdAt, Instant updatedAt) {
         this.username = username;
