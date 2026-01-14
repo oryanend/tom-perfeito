@@ -11,8 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@JsonPropertyOrder({
-        "id", "username", "roles", "email", "createdAt", "updatedAt"
+@JsonPropertyOrder({"id", "username", "roles", "email", "createdAt", "updatedAt"
 })
 public class UserDTO {
     private UUID id;

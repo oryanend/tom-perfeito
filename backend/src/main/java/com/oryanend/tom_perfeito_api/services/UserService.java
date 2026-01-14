@@ -8,6 +8,7 @@ import com.oryanend.tom_perfeito_api.entities.User;
 import com.oryanend.tom_perfeito_api.projections.UserDetailsProjection;
 import com.oryanend.tom_perfeito_api.repositories.RoleRepository;
 import com.oryanend.tom_perfeito_api.repositories.UserRepository;
+import com.oryanend.tom_perfeito_api.services.exceptions.ResourceAlreadyExistsException;
 import com.oryanend.tom_perfeito_api.util.CustomUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,8 +56,7 @@ public class UserService implements UserDetailsService {
         try {
             String username = customUserUtil.getLoggedUsername();
             return repository.findByEmail(username).get();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new UsernameNotFoundException("Invalid user");
         }
     }
@@ -69,6 +69,14 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserDTO insert(UserDTO dto) {
+        if (repository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Email already in use, try another one.");
+        }
+
+        if (repository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Username already in use, try another one.");
+        }
+
         User entity = new User();
         copyDtoToEntity(dto, entity);
 

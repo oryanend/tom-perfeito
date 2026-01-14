@@ -36,9 +36,7 @@ public class User implements UserDetails {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "tb_user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
+            name = "tb_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
 
@@ -81,7 +79,7 @@ public class User implements UserDetails {
         return email;
     }
 
-    public String getUsernameUser(){
+    public String getUsernameUser() {
         return username;
     }
 
@@ -109,13 +107,13 @@ public class User implements UserDetails {
         return roles;
     }
 
-    public void addRole(Role role){
+    public void addRole(Role role) {
         roles.add(role);
     }
 
-    public boolean hasRole(String roleName){
-        for (Role role : roles){
-            if(role.getAuthority().equals(roleName)){
+    public boolean hasRole(String roleName) {
+        for (Role role : roles) {
+            if (role.getAuthority().equals(roleName)) {
                 return true;
             }
         }
