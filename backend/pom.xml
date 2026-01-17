@@ -99,6 +99,13 @@
 			<groupId>jakarta.validation</groupId>
 			<artifactId>jakarta.validation-api</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>net.datafaker</groupId>
+			<artifactId>datafaker</artifactId>
+			<version>2.5.3</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
