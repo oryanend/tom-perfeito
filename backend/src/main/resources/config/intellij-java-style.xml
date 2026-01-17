@@ -305,7 +305,7 @@
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_record_components" value="18"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_record_declaration" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_method_invocation" value="0"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_selector_in_method_invocation" value="0"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_selector_in_method_invocation" value="80"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_explicit_constructor_call" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_allocation_expression" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_qualified_allocation_expression" value="0"/>
@@ -326,7 +326,9 @@
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_conditional_expression_chain" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_conditional_operator" value="false"/>
-		<setting id="org.eclipse.jdt.core.formatter.alignment_for_assignment" value="0"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_assignment" value="80"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_method_invocation" value="80"/>
+		<setting id="org.eclipse.jdt.core.formatter.alignment_for_method_invocation_chain" value="80"/>
 		<setting id="org.eclipse.jdt.core.formatter.wrap_before_assignment_operator" value="false"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_expressions_in_array_initializer" value="0"/>
 		<setting id="org.eclipse.jdt.core.formatter.alignment_for_expressions_in_for_loop_header" value="2"/>
