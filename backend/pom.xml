@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<maven.parallel.builds>false</maven.parallel.builds>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -113,10 +114,7 @@
 				<version>2.34.0</version>
 				<configuration>
 					<java>
-						<eclipse>
-							<file>${project.basedir}/src/main/resources/config/intellij-java-style.xml</file>
-						</eclipse>
-
+						<removeUnusedImports/>
 						<trimTrailingWhitespace/>
 						<endWithNewline/>
 					</java>

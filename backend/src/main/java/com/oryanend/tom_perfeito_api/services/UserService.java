@@ -1,6 +1,5 @@
 package com.oryanend.tom_perfeito_api.services;
 
-import com.oryanend.tom_perfeito_api.config.AuthorizationServerConfig;
 import com.oryanend.tom_perfeito_api.dto.RoleDTO;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
 import com.oryanend.tom_perfeito_api.entities.Role;

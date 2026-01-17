@@ -76,10 +76,15 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
             throw new OAuth2AuthenticationException("Invalid credentials");
         }
 
-        authorizedScopes = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).filter(scope -> registeredClient.getScopes().contains(scope)).collect(Collectors.toSet());
+        authorizedScopes = user.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(scope -> registeredClient.getScopes().contains(scope))
+                .collect(Collectors.toSet());
 
         //-----------Create a new Security Context Holder Context----------
-        OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken = (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken =
+                (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(username, user.getAuthorities());
         oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);
 
@@ -88,9 +93,19 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
         SecurityContextHolder.setContext(newcontext);
 
         //-----------TOKEN BUILDERS----------
-        DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder().registeredClient(registeredClient).principal(clientPrincipal).authorizationServerContext(AuthorizationServerContextHolder.getContext()).authorizedScopes(authorizedScopes).authorizationGrantType(new AuthorizationGrantType("password")).authorizationGrant(customPasswordAuthenticationToken);
+        DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
+                .registeredClient(registeredClient)
+                .principal(clientPrincipal)
+                .authorizationServerContext(AuthorizationServerContextHolder.getContext())
+                .authorizedScopes(authorizedScopes)
+                .authorizationGrantType(new AuthorizationGrantType("password"))
+                .authorizationGrant(customPasswordAuthenticationToken);
 
-        OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient).attribute(Principal.class.getName(), clientPrincipal).principalName(clientPrincipal.getName()).authorizationGrantType(new AuthorizationGrantType("password")).authorizedScopes(authorizedScopes);
+        OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
+                .attribute(Principal.class.getName(), clientPrincipal)
+                .principalName(clientPrincipal.getName())
+                .authorizationGrantType(new AuthorizationGrantType("password"))
+                .authorizedScopes(authorizedScopes);
 
         //-----------ACCESS TOKEN----------
         OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN).build();
@@ -101,6 +116,7 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
         }
 
         OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER, generatedAccessToken.getTokenValue(), generatedAccessToken.getIssuedAt(), generatedAccessToken.getExpiresAt(), tokenContext.getAuthorizedScopes());
+
         if (generatedAccessToken instanceof ClaimAccessor) {
             authorizationBuilder.token(accessToken, (metadata) -> metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, ((ClaimAccessor) generatedAccessToken).getClaims()));
         } else {
@@ -119,14 +135,15 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
     }
 
     private static OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(Authentication authentication) {
-
         OAuth2ClientAuthenticationToken clientPrincipal = null;
+
         if (OAuth2ClientAuthenticationToken.class.isAssignableFrom(authentication.getPrincipal().getClass())) {
             clientPrincipal = (OAuth2ClientAuthenticationToken) authentication.getPrincipal();
         }
         if (clientPrincipal != null && clientPrincipal.isAuthenticated()) {
             return clientPrincipal;
         }
+
         throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
     }
 }

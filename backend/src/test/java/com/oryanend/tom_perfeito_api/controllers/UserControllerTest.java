@@ -80,16 +80,32 @@ public class UserControllerTest {
     void insertUser() throws Exception {
         String jsonBody = objectMapper.writeValueAsString(validUserDTO);
 
-        ResultActions result = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(jsonBody).accept(MediaType.APPLICATION_JSON));
-        result.andExpect(status().isCreated()).andExpect(jsonPath("$.username").value(validUsername)).andExpect(jsonPath("$.email").value(validEmail)).andExpect(jsonPath("$.roles").isArray()).andExpect(jsonPath("$.roles[*].authority", hasItem("ROLE_CLIENT")));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username").value(validUsername))
+                .andExpect(jsonPath("$.email").value(validEmail))
+                .andExpect(jsonPath("$.roles").isArray())
+                .andExpect(jsonPath("$.roles[*].authority", hasItem("ROLE_CLIENT")));
 
         // Check if the returned id is a valid UUID
         String id = objectMapper.readTree(result.andReturn().getResponse().getContentAsString()).get("id").asText();
         assertDoesNotThrow(() -> UUID.fromString(id));
 
         // Check if the password is encoded correctly
-        assertTrue(passwordConfig.passwordEncoder().matches(validPassword, result.andReturn().getResponse().getContentAsString().contains("password") ? objectMapper.readTree(result.andReturn().getResponse().getContentAsString()).get("password").asText() : ""));
+        assertTrue(passwordConfig.passwordEncoder().matches(validPassword,
+                result.andReturn()
+                        .getResponse()
+                        .getContentAsString()
+                        .contains("password") ? objectMapper.readTree(result.andReturn()
+                        .getResponse()
+                        .getContentAsString()).get("password").asText() : ""));
 
         // Check if createdAt and updatedAt are valid Instants
         String createdAtStr = objectMapper.readTree(result.andReturn().getResponse().getContentAsString()).get("createdAt").asText();
@@ -103,9 +119,22 @@ public class UserControllerTest {
     void insertWithoutPassword() throws Exception {
         String jsonBody = objectMapper.writeValueAsString(nullPasswordUserDTO);
 
-        ResultActions result = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(jsonBody).accept(MediaType.APPLICATION_JSON));
-        result.andExpect(status().isUnprocessableEntity()).andExpect(jsonPath("$.timestamp").isNotEmpty()).andExpect(jsonPath("$.status").value(422)).andExpect(jsonPath("$.error").value("Validation Exception")).andExpect(jsonPath("$.message").isNotEmpty()).andExpect(jsonPath("$.path").value(baseUrl)).andExpect(jsonPath("$.errors[0].fieldName").value("password")).andExpect(jsonPath("$.errors[0].message").value("Password cannot be null"));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("password"))
+                .andExpect(jsonPath("$.errors[0].message").value("Password cannot be null"));
     }
 
     @Test
@@ -113,9 +142,21 @@ public class UserControllerTest {
     void insertWithoutEmail() throws Exception {
         String jsonBody = objectMapper.writeValueAsString(nullEmailUserDTO);
 
-        ResultActions result = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(jsonBody).accept(MediaType.APPLICATION_JSON));
-        result.andExpect(status().isUnprocessableEntity()).andExpect(jsonPath("$.timestamp").isNotEmpty()).andExpect(jsonPath("$.status").value(422)).andExpect(jsonPath("$.error").value("Validation Exception")).andExpect(jsonPath("$.message").isNotEmpty()).andExpect(jsonPath("$.path").value(baseUrl)).andExpect(jsonPath("$.errors[0].fieldName").value("email")).andExpect(jsonPath("$.errors[0].message").value("Email cannot be null"));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("email"))
+                .andExpect(jsonPath("$.errors[0].message").value("Email cannot be null"));
     }
 
     @Test
@@ -123,9 +164,22 @@ public class UserControllerTest {
     void insertWithoutUsername() throws Exception {
         String jsonBody = objectMapper.writeValueAsString(nullUsernameUserDTO);
 
-        ResultActions result = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(jsonBody).accept(MediaType.APPLICATION_JSON));
-        result.andExpect(status().isUnprocessableEntity()).andExpect(jsonPath("$.timestamp").isNotEmpty()).andExpect(jsonPath("$.status").value(422)).andExpect(jsonPath("$.error").value("Validation Exception")).andExpect(jsonPath("$.message").isNotEmpty()).andExpect(jsonPath("$.path").value(baseUrl)).andExpect(jsonPath("$.errors[0].fieldName").value("username")).andExpect(jsonPath("$.errors[0].message").value("Username cannot be null"));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("username"))
+                .andExpect(jsonPath("$.errors[0].message").value("Username cannot be null"));
     }
 
     @Test
@@ -133,9 +187,21 @@ public class UserControllerTest {
     void insertWithInvalidPassword() throws Exception {
         String jsonBody = objectMapper.writeValueAsString(invalidPasswordUserDTO);
 
-        ResultActions result = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(jsonBody).accept(MediaType.APPLICATION_JSON));
-        result.andExpect(status().isUnprocessableEntity()).andExpect(jsonPath("$.timestamp").isNotEmpty()).andExpect(jsonPath("$.status").value(422)).andExpect(jsonPath("$.error").value("Validation Exception")).andExpect(jsonPath("$.message").isNotEmpty()).andExpect(jsonPath("$.path").value(baseUrl)).andExpect(jsonPath("$.errors[0].fieldName").value("password")).andExpect(jsonPath("$.errors[0].message").value("Password must have 5 characters at least"));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("password"))
+                .andExpect(jsonPath("$.errors[0].message").value("Password must have 5 characters at least"));
     }
 
     @Test
@@ -143,9 +209,23 @@ public class UserControllerTest {
     void insertWithInvalidEmail() throws Exception {
         String jsonBody = objectMapper.writeValueAsString(invalidEmailUserDTO);
 
-        ResultActions result = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(jsonBody).accept(MediaType.APPLICATION_JSON));
-        result.andExpect(status().isUnprocessableEntity()).andExpect(jsonPath("$.timestamp").isNotEmpty()).andExpect(jsonPath("$.status").value(422)).andExpect(jsonPath("$.error").value("Validation Exception")).andExpect(jsonPath("$.message").isNotEmpty()).andExpect(jsonPath("$.path").value(baseUrl)).andExpect(jsonPath("$.errors[*].fieldName").value(hasItem("email"))).andExpect(jsonPath("$.errors[*].message").value(hasItem("Email must be between 5 and 254 characters"))).andExpect(jsonPath("$.errors[*].message").value(hasItem("Email should be valid")));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.errors[*].fieldName").value(hasItem("email")))
+                .andExpect(jsonPath("$.errors[*].message").value(hasItem("Email must be between 5 and 254 characters")))
+                .andExpect(jsonPath("$.errors[*].message").value(hasItem("Email should be valid")));
     }
 
     @Test
@@ -153,9 +233,22 @@ public class UserControllerTest {
     void insertWithInvalidUsername() throws Exception {
         String jsonBody = objectMapper.writeValueAsString(invalidUsernameUserDTO);
 
-        ResultActions result = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(jsonBody).accept(MediaType.APPLICATION_JSON));
-        result.andExpect(status().isUnprocessableEntity()).andExpect(jsonPath("$.timestamp").isNotEmpty()).andExpect(jsonPath("$.status").value(422)).andExpect(jsonPath("$.error").value("Validation Exception")).andExpect(jsonPath("$.message").isNotEmpty()).andExpect(jsonPath("$.path").value(baseUrl)).andExpect(jsonPath("$.errors[0].fieldName").value("username")).andExpect(jsonPath("$.errors[0].message").value("Username must be between 3 and 40 characters"));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("username"))
+                .andExpect(jsonPath("$.errors[0].message").value("Username must be between 3 and 40 characters"));
     }
 
     @Test
@@ -163,8 +256,12 @@ public class UserControllerTest {
     void insertWithAlreadyTakenEmail() throws Exception {
         String jsonBody = objectMapper.writeValueAsString(validUserDTO);
 
-        ResultActions result = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(jsonBody).accept(MediaType.APPLICATION_JSON));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isCreated());
 
@@ -172,10 +269,20 @@ public class UserControllerTest {
 
         String secondJsonBody = objectMapper.writeValueAsString(secondValidUserWithSameEmailDTO);
 
-        ResultActions secondResult = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(secondJsonBody).accept(MediaType.APPLICATION_JSON));
+        ResultActions secondResult =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(secondJsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-        secondResult.andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(400)).andExpect(jsonPath("$.error").value("Resource already exists")).andExpect(jsonPath("$.message").value("Email already in use, try another one.")).andExpect(jsonPath("$.path").value(baseUrl)).andExpect(jsonPath("$.timestamp").isNotEmpty());
+        secondResult
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Resource already exists"))
+                .andExpect(jsonPath("$.message").value("Email already in use, try another one."))
+                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -183,8 +290,12 @@ public class UserControllerTest {
     void insertWithAlreadyTakenUsername() throws Exception {
         String jsonBody = objectMapper.writeValueAsString(validUserDTO);
 
-        ResultActions result = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(jsonBody).accept(MediaType.APPLICATION_JSON));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isCreated());
 
@@ -192,9 +303,19 @@ public class UserControllerTest {
 
         String secondJsonBody = objectMapper.writeValueAsString(secondValidUserWithSameUsernameDTO);
 
-        ResultActions secondResult = mockMvc.perform(
-                post(baseUrl).contentType(MediaType.APPLICATION_JSON).content(secondJsonBody).accept(MediaType.APPLICATION_JSON));
+        ResultActions secondResult =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(secondJsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-        secondResult.andExpect(status().isBadRequest()).andExpect(jsonPath("$.status").value(400)).andExpect(jsonPath("$.error").value("Resource already exists")).andExpect(jsonPath("$.message").value("Username already in use, try another one.")).andExpect(jsonPath("$.path").value(baseUrl)).andExpect(jsonPath("$.timestamp").isNotEmpty());
+        secondResult
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Resource already exists"))
+                .andExpect(jsonPath("$.message").value("Username already in use, try another one."))
+                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 }

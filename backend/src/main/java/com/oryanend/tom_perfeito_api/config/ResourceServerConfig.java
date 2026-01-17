@@ -37,14 +37,15 @@ public class ResourceServerConfig {
     @Order(1)
     public SecurityFilterChain h2SecurityFilterChain(HttpSecurity http) throws Exception {
 
-        http.securityMatcher(PathRequest.toH2Console()).csrf(AbstractHttpConfigurer::disable).headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+        http.securityMatcher(PathRequest.toH2Console())
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
         return http.build();
     }
 
     @Bean
     @Order(3)
     public SecurityFilterChain rsSecurityFilterChain(HttpSecurity http) throws Exception {
-
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests((authorize) -> authorize.anyRequest().permitAll());
         http.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
