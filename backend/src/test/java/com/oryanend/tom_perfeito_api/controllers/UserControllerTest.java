@@ -3,6 +3,7 @@ package com.oryanend.tom_perfeito_api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oryanend.tom_perfeito_api.config.PasswordConfig;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
+import com.oryanend.tom_perfeito_api.factory.UserDTOFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,6 @@ public class UserControllerTest {
     private UserDTO invalidUsernameUserDTO, invalidEmailUserDTO, invalidPasswordUserDTO;
 
     private String validUsername, validEmail, validPassword;
-    private String secondValidUsername, secondValidEmail, secondValidPassword;
     private String invalidUsername, invalidEmail, invalidPassword;
 
     @BeforeEach
@@ -57,22 +57,18 @@ public class UserControllerTest {
         validEmail = "email@test.com";
         validPassword = "testpassword";
 
-        secondValidUsername = "anotheruser";
-        secondValidEmail = "anotheremail@test.com";
-        secondValidPassword = "anotherpassword";
+        validUserDTO = UserDTOFactory.createUserDTO(validUsername, validEmail, validPassword);
 
-        validUserDTO = new UserDTO(validUsername, validEmail, validPassword, null, null);
+        secondValidUserWithSameUsernameDTO = UserDTOFactory.createUserDTOWithUsername(validUsername);
+        secondValidUserWithSameEmailDTO = UserDTOFactory.createUserDTOWithEmail(validEmail);
 
-        secondValidUserWithSameUsernameDTO = new UserDTO(validUsername, secondValidEmail, secondValidPassword, null, null);
-        secondValidUserWithSameEmailDTO = new UserDTO(secondValidUsername, validEmail, secondValidPassword, null, null);
+        nullPasswordUserDTO = UserDTOFactory.createUserDTOWithPassword(null);
+        nullEmailUserDTO = UserDTOFactory.createUserDTOWithEmail(null);
+        nullUsernameUserDTO = UserDTOFactory.createUserDTOWithUsername(null);
 
-        nullPasswordUserDTO = new UserDTO(validUsername, validEmail, null, null, null);
-        nullEmailUserDTO = new UserDTO(validUsername, null, validPassword, null, null);
-        nullUsernameUserDTO = new UserDTO(null, validEmail, validPassword, null, null);
-
-        invalidPasswordUserDTO = new UserDTO(validUsername, validEmail, invalidPassword, null, null);
-        invalidEmailUserDTO = new UserDTO(validUsername, invalidEmail, validPassword, null, null);
-        invalidUsernameUserDTO = new UserDTO(invalidUsername, validEmail, validPassword, null, null);
+        invalidPasswordUserDTO = UserDTOFactory.createUserDTOWithPassword(invalidPassword);
+        invalidEmailUserDTO = UserDTOFactory.createUserDTOWithEmail(invalidEmail);
+        invalidUsernameUserDTO = UserDTOFactory.createUserDTOWithUsername(invalidUsername);
     }
 
     @Test

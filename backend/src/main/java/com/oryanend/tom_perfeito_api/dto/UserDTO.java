@@ -97,4 +97,32 @@ public class UserDTO {
     public Set<RoleDTO> getRoles() {
         return roles;
     }
+
+    public void setRoles(Set<RoleDTO> roles) {
+        this.roles = roles;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 }
