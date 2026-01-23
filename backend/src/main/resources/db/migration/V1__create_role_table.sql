@@ -1,4 +1,4 @@
-CREATE TABLE tb_role(
-    id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS tb_role(
+    id BIGINT PRIMARY KEY,
     authority VARCHAR(11) NOT NULL
 )

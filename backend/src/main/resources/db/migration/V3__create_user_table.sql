@@ -1,4 +1,4 @@
-CREATE TABLE tb_user (
+CREATE TABLE IF NOT EXISTS tb_user (
                          id UUID PRIMARY KEY,
                          username VARCHAR(40) NOT NULL UNIQUE,
                          email VARCHAR(254) NOT NULL UNIQUE,
