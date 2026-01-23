@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -21,6 +22,8 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,6 +47,13 @@ public class UserControllerTest {
 
     private String validUsername, validEmail, validPassword;
     private String invalidUsername, invalidEmail, invalidPassword;
+    private String invalidToken;
+
+    @Value("${security.client-id}")
+    private String clientId;
+
+    @Value("${security.client-secret}")
+    private String clientSecret;
 
     @BeforeEach
     void setUp() {
@@ -69,6 +79,8 @@ public class UserControllerTest {
         invalidPasswordUserDTO = UserDTOFactory.createUserDTOWithPassword(invalidPassword);
         invalidEmailUserDTO = UserDTOFactory.createUserDTOWithEmail(invalidEmail);
         invalidUsernameUserDTO = UserDTOFactory.createUserDTOWithUsername(invalidUsername);
+
+        invalidToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30";
     }
 
     @Test
@@ -314,4 +326,75 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.path").value(baseUrl))
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
+
+    @Test
+    @DisplayName("GET `/users/me` should return the authenticated user's data")
+    void getMeWithValidToken() throws Exception {
+        // First, insert a valid user
+        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
+
+        ResultActions postResult =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        postResult.andExpect(status().isCreated());
+
+        // Try to get token with the same user
+        ResultActions tokenResult =
+                mockMvc
+                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                                .param("username", validUserDTO.getEmail())
+                                .param("password", validUserDTO.getPassword())
+                                .param("grant_type", "password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        tokenResult
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token_type").value("Bearer"))
+                .andExpect(jsonPath("$.expires_in").isNumber())
+                .andExpect(jsonPath("$.access_token").isString())
+        ;
+
+        // Now, authenticate as that user and call /users/me
+        ResultActions getResult =
+                mockMvc
+                        .perform(get(baseUrl + "/me")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization",
+                                        "Bearer " +
+                                                objectMapper.readTree(
+                                                        tokenResult.andReturn()
+                                                                .getResponse()
+                                                                .getContentAsString()
+                                                ).get("access_token").asText()
+                                )
+                                .accept(MediaType.APPLICATION_JSON));
+
+        getResult
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value(validUsername))
+                .andExpect(jsonPath("$.email").value(validEmail))
+                .andExpect(jsonPath("$.roles").isArray())
+                .andExpect(jsonPath("$.roles[*].authority", hasItem("ROLE_CLIENT")));
+    }
+
+    @Test
+    @DisplayName("GET `/users/me` with invalid token should return unauthorized")
+    void getMeWithInvalidToken() throws Exception {
+        ResultActions getResult =
+                mockMvc
+                        .perform(get(baseUrl + "/me")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer " + invalidToken)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        getResult
+                .andExpect(status().isUnauthorized())
+        ;
+    }
+
 }
