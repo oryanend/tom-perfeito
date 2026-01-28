@@ -149,7 +149,7 @@ public class AuthorizationServerConfig {
                 // @formatter:off
 				context.getClaims()
 					.claim("authorities", authorities)
-					.claim("username", user.getUsername());
+					.claim("username", user.getEmail());
 				// @formatter:on
             }
         };

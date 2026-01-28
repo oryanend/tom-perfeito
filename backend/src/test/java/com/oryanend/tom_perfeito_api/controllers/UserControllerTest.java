@@ -347,7 +347,7 @@ public class UserControllerTest {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)

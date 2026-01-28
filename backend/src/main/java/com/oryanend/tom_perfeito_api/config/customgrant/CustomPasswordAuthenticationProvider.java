@@ -40,7 +40,7 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
     private final UserDetailsService userDetailsService;
     private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
     private final PasswordEncoder passwordEncoder;
-    private String username = "";
+    private String email = "";
     private String password = "";
     private Set<String> authorizedScopes = new HashSet<>();
 
@@ -62,17 +62,17 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
         CustomPasswordAuthenticationToken customPasswordAuthenticationToken = (CustomPasswordAuthenticationToken) authentication;
         OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(customPasswordAuthenticationToken);
         RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
-        username = customPasswordAuthenticationToken.getUsername();
+        email = customPasswordAuthenticationToken.getEmail();
         password = customPasswordAuthenticationToken.getPassword();
 
         UserDetails user = null;
         try {
-            user = userDetailsService.loadUserByUsername(username);
+            user = userDetailsService.loadUserByUsername(email);
         } catch (UsernameNotFoundException e) {
             throw new OAuth2AuthenticationException("Invalid credentials");
         }
 
-        if (!passwordEncoder.matches(password, user.getPassword()) || !user.getUsername().equals(username)) {
+        if (!passwordEncoder.matches(password, user.getPassword()) || !user.getUsername().equals(email)) {
             throw new OAuth2AuthenticationException("Invalid credentials");
         }
 
@@ -85,7 +85,7 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
         //-----------Create a new Security Context Holder Context----------
         OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken =
                 (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(username, user.getAuthorities());
+        CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(email, user.getAuthorities());
         oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);
 
         var newcontext = SecurityContextHolder.createEmptyContext();

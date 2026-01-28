@@ -107,7 +107,7 @@ public class MusicControllerTest {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -190,7 +190,7 @@ public class MusicControllerTest {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -280,7 +280,7 @@ public class MusicControllerTest {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -448,7 +448,7 @@ public class MusicControllerTest {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -526,7 +526,7 @@ public class MusicControllerTest {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -569,7 +569,7 @@ public class MusicControllerTest {
         tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", secondValidUserDTO.getEmail())
+                                .param("email", secondValidUserDTO.getEmail())
                                 .param("password", secondValidUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -618,7 +618,7 @@ public class MusicControllerTest {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -665,7 +665,7 @@ public class MusicControllerTest {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -725,7 +725,7 @@ public class MusicControllerTest {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)

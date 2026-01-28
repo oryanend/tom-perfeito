@@ -71,7 +71,7 @@ public class OAuth2Test {
         ResultActions tokenResult =
                 mockMvc
                         .perform(post(baseUrl).with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +102,7 @@ public class OAuth2Test {
                 mockMvc
                         .perform(post(baseUrl)
                                 .with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", "wrongpassword")
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -121,7 +121,7 @@ public class OAuth2Test {
                 mockMvc
                         .perform(post(baseUrl)
                                 .with(httpBasic(clientId, clientSecret))
-                                .param("username", "invalidEmailUsername@test.com")
+                                .param("email", "invalidEmailUsername@test.com")
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
