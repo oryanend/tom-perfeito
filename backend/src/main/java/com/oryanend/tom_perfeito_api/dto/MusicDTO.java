@@ -1,0 +1,151 @@
+package com.oryanend.tom_perfeito_api.dto;
+
+import com.oryanend.tom_perfeito_api.entities.Music;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.UUID;
+
+public class MusicDTO {
+    private UUID id;
+
+    @Column(nullable = false, unique = true, length = 40)
+    @NotNull(message = "Title cannot be null")
+    private String title;
+
+    @Column(nullable = false, unique = true, length = 254)
+    @NotNull(message = "Description cannot be null")
+    private String description;
+
+    @NotNull(message = "ReleaseDate cannot be null")
+    private LocalDate releaseDate;
+    private Instant createdAt;
+    private Instant updatedAt;
+
+    @NotNull(message = "Lyric cannot be null")
+    private LyricDTO lyric;
+
+    private UserDTO createdBy;
+
+    public MusicDTO() {
+    }
+
+    public MusicDTO(String title, String description, LocalDate releaseDate, Instant createdAt, Instant updatedAt, LyricDTO lyric, UserDTO createdBy) {
+        this.title = title;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.lyric = lyric;
+        this.createdBy = createdBy;
+
+        if (createdAt != null) {
+            this.createdAt = createdAt;
+        } else {
+            this.createdAt = Instant.now();
+        }
+        if (updatedAt != null) {
+            this.updatedAt = updatedAt;
+        } else {
+            this.updatedAt = Instant.now();
+        }
+    }
+
+    public MusicDTO(Music entity) {
+        this.id = entity.getId();
+        this.title = entity.getTitle();
+        this.description = entity.getDescription();
+        this.releaseDate = entity.getReleaseDate();
+        this.lyric = new LyricDTO(entity.getLyric());
+        this.createdBy = new UserDTO(entity.getCreatedBy());
+
+        if (entity.getCreatedAt() != null) {
+            this.createdAt = entity.getCreatedAt();
+        } else {
+            this.createdAt = Instant.now();
+        }
+
+        if (entity.getUpdatedAt() != null) {
+            this.updatedAt = entity.getUpdatedAt();
+        } else {
+            this.updatedAt = Instant.now();
+        }
+    }
+
+    public MusicDTO(MusicPatchDTO dto){
+        this.title = dto.getTitle();
+        this.description = dto.getDescription();
+        this.releaseDate = dto.getReleaseDate();
+        this.lyric = dto.getLyric();
+
+        if (dto.getUpdatedAt() != null) {
+            this.updatedAt = dto.getUpdatedAt();
+        } else {
+            this.updatedAt = Instant.now();
+        }
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(LocalDate  releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public LyricDTO getLyric() {
+        return lyric;
+    }
+
+    public void setLyric(LyricDTO lyric) {
+        this.lyric = lyric;
+    }
+
+    public UserDTO getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(UserDTO createdBy) {
+        this.createdBy = createdBy;
+    }
+}

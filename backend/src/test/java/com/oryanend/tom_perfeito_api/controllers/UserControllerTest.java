@@ -3,7 +3,6 @@ package com.oryanend.tom_perfeito_api.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oryanend.tom_perfeito_api.config.PasswordConfig;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
-import com.oryanend.tom_perfeito_api.factory.UserDTOFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
+import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.*;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,18 +67,18 @@ public class UserControllerTest {
         validEmail = "email@test.com";
         validPassword = "testpassword";
 
-        validUserDTO = UserDTOFactory.createUserDTO(validUsername, validEmail, validPassword);
+        validUserDTO = createUserDTO(validUsername, validEmail, validPassword);
 
-        secondValidUserWithSameUsernameDTO = UserDTOFactory.createUserDTOWithUsername(validUsername);
-        secondValidUserWithSameEmailDTO = UserDTOFactory.createUserDTOWithEmail(validEmail);
+        secondValidUserWithSameUsernameDTO = createUserDTOWithUsername(validUsername);
+        secondValidUserWithSameEmailDTO = createUserDTOWithEmail(validEmail);
 
-        nullPasswordUserDTO = UserDTOFactory.createUserDTOWithPassword(null);
-        nullEmailUserDTO = UserDTOFactory.createUserDTOWithEmail(null);
-        nullUsernameUserDTO = UserDTOFactory.createUserDTOWithUsername(null);
+        nullPasswordUserDTO = createUserDTOWithPassword(null);
+        nullEmailUserDTO = createUserDTOWithEmail(null);
+        nullUsernameUserDTO = createUserDTOWithUsername(null);
 
-        invalidPasswordUserDTO = UserDTOFactory.createUserDTOWithPassword(invalidPassword);
-        invalidEmailUserDTO = UserDTOFactory.createUserDTOWithEmail(invalidEmail);
-        invalidUsernameUserDTO = UserDTOFactory.createUserDTOWithUsername(invalidUsername);
+        invalidPasswordUserDTO = createUserDTOWithPassword(invalidPassword);
+        invalidEmailUserDTO = createUserDTOWithEmail(invalidEmail);
+        invalidUsernameUserDTO = createUserDTOWithUsername(invalidUsername);
 
         invalidToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30";
     }
@@ -327,6 +327,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
+    // GET Tests
     @Test
     @DisplayName("GET `/users/me` should return the authenticated user's data")
     void getMeWithValidToken() throws Exception {
@@ -397,4 +398,56 @@ public class UserControllerTest {
         ;
     }
 
+    @Test
+    @DisplayName("GET `/users/{id}` with existing id should return user")
+    void getUserWithExistingId() throws Exception {
+        // First, insert a valid user
+        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
+
+        ResultActions postResult =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        postResult.andExpect(status().isCreated());
+
+        String id = objectMapper.readTree(postResult.andReturn().getResponse().getContentAsString()).get("id").asText();
+
+        // Now, try to get the user by id
+        ResultActions getResult =
+                mockMvc
+                        .perform(get(baseUrl + "/" + id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        getResult
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.username").value(validUsername))
+                .andExpect(jsonPath("$.email").value(validEmail))
+                .andExpect(jsonPath("$.roles").isArray())
+                .andExpect(jsonPath("$.roles[*].authority", hasItem("ROLE_CLIENT")));
+    }
+
+    @Test
+    @DisplayName("GET `/users/{id}` with non existing id should return 404")
+    void getUserWithNonExistingId() throws Exception {
+        String nonExistingId = UUID.randomUUID().toString();
+
+        ResultActions getResult =
+                mockMvc
+                        .perform(get(baseUrl + "/" + nonExistingId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        getResult
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.error").value("Resource not found"))
+                .andExpect(jsonPath("$.message").value("User not found"))
+                .andExpect(jsonPath("$.path").value(baseUrl + "/" + nonExistingId))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
+    }
 }

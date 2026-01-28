@@ -5,7 +5,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
-import com.oryanend.tom_perfeito_api.factory.UserDTOFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createUserDTOTemplate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,7 +49,7 @@ public class OAuth2Test {
     void setUp() {
         baseUrl = "/oauth2/token";
 
-        validUserDTO = UserDTOFactory.createUserDTOTemplate();
+        validUserDTO = createUserDTOTemplate();
     }
 
     @Test

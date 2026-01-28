@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS tb_lyric (
+    id UUID PRIMARY KEY,
+    text VARCHAR NOT NULL,
+    music_id UUID UNIQUE,
+    FOREIGN KEY (music_id) REFERENCES tb_music(id) ON DELETE CASCADE
+);

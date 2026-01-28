@@ -1,5 +1,6 @@
 package com.oryanend.tom_perfeito_api.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -39,6 +40,10 @@ public class User implements UserDetails {
             name = "tb_user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "createdBy")
+    @JsonManagedReference
+    private List<Music> musicList = new ArrayList<>();
 
     public User() {
     }
@@ -118,6 +123,14 @@ public class User implements UserDetails {
             }
         }
         return false;
+    }
+
+    public List<Music> getMusicList() {
+        return musicList;
+    }
+
+    public void addMusic(Music music) {
+        musicList.add(music);
     }
 
     @Override
