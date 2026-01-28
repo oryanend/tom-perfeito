@@ -41,7 +41,7 @@ public class MusicControllerTest {
     @Autowired
     private MusicRepository repository;
 
-    private String baseUrl;
+    private String baseUrl, baseAuthUrl, baseLoginAuthUrl;
     private UUID existingId, nonExistingId;
     private String existingMusicName, nonExistingMusicName;
     private MusicDTO validMusicDTO;
@@ -59,6 +59,8 @@ public class MusicControllerTest {
     @BeforeEach
     void setUp() {
         baseUrl = "/musics";
+        baseAuthUrl = "/auth/register";
+        baseLoginAuthUrl = "/auth/login";
 
         nonExistingId = UUID.randomUUID();
 
@@ -96,7 +98,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -106,7 +108,7 @@ public class MusicControllerTest {
         // Try to get token with the same user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
@@ -179,7 +181,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -189,7 +191,7 @@ public class MusicControllerTest {
         // Try to get token with the same user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
@@ -269,7 +271,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -279,7 +281,7 @@ public class MusicControllerTest {
         // Try to get token with the same user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
@@ -437,7 +439,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -447,7 +449,7 @@ public class MusicControllerTest {
         // Try to get token with the same user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
@@ -515,7 +517,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -525,7 +527,7 @@ public class MusicControllerTest {
         // Try to get token with the first user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
@@ -558,7 +560,7 @@ public class MusicControllerTest {
 
         ResultActions createSecondUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -568,7 +570,7 @@ public class MusicControllerTest {
         // Try to get token with the second user
         tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", secondValidUserDTO.getEmail())
                                 .param("password", secondValidUserDTO.getPassword())
                                 .param("grant_type", "password")
@@ -607,7 +609,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -617,7 +619,7 @@ public class MusicControllerTest {
         // Try to get token with the first user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
@@ -654,7 +656,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -664,7 +666,7 @@ public class MusicControllerTest {
         // Try to get token with the same user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
@@ -714,7 +716,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -724,7 +726,7 @@ public class MusicControllerTest {
         // Try to get token with the same user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")

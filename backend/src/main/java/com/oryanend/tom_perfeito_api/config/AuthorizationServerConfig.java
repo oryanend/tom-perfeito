@@ -127,7 +127,9 @@ public class AuthorizationServerConfig {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder()
+                .tokenEndpoint("/auth/login") // Change `/oauth2/token` to `/auth/login`
+                .build();
     }
 
     @Bean
