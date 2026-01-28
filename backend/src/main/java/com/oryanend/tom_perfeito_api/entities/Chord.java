@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.oryanend.tom_perfeito_api.entities.enums.ChordType;
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "tb_chord")
@@ -31,6 +29,9 @@ public class Chord {
             inverseJoinColumns = @JoinColumn(name = "note_id")
     )
     private Set<Note> notes = new HashSet<>();
+
+    @OneToMany(mappedBy = "chord")
+    private List<LyricChord> lyric = new ArrayList<>();
 
     public Chord() {
     }

@@ -1,13 +1,17 @@
 package com.oryanend.tom_perfeito_api.services;
 
+import com.oryanend.tom_perfeito_api.dto.MusicMinDTO;
 import com.oryanend.tom_perfeito_api.dto.RoleDTO;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
+import com.oryanend.tom_perfeito_api.entities.Music;
 import com.oryanend.tom_perfeito_api.entities.Role;
 import com.oryanend.tom_perfeito_api.entities.User;
 import com.oryanend.tom_perfeito_api.projections.UserDetailsProjection;
+import com.oryanend.tom_perfeito_api.repositories.MusicRepository;
 import com.oryanend.tom_perfeito_api.repositories.RoleRepository;
 import com.oryanend.tom_perfeito_api.repositories.UserRepository;
 import com.oryanend.tom_perfeito_api.services.exceptions.ResourceAlreadyExistsException;
+import com.oryanend.tom_perfeito_api.services.exceptions.ResourceNotFoundException;
 import com.oryanend.tom_perfeito_api.util.CustomUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -29,6 +34,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private MusicRepository musicRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -66,6 +74,12 @@ public class UserService implements UserDetailsService {
         return new UserDTO(entity);
     }
 
+    @Transactional(readOnly = true)
+    public UserDTO findById(String id) {
+        User entity = repository.findById(UUID.fromString(id)).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return new UserDTO(entity);
+    }
+
     @Transactional
     public UserDTO insert(UserDTO dto) {
         if (repository.findByEmail(dto.getEmail()).isPresent()) {
@@ -97,6 +111,12 @@ public class UserService implements UserDetailsService {
         for (RoleDTO roleDTO : dto.getRoles()) {
             Role role = roleRepository.getReferenceById(roleDTO.getId());
             entity.getRoles().add(role);
+        }
+
+        entity.getMusicList().clear();
+        for (MusicMinDTO musicMinDTO : dto.getMusics()) {
+            Music music = musicRepository.getReferenceById(musicMinDTO.getId());
+            entity.getMusicList().add(music);
         }
     }
 }

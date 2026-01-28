@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.oryanend.tom_perfeito_api.entities.enums.ChordType.MINOR;
+import static com.oryanend.tom_perfeito_api.factory.ChordDTOFactory.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,31 +49,11 @@ public class ChordControllerTest {
         validChordName = "A Minor";
         nonExistingChordName = "NonExistingChordName";
 
-        validChordDTO = new ChordDTO();
-        validChordDTO.setName(validChordName);
-        validChordDTO.setType(MINOR);
+        validChordDTO = createValidChordDTO(noteRepository);
 
-        validChordDTO.getNotes().add(noteRepository.findById(1L).orElseThrow());
-        validChordDTO.getNotes().add(noteRepository.findById(5L).orElseThrow());
-        validChordDTO.getNotes().add(noteRepository.findById(10L).orElseThrow());
-
-        withoutNotesChordDTO = new ChordDTO();
-        withoutNotesChordDTO.setName(validChordName);
-        withoutNotesChordDTO.setType(MINOR);
-
-        withoutNameChordDTO = new ChordDTO();
-        withoutNameChordDTO.setType(MINOR);
-
-        withoutNameChordDTO.getNotes().add(noteRepository.findById(1L).orElseThrow());
-        withoutNameChordDTO.getNotes().add(noteRepository.findById(5L).orElseThrow());
-        withoutNameChordDTO.getNotes().add(noteRepository.findById(10L).orElseThrow());
-
-        withoutTypeChordDTO = new ChordDTO();
-        withoutTypeChordDTO.setName(validChordName);
-
-        withoutTypeChordDTO.getNotes().add(noteRepository.findById(1L).orElseThrow());
-        withoutTypeChordDTO.getNotes().add(noteRepository.findById(5L).orElseThrow());
-        withoutTypeChordDTO.getNotes().add(noteRepository.findById(10L).orElseThrow());
+        withoutNotesChordDTO = createWithoutNotesChordDTO();
+        withoutNameChordDTO = createWithoutNameChordDTO(noteRepository);
+        withoutTypeChordDTO = createWithoutTypeChordDTO(noteRepository);
     }
 
     // Tests for `/chords` endpoint

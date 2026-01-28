@@ -7,9 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @JsonPropertyOrder({"id", "username", "roles", "email", "createdAt", "updatedAt"
 })
@@ -31,6 +29,7 @@ public class UserDTO {
     private Instant createdAt;
     private Instant updatedAt;
     private Set<RoleDTO> roles = new HashSet<>();
+    private List<MusicMinDTO> musics = new ArrayList<MusicMinDTO>();
 
     public UserDTO() {
     }
@@ -49,7 +48,6 @@ public class UserDTO {
         } else {
             this.updatedAt = Instant.now();
         }
-
     }
 
     public UserDTO(User entity) {
@@ -68,6 +66,7 @@ public class UserDTO {
             this.updatedAt = Instant.now();
         }
         entity.getRoles().forEach(role -> roles.add(new RoleDTO(role)));
+        entity.getMusicList().forEach(music -> musics.add(new MusicMinDTO(music)));
     }
 
     public UUID getId() {
@@ -124,5 +123,9 @@ public class UserDTO {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public List<MusicMinDTO> getMusics() {
+        return musics;
     }
 }

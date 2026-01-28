@@ -1,8 +1,10 @@
 package com.oryanend.tom_perfeito_api.controllers.handlers;
 
 import com.oryanend.tom_perfeito_api.db.migration.exceptions.PathNotFoundException;
+import com.oryanend.tom_perfeito_api.services.exceptions.DatabaseException;
 import com.oryanend.tom_perfeito_api.services.exceptions.ResourceAlreadyExistsException;
 import com.oryanend.tom_perfeito_api.services.exceptions.ResourceNotFoundException;
+import com.oryanend.tom_perfeito_api.services.exceptions.UnauthorizedActionException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +66,30 @@ public class ControllerExceptionHandler {
         err.setTimestamp(Instant.now());
         err.setStatus(status.value());
         err.setError("Path not found");
+        err.setMessage(e.getMessage());
+        err.setPath(request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(UnauthorizedActionException.class)
+    public ResponseEntity<StandardError> unauthorizedAction(UnauthorizedActionException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        StandardError err = new StandardError();
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setError("Unauthorized action");
+        err.setMessage(e.getMessage());
+        err.setPath(request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<StandardError> database(DatabaseException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError();
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setError("Data Integrity Violation Exception");
         err.setMessage(e.getMessage());
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
