@@ -152,8 +152,13 @@ public class AuthControllerTest {
                                 .accept(MediaType.APPLICATION_JSON));
 
         tokenResult
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Invalid credentials"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.error").value("Invalid Credentials"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.message").value("Email or Password invalid"))
+                .andExpect(jsonPath("$.path").value(baseUrl))
         ;
     }
 
@@ -171,8 +176,13 @@ public class AuthControllerTest {
                                 .accept(MediaType.APPLICATION_JSON));
 
         tokenResult
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Invalid credentials"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.error").value("Invalid Credentials"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.message").value("Email or Password invalid"))
+                .andExpect(jsonPath("$.path").value(baseUrl))
         ;
     }
 
