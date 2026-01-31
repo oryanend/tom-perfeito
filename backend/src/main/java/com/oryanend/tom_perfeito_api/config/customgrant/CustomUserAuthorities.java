@@ -6,16 +6,16 @@ import org.springframework.security.core.GrantedAuthority;
 
 public class CustomUserAuthorities {
 
-    private String username;
+    private String email;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserAuthorities(String username, Collection<? extends GrantedAuthority> authorities) {
-        this.username = username;
+    public CustomUserAuthorities(String email, Collection<? extends GrantedAuthority> authorities) {
+        this.email = email;
         this.authorities = authorities;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

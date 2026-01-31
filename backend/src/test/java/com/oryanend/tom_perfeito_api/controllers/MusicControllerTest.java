@@ -41,7 +41,7 @@ public class MusicControllerTest {
     @Autowired
     private MusicRepository repository;
 
-    private String baseUrl;
+    private String baseUrl, baseAuthUrl, baseLoginAuthUrl;
     private UUID existingId, nonExistingId;
     private String existingMusicName, nonExistingMusicName;
     private MusicDTO validMusicDTO;
@@ -59,6 +59,8 @@ public class MusicControllerTest {
     @BeforeEach
     void setUp() {
         baseUrl = "/musics";
+        baseAuthUrl = "/auth/register";
+        baseLoginAuthUrl = "/auth/login";
 
         nonExistingId = UUID.randomUUID();
 
@@ -92,46 +94,11 @@ public class MusicControllerTest {
     @Test
     @DisplayName("GET `/musics` should return paged list of musics sorted by `name`")
     void findByNameWhenContainsName() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions createUserResult =
-                mockMvc
-                        .perform(post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        createUserResult.andExpect(status().isCreated());
-
-        // Try to get token with the same user
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult.andExpect(status().isOk());
-
-        // Post a valid music to ensure there is at least one music with the specified name
-        jsonBody = objectMapper.writeValueAsString(validMusicDTO);
-
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(baseUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
-                                .accept(MediaType.APPLICATION_JSON));
-
-        postResult.andExpect(status().isCreated());
+        // Get token user
+        String registerAndGetToken = registerAndGetToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        String postResponse = postResult.andReturn().getResponse().getContentAsString();
-        MusicDTO createdMusic = objectMapper.readValue(postResponse, MusicDTO.class);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
         existingId = createdMusic.getId();
 
         // GET request to find musics by name
@@ -175,46 +142,11 @@ public class MusicControllerTest {
     @Test
     @DisplayName("GET `/musics/{id}` should return 200 when `id` doesn't exists")
     void findByIdWhenIdExists() throws Exception{
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions createUserResult =
-                mockMvc
-                        .perform(post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        createUserResult.andExpect(status().isCreated());
-
-        // Try to get token with the same user
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult.andExpect(status().isOk());
-
-        // Post a valid music to ensure there is at least one music with the specified name
-        jsonBody = objectMapper.writeValueAsString(validMusicDTO);
-
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(baseUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
-                                .accept(MediaType.APPLICATION_JSON));
-
-        postResult.andExpect(status().isCreated());
+        // Get token user
+        String registerAndGetToken = registerAndGetToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        String postResponse = postResult.andReturn().getResponse().getContentAsString();
-        MusicDTO createdMusic = objectMapper.readValue(postResponse, MusicDTO.class);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
         existingId = createdMusic.getId();
 
         ResultActions result =
@@ -269,7 +201,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post("/users")
+                        .perform(post(baseAuthUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -279,8 +211,8 @@ public class MusicControllerTest {
         // Try to get token with the same user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                                .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -433,56 +365,22 @@ public class MusicControllerTest {
     @Test
     @DisplayName("PATCH `/musics/{id}` should update music when given valid credentials")
     void updateMusicWithValidCredentials() throws Exception{
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions createUserResult =
-                mockMvc
-                        .perform(post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        createUserResult.andExpect(status().isCreated());
-
-        // Try to get token with the same user
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult.andExpect(status().isOk());
-
-        // Post a valid music to ensure there is at least one music with the specified name
-        jsonBody = objectMapper.writeValueAsString(validMusicDTO);
-
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(baseUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
-                                .accept(MediaType.APPLICATION_JSON));
+        // Get token user
+        String registerAndGetToken = registerAndGetToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        String postResponse = postResult.andReturn().getResponse().getContentAsString();
-        Instant createdAt = Instant.parse(objectMapper.readTree(postResponse).get("createdAt").asText());
-        MusicDTO createdMusic = objectMapper.readValue(postResponse, MusicDTO.class);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
         existingId = createdMusic.getId();
+        Instant createdAt = createdMusic.getCreatedAt();
 
         // Update some fields of the created music
-        jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
+        String jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
         ResultActions result =
                 mockMvc
                         .perform(patch(baseUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
+                                .header("Authorization", "Bearer " + registerAndGetToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
@@ -510,82 +408,24 @@ public class MusicControllerTest {
     @Test
     @DisplayName("PATCH `/musics/{id}` should return 403 when given invalid credentials")
     void updateMusicWithInvalidCredentials() throws Exception{
-        // Create first user
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions createUserResult =
-                mockMvc
-                        .perform(post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        createUserResult.andExpect(status().isCreated());
-
-        // Try to get token with the first user
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult.andExpect(status().isOk());
+        // Get token user
+        String registerAndGetToken = registerAndGetToken(validUserDTO);
 
         // Post a valid music to ensure there is at least one music with the specified name
-        jsonBody = objectMapper.writeValueAsString(validMusicDTO);
-
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(baseUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
-                                .accept(MediaType.APPLICATION_JSON));
-
-        postResult.andExpect(status().isCreated());
-
-        // Extract the created music ID from the POST response
-        String postResponse = postResult.andReturn().getResponse().getContentAsString();
-        MusicDTO createdMusic = objectMapper.readValue(postResponse, MusicDTO.class);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
         existingId = createdMusic.getId();
 
-        // Create second user
-        jsonBody = objectMapper.writeValueAsString(secondValidUserDTO);
-
-        ResultActions createSecondUserResult =
-                mockMvc
-                        .perform(post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        createSecondUserResult.andExpect(status().isCreated());
-
         // Try to get token with the second user
-        tokenResult =
-                mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", secondValidUserDTO.getEmail())
-                                .param("password", secondValidUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult.andExpect(status().isOk());
+        String registerAndGetTokenSecondUser = registerAndGetToken(secondValidUserDTO);
 
         // Update some fields of the created music
-        jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
+        String jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
         ResultActions result =
                 mockMvc
                         .perform(patch(baseUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
+                                .header("Authorization", "Bearer " + registerAndGetTokenSecondUser)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
@@ -602,38 +442,21 @@ public class MusicControllerTest {
     @Test
     @DisplayName("PATCH `/musics/{id}` should return 404 when `id` doesn't exist")
     void updateMusicWithNonExistId() throws Exception {
-        // Create first user
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
+        // Get token user
+        String registerAndGetToken = registerAndGetToken(validUserDTO);
 
-        ResultActions createUserResult =
-                mockMvc
-                        .perform(post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        // Post a valid music to ensure there is at least one music with the specified name
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        existingId = createdMusic.getId();
 
-        createUserResult.andExpect(status().isCreated());
-
-        // Try to get token with the first user
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult.andExpect(status().isOk());
-
-        jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
+        // Patch music with non-existing ID
+        String jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
         ResultActions result =
                 mockMvc
                         .perform(patch(baseUrl + "/" + nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
+                                .header("Authorization", "Bearer " + registerAndGetToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
@@ -644,50 +467,19 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.message").value("Music not found"))
                 .andExpect(jsonPath("$.path").value(baseUrl + "/" + nonExistingId))
         ;
+
+        assertNotSame(existingId, nonExistingId);
     }
 
     // DELETE Tests
     @Test
     @DisplayName("DELETE `/musics/{id}` should delete music when given valid credentials")
     void deleteMusicWithValidCredentials() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions createUserResult =
-                mockMvc
-                        .perform(post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        createUserResult.andExpect(status().isCreated());
-
-        // Try to get token with the same user
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult.andExpect(status().isOk());
+        // Get token user
+        String registerAndGetToken = registerAndGetToken(validUserDTO);
 
         // Post a valid music to ensure there is at least one music with the specified name
-        jsonBody = objectMapper.writeValueAsString(validMusicDTO);
-
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(baseUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
-                                .accept(MediaType.APPLICATION_JSON));
-
-        // Extract the created music ID from the POST response
-        String postResponse = postResult.andReturn().getResponse().getContentAsString();
-        MusicDTO createdMusic = objectMapper.readValue(postResponse, MusicDTO.class);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
         existingId = createdMusic.getId();
 
         // Delete the created music
@@ -695,14 +487,14 @@ public class MusicControllerTest {
                 mockMvc
                         .perform(delete(baseUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
+                                .header("Authorization", "Bearer " + registerAndGetToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$").doesNotExist())
         ;
+
         // Verify that the music is actually deleted
         assertFalse(repository.existsById(existingId));
     }
@@ -710,53 +502,18 @@ public class MusicControllerTest {
     @Test
     @DisplayName("DELETE `/musics/{id}` should return 404 when `id` doesn't exist")
     void deleteMusicWithNonExistId() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions createUserResult =
-                mockMvc
-                        .perform(post("/users")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        createUserResult.andExpect(status().isCreated());
-
-        // Try to get token with the same user
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post("/oauth2/token").with(httpBasic(clientId, clientSecret))
-                                .param("username", validUserDTO.getEmail())
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult.andExpect(status().isOk());
+        // Get token user
+        String registerAndGetToken = registerAndGetToken(validUserDTO);
 
         // Post a valid music to ensure there is at least one music with the specified name
-        jsonBody = objectMapper.writeValueAsString(validMusicDTO);
-
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(baseUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
-                                .accept(MediaType.APPLICATION_JSON));
-
-        // Extract the created music ID from the POST response
-        String postResponse = postResult.andReturn().getResponse().getContentAsString();
-        MusicDTO createdMusic = objectMapper.readValue(postResponse, MusicDTO.class);
-        existingId = createdMusic.getId();
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
 
         // Delete the created music
         ResultActions result =
                 mockMvc
                         .perform(delete(baseUrl + "/" + nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "Bearer " + objectMapper.readTree(
-                                        tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText())
+                                .header("Authorization", "Bearer " + registerAndGetToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
@@ -767,5 +524,62 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.message").value("Music not found"))
                 .andExpect(jsonPath("$.path").value(baseUrl + "/" + nonExistingId))
         ;
+
+        assertNotSame(createdMusic.getId(), nonExistingId);
+    }
+
+
+    // Methods to help tests
+    private String obtainAcessToken(String email, String password) throws Exception {
+        ResultActions tokenResult =
+                mockMvc
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                                .param("email", email)
+                                .param("password", password)
+                                .param("grant_type", "password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        tokenResult.andExpect(status().isOk());
+
+        return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
+    }
+
+    private UserDTO registerUser(UserDTO dto) throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions createUserResult =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        createUserResult.andExpect(status().isCreated());
+
+        String response = createUserResult.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(response, UserDTO.class);
+    }
+
+    private String registerAndGetToken(UserDTO dto) throws Exception {
+        UserDTO registeredUser = registerUser(dto);
+        return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
+    }
+
+    private MusicDTO createMusic(MusicDTO dto, String token) throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions postResult =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .header("Authorization", "Bearer " + token)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        postResult.andExpect(status().isCreated());
+
+        String postResponse = postResult.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(postResponse, MusicDTO.class);
     }
 }

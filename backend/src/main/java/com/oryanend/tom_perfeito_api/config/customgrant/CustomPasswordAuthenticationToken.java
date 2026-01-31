@@ -16,7 +16,7 @@ public class CustomPasswordAuthenticationToken extends OAuth2AuthorizationGrantA
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private final String username;
+    private final String email;
     private final String password;
     private final Set<String> scopes;
 
@@ -24,14 +24,14 @@ public class CustomPasswordAuthenticationToken extends OAuth2AuthorizationGrantA
 
         super(new AuthorizationGrantType("password"), clientPrincipal, additionalParameters);
 
-        this.username = (String) additionalParameters.get("username");
+        this.email = (String) additionalParameters.get("email");
         this.password = (String) additionalParameters.get("password");
         this.scopes = Collections.unmodifiableSet(
                 scopes != null ? new HashSet<>(scopes) : Collections.emptySet());
     }
 
-    public String getUsername() {
-        return this.username;
+    public String getEmail() {
+        return this.email;
     }
 
     public String getPassword() {

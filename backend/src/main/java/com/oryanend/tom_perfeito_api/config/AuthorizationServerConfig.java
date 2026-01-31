@@ -7,6 +7,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.oryanend.tom_perfeito_api.config.customgrant.CustomPasswordAuthenticationConverter;
 import com.oryanend.tom_perfeito_api.config.customgrant.CustomPasswordAuthenticationProvider;
 import com.oryanend.tom_perfeito_api.config.customgrant.CustomUserAuthorities;
+import com.oryanend.tom_perfeito_api.controllers.handlers.ControllerExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -74,7 +75,7 @@ public class AuthorizationServerConfig {
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
 			.tokenEndpoint(tokenEndpoint -> tokenEndpoint
 				.accessTokenRequestConverter(new CustomPasswordAuthenticationConverter())
-				.authenticationProvider(new CustomPasswordAuthenticationProvider(authorizationService(), tokenGenerator(), userDetailsService, passwordEncoder)));
+				.authenticationProvider(new CustomPasswordAuthenticationProvider(authorizationService(), tokenGenerator(), userDetailsService, passwordEncoder)).errorResponseHandler(new ControllerExceptionHandler()));
 
 		http.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
 		// @formatter:on
@@ -127,7 +128,9 @@ public class AuthorizationServerConfig {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder()
+                .tokenEndpoint("/auth/login") // Change `/oauth2/token` to `/auth/login`
+                .build();
     }
 
     @Bean
@@ -149,7 +152,7 @@ public class AuthorizationServerConfig {
                 // @formatter:off
 				context.getClaims()
 					.claim("authorities", authorities)
-					.claim("username", user.getUsername());
+					.claim("username", user.getEmail());
 				// @formatter:on
             }
         };
