@@ -46,7 +46,7 @@ public class AuthControllerTest {
     @Autowired
     private PasswordConfig passwordConfig;
 
-    private String baseUrl, baseAuthUrl;
+    private String baseUrl, baseAuthUrl, baseLoginAuthUrl;
     private String validUsername, validEmail, validPassword;
     private String invalidUsername, invalidEmail, invalidPassword;
     private String invalidToken;
@@ -68,6 +68,7 @@ public class AuthControllerTest {
     void setUp() {
         baseUrl = "/auth/login";
         baseAuthUrl = "/auth/register";
+        baseLoginAuthUrl = "/auth/login";
 
         invalidUsername = "iu";
         invalidPassword = "123";
@@ -98,44 +99,11 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/login` with valid email and password should return token")
     void validTokenTest() throws Exception {
-        // Create new user first
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
+        // First, register the user
+        registerUser(validUserDTO);
 
-        ResultActions result =
-                mockMvc
-                        .perform(post(baseAuthUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        result.andExpect(status().isCreated());
-
-        // Try to get token with the same user
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post(baseUrl).with(httpBasic(clientId, clientSecret))
-                                .param("email", validUserDTO.getEmail())
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token_type").value("Bearer"))
-                .andExpect(jsonPath("$.expires_in").isNumber())
-                .andExpect(jsonPath("$.access_token").isString())
-        ;
-
-        // Token validation
-        String responseString = tokenResult.andReturn().getResponse().getContentAsString();
-        String accessToken = JsonPath.read(responseString, "$.access_token");
-
-        DecodedJWT decodedJWT = JWT.decode(accessToken);
-
-        assertEquals(clientId, decodedJWT.getSubject());
-        assertEquals(decodedJWT.getExpiresAt().getTime() - decodedJWT.getIssuedAt().getTime(), tokenExpiresIn * 1000);
-        assertEquals(validUserDTO.getEmail(), decodedJWT.getClaim("username").asString());
+        // Now, try to obtain a token
+        obtainAcessToken(validUserDTO.getEmail(), validUserDTO.getPassword());
     }
 
     @Test
@@ -191,38 +159,19 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/register` with valid data should return success")
     void insertUser() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(baseAuthUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        result
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username").value(validUsername))
-                .andExpect(jsonPath("$.email").value(validEmail))
-                .andExpect(jsonPath("$.roles").isArray())
-                .andExpect(jsonPath("$.roles[*].authority", hasItem("ROLE_CLIENT")));
+        // First, register the user
+        UserDTO userDTO = registerUser(validUserDTO);
 
         // Check if the returned id is a valid UUID
-        String id = objectMapper.readTree(result.andReturn().getResponse().getContentAsString()).get("id").asText();
+        String id = userDTO.getId().toString();
         assertDoesNotThrow(() -> UUID.fromString(id));
 
         // Check if the password is encoded correctly
-        assertTrue(passwordConfig.passwordEncoder().matches(validPassword,
-                result.andReturn()
-                        .getResponse()
-                        .getContentAsString()
-                        .contains("password") ? objectMapper.readTree(result.andReturn()
-                        .getResponse()
-                        .getContentAsString()).get("password").asText() : ""));
+        assertTrue(passwordConfig.passwordEncoder().matches(validPassword, userDTO.getPassword()));
 
         // Check if createdAt and updatedAt are valid Instants
-        String createdAtStr = objectMapper.readTree(result.andReturn().getResponse().getContentAsString()).get("createdAt").asText();
-        String updatedAtStr = objectMapper.readTree(result.andReturn().getResponse().getContentAsString()).get("updatedAt").asText();
+        String createdAtStr = userDTO.getCreatedAt().toString();
+        String updatedAtStr = userDTO.getUpdatedAt().toString();
         assertDoesNotThrow(() -> Instant.parse(createdAtStr));
         assertDoesNotThrow(() -> Instant.parse(updatedAtStr));
     }
@@ -430,5 +379,64 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("Username already in use, try another one."))
                 .andExpect(jsonPath("$.path").value(baseAuthUrl))
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());
+    }
+
+    // Methods to help tests
+    private String obtainAcessToken(String email, String password) throws Exception {
+        ResultActions tokenResult =
+                mockMvc
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                                .param("email", email)
+                                .param("password", password)
+                                .param("grant_type", "password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        tokenResult
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token_type").value("Bearer"))
+                .andExpect(jsonPath("$.expires_in").isNumber())
+                .andExpect(jsonPath("$.access_token").isString())
+        ;
+
+        // Token validation
+        String responseString = tokenResult.andReturn().getResponse().getContentAsString();
+        String accessToken = JsonPath.read(responseString, "$.access_token");
+
+        DecodedJWT decodedJWT = JWT.decode(accessToken);
+
+        assertEquals(clientId, decodedJWT.getSubject());
+        assertEquals(decodedJWT.getExpiresAt().getTime() - decodedJWT.getIssuedAt().getTime(), tokenExpiresIn * 1000);
+        assertEquals(validUserDTO.getEmail(), decodedJWT.getClaim("username").asString());
+
+        return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
+    }
+
+    private UserDTO registerUser(UserDTO dto) throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions createUserResult =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        createUserResult
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username").value(validUsername))
+                .andExpect(jsonPath("$.email").value(validEmail))
+                .andExpect(jsonPath("$.roles").isArray())
+                .andExpect(jsonPath("$.roles[*].authority", hasItem("ROLE_CLIENT")))
+        ;
+
+
+        String response = createUserResult.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(response, UserDTO.class);
+    }
+
+    private String registerAndGetToken(UserDTO dto) throws Exception {
+        UserDTO registeredUser = registerUser(dto);
+        return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
     }
 }

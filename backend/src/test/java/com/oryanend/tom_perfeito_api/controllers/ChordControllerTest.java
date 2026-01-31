@@ -2,8 +2,6 @@ package com.oryanend.tom_perfeito_api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oryanend.tom_perfeito_api.dto.ChordDTO;
-import com.oryanend.tom_perfeito_api.entities.Chord;
-import com.oryanend.tom_perfeito_api.entities.Note;
 import com.oryanend.tom_perfeito_api.repositories.NoteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,8 +36,6 @@ public class ChordControllerTest {
     private String baseUrl;
     private String validChordName, nonExistingChordName;
     private ChordDTO validChordDTO, withoutNotesChordDTO, withoutNameChordDTO, withoutTypeChordDTO;
-    private Chord chord;
-    private Note noteOne, noteTwo, noteThree;
 
 
     @BeforeEach

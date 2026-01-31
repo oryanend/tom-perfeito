@@ -1,7 +1,6 @@
 package com.oryanend.tom_perfeito_api.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oryanend.tom_perfeito_api.config.PasswordConfig;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,13 +14,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.*;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,7 +33,7 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private String baseUrl, baseAuthUrl;
+    private String baseUrl, baseAuthUrl, baseLoginAuthUrl;
 
     private UserDTO validUserDTO;
 
@@ -55,6 +51,7 @@ public class UserControllerTest {
     void setUp() {
         baseUrl = "/users";
         baseAuthUrl = "/auth/register";
+        baseLoginAuthUrl = "/auth/login";
 
         invalidUsername = "iu";
         invalidPassword = "123";
@@ -73,48 +70,15 @@ public class UserControllerTest {
     @Test
     @DisplayName("GET `/users/me` should return the authenticated user's data")
     void getMeWithValidToken() throws Exception {
-        // First, insert a valid user
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(baseAuthUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        postResult.andExpect(status().isCreated());
-
-        // Try to get token with the same user
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post("/auth/login").with(httpBasic(clientId, clientSecret))
-                                .param("email", validUserDTO.getEmail())
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        tokenResult
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token_type").value("Bearer"))
-                .andExpect(jsonPath("$.expires_in").isNumber())
-                .andExpect(jsonPath("$.access_token").isString())
-        ;
+        // Insert a valid user and get a token for it
+        String validToken = registerAndGetToken(validUserDTO);
 
         // Now, authenticate as that user and call /users/me
         ResultActions getResult =
                 mockMvc
                         .perform(get(baseUrl + "/me")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization",
-                                        "Bearer " +
-                                                objectMapper.readTree(
-                                                        tokenResult.andReturn()
-                                                                .getResponse()
-                                                                .getContentAsString()
-                                                ).get("access_token").asText()
-                                )
+                                .header("Authorization", "Bearer " + validToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         getResult
@@ -144,18 +108,10 @@ public class UserControllerTest {
     @DisplayName("GET `/users/{id}` with existing id should return user")
     void getUserWithExistingId() throws Exception {
         // First, insert a valid user
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
+        UserDTO registeredUser = registerUser(validUserDTO);
 
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(baseAuthUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
-
-        postResult.andExpect(status().isCreated());
-
-        String id = objectMapper.readTree(postResult.andReturn().getResponse().getContentAsString()).get("id").asText();
+        // Get the id of the registered user
+        String id = String.valueOf(registeredUser.getId());
 
         // Now, try to get the user by id
         ResultActions getResult =
@@ -191,5 +147,42 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("User not found"))
                 .andExpect(jsonPath("$.path").value(baseUrl + "/" + nonExistingId))
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());
+    }
+
+    // Methods to help tests
+    private String registerAndGetToken(UserDTO dto) throws Exception {
+        UserDTO registeredUser = registerUser(dto);
+        return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
+    }
+
+    private String obtainAcessToken(String email, String password) throws Exception {
+        ResultActions tokenResult =
+                mockMvc
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                                .param("email", email)
+                                .param("password", password)
+                                .param("grant_type", "password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        tokenResult.andExpect(status().isOk());
+
+        return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
+    }
+
+    private UserDTO registerUser(UserDTO dto) throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions createUserResult =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        createUserResult.andExpect(status().isCreated());
+
+        String response = createUserResult.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(response, UserDTO.class);
     }
 }
