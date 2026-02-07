@@ -45,6 +45,9 @@ public class User implements UserDetails {
     @JsonManagedReference
     private List<Music> musicList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "author")
+    private List<Comment> comments = new ArrayList<>();
+
     public User() {
     }
 

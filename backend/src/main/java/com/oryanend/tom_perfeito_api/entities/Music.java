@@ -7,7 +7,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -41,6 +43,9 @@ public class Music {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     private User createdBy;
+
+    @OneToMany(mappedBy = "music", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comments = new HashSet<>();
 
     public Music() {
     }
@@ -116,6 +121,15 @@ public class Music {
 
     public void setCreatedBy(User createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setMusic(this);
     }
 
     @Override
