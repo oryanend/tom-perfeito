@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class MusicDTO {
@@ -28,6 +30,8 @@ public class MusicDTO {
     private LyricDTO lyric;
 
     private UserDTO createdBy;
+
+    private Set<CommentDTO> comments = new HashSet<>();
 
     public MusicDTO() {
     }
@@ -147,5 +151,13 @@ public class MusicDTO {
 
     public void setCreatedBy(UserDTO createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Set<CommentDTO> getComments() {
+        return comments;
+    }
+
+    public void addComment(CommentDTO comment) {
+        comments.add(comment);
     }
 }

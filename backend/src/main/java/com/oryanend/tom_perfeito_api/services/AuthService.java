@@ -1,5 +1,6 @@
 package com.oryanend.tom_perfeito_api.services;
 
+import com.oryanend.tom_perfeito_api.entities.Comment;
 import com.oryanend.tom_perfeito_api.entities.Music;
 import com.oryanend.tom_perfeito_api.entities.User;
 import com.oryanend.tom_perfeito_api.services.exceptions.UnauthorizedActionException;
@@ -29,6 +30,18 @@ public class AuthService {
         }
 
         if (!music.getCreatedBy().getId().equals(me.getId())) {
+            throw new UnauthorizedActionException("Access denied. Should be self or admin");
+        }
+    }
+
+    public void validateCreatedCommentBySelfOrAdmin(Comment comment) {
+        User me = userService.authenticated();
+
+        if (me.hasRole("ROLE_ADMIN")) {
+            return;
+        }
+
+        if (!comment.getAuthor().getId().equals(me.getId())) {
             throw new UnauthorizedActionException("Access denied. Should be self or admin");
         }
     }
