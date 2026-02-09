@@ -111,14 +111,7 @@ public class ChordControllerTest {
     @Test
     @DisplayName("POST `/chords` should insert a new chord")
     void insertNewChord() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(validChordDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(chordUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertChord(validChordDTO);
 
         result
                 .andExpect(status().isCreated())
@@ -137,14 +130,7 @@ public class ChordControllerTest {
     @Test
     @DisplayName("POST `/chords` should return 400 Bad Request when inserting a chord without notes")
     void insertWithoutNotes() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(withoutNotesChordDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(chordUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertChord(withoutNotesChordDTO);
 
         result
                 .andExpect(status().isUnprocessableEntity())
@@ -162,14 +148,7 @@ public class ChordControllerTest {
     @Test
     @DisplayName("POST `/chords` should return 400 Bad Request when inserting a chord without type")
     void insertWithoutType() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(withoutTypeChordDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(chordUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertChord(withoutTypeChordDTO);
 
         result
                 .andExpect(status().isUnprocessableEntity())
@@ -186,14 +165,7 @@ public class ChordControllerTest {
     @Test
     @DisplayName("POST `/chords` should return 400 Bad Request when inserting a chord without name")
     void insertWithoutName() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(withoutNameChordDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(chordUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertChord(withoutNameChordDTO);
 
         result
                 .andExpect(status().isUnprocessableEntity())
@@ -205,5 +177,18 @@ public class ChordControllerTest {
                 .andExpect(jsonPath("$.errors[0].fieldName").value("name"))
                 .andExpect(jsonPath("$.errors[0].message").value("Chord name cannot be null"))
         ;
+    }
+
+    // Methods to help tests
+
+    // This method can be used to insert a chord directly into the database for testing purposes
+    private ResultActions insertChord(ChordDTO chord) throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(chord);
+
+        return mockMvc
+                .perform(post(chordUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody)
+                        .accept(MediaType.APPLICATION_JSON));
     }
 }

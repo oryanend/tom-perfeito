@@ -103,21 +103,30 @@ public class AuthControllerTest {
         registerUser(validUserDTO);
 
         // Now, try to obtain a token
-        obtainAcessToken(validUserDTO.getEmail(), validUserDTO.getPassword());
+        ResultActions validTokenResult = obtainAcessToken(validUserDTO.getEmail(), validUserDTO.getPassword());
+
+        validTokenResult
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token_type").value("Bearer"))
+                .andExpect(jsonPath("$.expires_in").isNumber())
+                .andExpect(jsonPath("$.access_token").isString())
+        ;
+
+        // Token validation
+        String responseString = validTokenResult.andReturn().getResponse().getContentAsString();
+        String accessToken = JsonPath.read(responseString, "$.access_token");
+
+        DecodedJWT decodedJWT = JWT.decode(accessToken);
+
+        assertEquals(clientId, decodedJWT.getSubject());
+        assertEquals(decodedJWT.getExpiresAt().getTime() - decodedJWT.getIssuedAt().getTime(), tokenExpiresIn * 1000);
+        assertEquals(validUserDTO.getEmail(), decodedJWT.getClaim("username").asString());
     }
 
     @Test
     @DisplayName("POST `/auth/login` with invalid password should return 400")
     void invalidPasswordTest() throws Exception {
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post(authUrl)
-                                .with(httpBasic(clientId, clientSecret))
-                                .param("email", validUserDTO.getEmail())
-                                .param("password", "wrongpassword")
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions tokenResult = obtainAcessToken(validUserDTO.getEmail(), "wrongpassword");
 
         tokenResult
                 .andExpect(status().isUnauthorized())
@@ -133,15 +142,7 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/login` with invalid username should return 400")
     void invalidUsernameTest() throws Exception {
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post(authUrl)
-                                .with(httpBasic(clientId, clientSecret))
-                                .param("email", "invalidEmailUsername@test.com")
-                                .param("password", validUserDTO.getPassword())
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions tokenResult = obtainAcessToken("invalidEmailUsername@test.com", validUserDTO.getPassword());
 
         tokenResult
                 .andExpect(status().isUnauthorized())
@@ -179,14 +180,7 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/register` without password should return unprocessable entity")
     void insertWithoutPassword() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(nullPasswordUserDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertUser(nullPasswordUserDTO);
 
         result
                 .andExpect(status().isUnprocessableEntity())
@@ -202,14 +196,8 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/register` without email should return unprocessable entity")
     void insertWithoutEmail() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(nullEmailUserDTO);
+        ResultActions result = insertUser(nullEmailUserDTO);
 
-        ResultActions result =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
         result
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.timestamp").isNotEmpty())
@@ -224,14 +212,7 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/register` without username should return unprocessable entity")
     void insertWithoutUsername() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(nullUsernameUserDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertUser(nullUsernameUserDTO);
 
         result
                 .andExpect(status().isUnprocessableEntity())
@@ -247,14 +228,8 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/register` with a invalid password should return unprocessable entity")
     void insertWithInvalidPassword() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(invalidPasswordUserDTO);
+        ResultActions result = insertUser(invalidPasswordUserDTO);
 
-        ResultActions result =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
         result
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.timestamp").isNotEmpty())
@@ -269,14 +244,7 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/register` with a invalid password should return unprocessable entity")
     void insertWithInvalidEmail() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(invalidEmailUserDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertUser(invalidEmailUserDTO);
 
         result
                 .andExpect(status().isUnprocessableEntity())
@@ -293,14 +261,7 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/register` with a invalid username should return unprocessable entity")
     void insertWithInvalidUsername() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(invalidUsernameUserDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertUser(invalidUsernameUserDTO);
 
         result
                 .andExpect(status().isUnprocessableEntity())
@@ -316,27 +277,12 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/register` with an already taken email should return bad request")
     void insertWithAlreadyTakenEmail() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertUser(validUserDTO);
 
         result.andExpect(status().isCreated());
 
         // Try to insert the same user again
-
-        String secondJsonBody = objectMapper.writeValueAsString(secondValidUserWithSameEmailDTO);
-
-        ResultActions secondResult =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(secondJsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions secondResult = insertUser(secondValidUserWithSameEmailDTO);
 
         secondResult
                 .andExpect(status().isBadRequest())
@@ -350,27 +296,12 @@ public class AuthControllerTest {
     @Test
     @DisplayName("POST `/auth/register` with an already taken username should return bad request")
     void insertWithAlreadyTakenUsername() throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
-
-        ResultActions result =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions result = insertUser(validUserDTO);
 
         result.andExpect(status().isCreated());
 
         // Try to insert the same user again
-
-        String secondJsonBody = objectMapper.writeValueAsString(secondValidUserWithSameUsernameDTO);
-
-        ResultActions secondResult =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(secondJsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions secondResult = insertUser(secondValidUserWithSameUsernameDTO);
 
         secondResult
                 .andExpect(status().isBadRequest())
@@ -383,47 +314,31 @@ public class AuthControllerTest {
 
     // Methods to help tests
 
-    // Used to receive a valid token for a user by his email and password, also checks if the token is valid and has the correct claims
-    private String obtainAcessToken(String email, String password) throws Exception {
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post(authLoginUrl).with(httpBasic(clientId, clientSecret))
-                                .param("email", email)
-                                .param("password", password)
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
+    // Used to receive a valid token for a user by his email and password
+    private ResultActions obtainAcessToken(String email, String password) throws Exception {
+        return mockMvc
+                .perform(post(authLoginUrl).with(httpBasic(clientId, clientSecret))
+                        .param("email", email)
+                        .param("password", password)
+                        .param("grant_type", "password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON));
+    }
 
-        tokenResult
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token_type").value("Bearer"))
-                .andExpect(jsonPath("$.expires_in").isNumber())
-                .andExpect(jsonPath("$.access_token").isString())
-        ;
+    // Insert a user by `UserDTO` and return the ResultActions
+    private ResultActions insertUser(UserDTO dto) throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(dto);
 
-        // Token validation
-        String responseString = tokenResult.andReturn().getResponse().getContentAsString();
-        String accessToken = JsonPath.read(responseString, "$.access_token");
-
-        DecodedJWT decodedJWT = JWT.decode(accessToken);
-
-        assertEquals(clientId, decodedJWT.getSubject());
-        assertEquals(decodedJWT.getExpiresAt().getTime() - decodedJWT.getIssuedAt().getTime(), tokenExpiresIn * 1000);
-        assertEquals(validUserDTO.getEmail(), decodedJWT.getClaim("username").asString());
-
-        return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
+        return mockMvc
+                .perform(post(authRegisterUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody)
+                        .accept(MediaType.APPLICATION_JSON));
     }
 
     // Create a valid user by `UserDTO` and return the created user as `UserDTO`
     private UserDTO registerUser(UserDTO dto) throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(dto);
-
-        ResultActions createUserResult =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+        ResultActions createUserResult = insertUser(dto);
 
         createUserResult
                 .andExpect(status().isCreated())
@@ -435,11 +350,5 @@ public class AuthControllerTest {
 
         String response = createUserResult.andReturn().getResponse().getContentAsString();
         return objectMapper.readValue(response, UserDTO.class);
-    }
-
-    // Use the `registerUser` and `obtainAcessToken` methods to create a user and obtain a valid token for that user
-    private String registerUserAndObtainAcessToken(UserDTO dto) throws Exception {
-        UserDTO registeredUser = registerUser(dto);
-        return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
     }
 }
