@@ -37,7 +37,6 @@ public class ChordControllerTest {
     private String validChordName, nonExistingChordName;
     private ChordDTO validChordDTO, withoutNotesChordDTO, withoutNameChordDTO, withoutTypeChordDTO;
 
-
     @BeforeEach
     void setUp() {
         chordUrl = "/chords";

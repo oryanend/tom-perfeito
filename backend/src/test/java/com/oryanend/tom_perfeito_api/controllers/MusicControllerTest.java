@@ -95,10 +95,10 @@ public class MusicControllerTest {
     @DisplayName("GET `/musics` should return paged list of musics sorted by `name`")
     void findByNameWhenContainsName() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         // GET request to find musics by name
@@ -143,10 +143,10 @@ public class MusicControllerTest {
     @DisplayName("GET `/musics/{id}` should return 200 when `id` doesn't exists")
     void findByIdWhenIdExists() throws Exception{
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         ResultActions result =
@@ -366,10 +366,10 @@ public class MusicControllerTest {
     @DisplayName("PATCH `/musics/{id}` should update music when given valid credentials")
     void updateMusicWithValidCredentials() throws Exception{
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
         Instant createdAt = createdMusic.getCreatedAt();
 
@@ -380,7 +380,7 @@ public class MusicControllerTest {
                         .perform(patch(musicUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
-                                .header("Authorization", "Bearer " + registerAndGetToken)
+                                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
@@ -409,14 +409,14 @@ public class MusicControllerTest {
     @DisplayName("PATCH `/musics/{id}` should return 403 when given invalid credentials")
     void updateMusicWithInvalidCredentials() throws Exception{
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Post a valid music to ensure there is at least one music with the specified name
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         // Try to get token with the second user
-        String registerAndGetTokenSecondUser = registerAndGetToken(secondValidUserDTO);
+        String registerUserAndObtainAcessTokenSecondUser = registerUserAndObtainAcessToken(secondValidUserDTO);
 
         // Update some fields of the created music
         String jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
@@ -425,7 +425,7 @@ public class MusicControllerTest {
                         .perform(patch(musicUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
-                                .header("Authorization", "Bearer " + registerAndGetTokenSecondUser)
+                                .header("Authorization", "Bearer " + registerUserAndObtainAcessTokenSecondUser)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
@@ -443,10 +443,10 @@ public class MusicControllerTest {
     @DisplayName("PATCH `/musics/{id}` should return 404 when `id` doesn't exist")
     void updateMusicWithNonExistId() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Post a valid music to ensure there is at least one music with the specified name
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         // Patch music with non-existing ID
@@ -456,7 +456,7 @@ public class MusicControllerTest {
                         .perform(patch(musicUrl + "/" + nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
-                                .header("Authorization", "Bearer " + registerAndGetToken)
+                                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
@@ -476,10 +476,10 @@ public class MusicControllerTest {
     @DisplayName("DELETE `/musics/{id}` should delete music when given valid credentials")
     void deleteMusicWithValidCredentials() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Post a valid music to ensure there is at least one music with the specified name
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         // Delete the created music
@@ -487,7 +487,7 @@ public class MusicControllerTest {
                 mockMvc
                         .perform(delete(musicUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "Bearer " + registerAndGetToken)
+                                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
@@ -503,17 +503,17 @@ public class MusicControllerTest {
     @DisplayName("DELETE `/musics/{id}` should return 404 when `id` doesn't exist")
     void deleteMusicWithNonExistId() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Post a valid music to ensure there is at least one music with the specified name
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
 
         // Delete the created music
         ResultActions result =
                 mockMvc
                         .perform(delete(musicUrl + "/" + nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "Bearer " + registerAndGetToken)
+                                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         result
@@ -528,8 +528,9 @@ public class MusicControllerTest {
         assertNotSame(createdMusic.getId(), nonExistingId);
     }
 
-
     // Methods to help tests
+
+    // Used to receive a valid token for a user by his email and password, also checks if the token is valid and has the correct claims
     private String obtainAcessToken(String email, String password) throws Exception {
         ResultActions tokenResult =
                 mockMvc
@@ -545,6 +546,7 @@ public class MusicControllerTest {
         return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
     }
 
+    // Create a valid user by `UserDTO` and return the created user as `UserDTO`
     private UserDTO registerUser(UserDTO dto) throws Exception {
         String jsonBody = objectMapper.writeValueAsString(dto);
 
@@ -561,11 +563,13 @@ public class MusicControllerTest {
         return objectMapper.readValue(response, UserDTO.class);
     }
 
-    private String registerAndGetToken(UserDTO dto) throws Exception {
+    // Use the `registerUser` and `obtainAcessToken` methods to create a user and obtain a valid token for that user
+    private String registerUserAndObtainAcessToken(UserDTO dto) throws Exception {
         UserDTO registeredUser = registerUser(dto);
         return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
     }
 
+    // Insert a valid music and return the created music as `MusicDTO`
     private MusicDTO createMusic(MusicDTO dto, String token) throws Exception {
         String jsonBody = objectMapper.writeValueAsString(dto);
 

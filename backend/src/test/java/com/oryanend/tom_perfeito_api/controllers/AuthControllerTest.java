@@ -382,6 +382,8 @@ public class AuthControllerTest {
     }
 
     // Methods to help tests
+
+    // Used to receive a valid token for a user by his email and password, also checks if the token is valid and has the correct claims
     private String obtainAcessToken(String email, String password) throws Exception {
         ResultActions tokenResult =
                 mockMvc
@@ -412,6 +414,7 @@ public class AuthControllerTest {
         return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
     }
 
+    // Create a valid user by `UserDTO` and return the created user as `UserDTO`
     private UserDTO registerUser(UserDTO dto) throws Exception {
         String jsonBody = objectMapper.writeValueAsString(dto);
 
@@ -430,12 +433,12 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.roles[*].authority", hasItem("ROLE_CLIENT")))
         ;
 
-
         String response = createUserResult.andReturn().getResponse().getContentAsString();
         return objectMapper.readValue(response, UserDTO.class);
     }
 
-    private String registerAndGetToken(UserDTO dto) throws Exception {
+    // Use the `registerUser` and `obtainAcessToken` methods to create a user and obtain a valid token for that user
+    private String registerUserAndObtainAcessToken(UserDTO dto) throws Exception {
         UserDTO registeredUser = registerUser(dto);
         return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
     }

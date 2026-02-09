@@ -80,14 +80,14 @@ public class CommentControllerTest {
     @DisplayName("GET `/comments/{id}` should return comment by ID")
     void getCommentByExistingId() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         // Insert comment
-        CommentDTO createdComment = createComment(existingId, validCommentDTO, registerAndGetToken);
+        CommentDTO createdComment = createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
         Long commentId = createdComment.getId();
 
         // Perform GET request to retrieve the comment by ID
@@ -142,28 +142,28 @@ public class CommentControllerTest {
     @DisplayName("POST `/comments` should create a new comment")
     void postComment() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         // Insert comment
-        createComment(existingId, validCommentDTO, registerAndGetToken);
+        createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
     }
 
     @Test
     @DisplayName("POST `/comments` should return 404 when music ID does not exist")
     void postCommentWhenMusicIdDoesntExists() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         // Insert comment
-        CommentDTO commentDTO = createComment(existingId, validCommentDTO, registerAndGetToken);
+        CommentDTO commentDTO = createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
         String jsonBody = objectMapper.writeValueAsString(commentDTO);
 
         ResultActions postResult =
@@ -171,7 +171,7 @@ public class CommentControllerTest {
                         .perform(post(musicUrl + "/" + nonExistingId + "/comments")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
-                                .header("Authorization", "Bearer " + registerAndGetToken)
+                                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
                                 .accept(MediaType.APPLICATION_JSON));
 
         postResult
@@ -188,17 +188,17 @@ public class CommentControllerTest {
     @DisplayName("POST `/comments` should return 201 when your comment is a reply to another comment")
     void postCommentAsReply() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         // Insert comment
-        CommentDTO commentDTO = createComment(existingId, validCommentDTO, registerAndGetToken);
+        CommentDTO commentDTO = createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
 
         // Second User creates a comment to be the parent comment and Create a reply comment DTO
-        String secondUserToken = registerAndGetToken(secondValidUserDTO);
+        String secondUserToken = registerUserAndObtainAcessToken(secondValidUserDTO);
         CommentDTO replyDTO = createReplyComment(commentDTO, secondUserToken);
 
         // Check if the parent comment has the reply
@@ -225,19 +225,19 @@ public class CommentControllerTest {
     @DisplayName("DELETE `/comments/{id}` should delete comment by ID")
     void deleteComment() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Post a valid music to ensure there is at least one music with the specified name
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerAndGetToken);
+        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
         existingId = createdMusic.getId();
 
         // Insert comment
-        CommentDTO createdComment = createComment(existingId, validCommentDTO, registerAndGetToken);
+        CommentDTO createdComment = createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
         Long commentId = createdComment.getId();
 
         // Perform DELETE request to delete the comment by ID
         ResultActions deleteResult = mockMvc.perform(delete(musicUrl + "/" + existingId + "/comments/" + commentId)
-                .header("Authorization", "Bearer " + registerAndGetToken)
+                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
                 .accept(MediaType.APPLICATION_JSON));
 
         deleteResult
@@ -253,11 +253,11 @@ public class CommentControllerTest {
     @DisplayName("DELETE `/comments/{id}` should return 404 when comment ID does not exist")
     void deleteCommentWhenIdDoesntExists() throws Exception {
         // Get token user
-        String registerAndGetToken = registerAndGetToken(validUserDTO);
+        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Perform DELETE request to delete the comment by ID
         ResultActions deleteResult = mockMvc.perform(delete(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId)
-                .header("Authorization", "Bearer " + registerAndGetToken)
+                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
                 .accept(MediaType.APPLICATION_JSON));
 
         deleteResult
@@ -274,7 +274,7 @@ public class CommentControllerTest {
     @Test
     void patchComment() throws Exception {
         // Get token user
-        String firstUserToken = registerAndGetToken(validUserDTO);
+        String firstUserToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Extract the created music ID from the POST response
         MusicDTO createdMusic = createMusic(validMusicDTO, firstUserToken);
@@ -317,6 +317,8 @@ public class CommentControllerTest {
     }
 
     // Methods to help tests
+
+    // Used to receive a valid token for a user by his email and password, also checks if the token is valid and has the correct claims
     private String obtainAcessToken(String email, String password) throws Exception {
         ResultActions tokenResult =
                 mockMvc
@@ -332,6 +334,7 @@ public class CommentControllerTest {
         return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
     }
 
+    // Create a valid user by `UserDTO` and return the created user as `UserDTO`
     private UserDTO registerUser(UserDTO dto) throws Exception {
         String jsonBody = objectMapper.writeValueAsString(dto);
 
@@ -348,11 +351,13 @@ public class CommentControllerTest {
         return objectMapper.readValue(response, UserDTO.class);
     }
 
-    private String registerAndGetToken(UserDTO dto) throws Exception {
+    // Use the `registerUser` and `obtainAcessToken` methods to create a user and obtain a valid token for that user
+    private String registerUserAndObtainAcessToken(UserDTO dto) throws Exception {
         UserDTO registeredUser = registerUser(dto);
         return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
     }
 
+    // Insert a valid music and return the created music as `MusicDTO`
     private MusicDTO createMusic(MusicDTO dto, String token) throws Exception {
         String jsonBody = objectMapper.writeValueAsString(dto);
 
@@ -370,6 +375,7 @@ public class CommentControllerTest {
         return objectMapper.readValue(postResponse, MusicDTO.class);
     }
 
+    // Insert a valid comment for a music and return the created comment as `CommentDTO`
     private CommentDTO createComment(UUID musicId, CommentDTO dto, String token) throws Exception {
         String jsonBody = objectMapper.writeValueAsString(dto);
 
@@ -397,6 +403,7 @@ public class CommentControllerTest {
         return objectMapper.readValue(postResponse, CommentDTO.class);
     }
 
+    // Insert a valid comment as a reply to another comment and return the created reply comment as `CommentDTO`
     private CommentDTO createReplyComment(CommentDTO dto, String token) throws Exception {
         CommentDTO replyDTO = new CommentDTO();
         replyDTO.setBody("This is a reply to the comment with ID " + dto.getId());

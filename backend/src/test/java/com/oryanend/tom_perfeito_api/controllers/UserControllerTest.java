@@ -71,7 +71,7 @@ public class UserControllerTest {
     @DisplayName("GET `/users/me` should return the authenticated user's data")
     void getMeWithValidToken() throws Exception {
         // Insert a valid user and get a token for it
-        String validToken = registerAndGetToken(validUserDTO);
+        String validToken = registerUserAndObtainAcessToken(validUserDTO);
 
         // Now, authenticate as that user and call /users/me
         ResultActions getResult =
@@ -150,11 +150,8 @@ public class UserControllerTest {
     }
 
     // Methods to help tests
-    private String registerAndGetToken(UserDTO dto) throws Exception {
-        UserDTO registeredUser = registerUser(dto);
-        return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
-    }
 
+    // Used to receive a valid token for a user by his email and password, also checks if the token is valid and has the correct claims
     private String obtainAcessToken(String email, String password) throws Exception {
         ResultActions tokenResult =
                 mockMvc
@@ -170,6 +167,7 @@ public class UserControllerTest {
         return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
     }
 
+    // Create a valid user by `UserDTO` and return the created user as `UserDTO`
     private UserDTO registerUser(UserDTO dto) throws Exception {
         String jsonBody = objectMapper.writeValueAsString(dto);
 
@@ -184,5 +182,11 @@ public class UserControllerTest {
 
         String response = createUserResult.andReturn().getResponse().getContentAsString();
         return objectMapper.readValue(response, UserDTO.class);
+    }
+
+    // Use the `registerUser` and `obtainAcessToken` methods to create a user and obtain a valid token for that user
+    private String registerUserAndObtainAcessToken(UserDTO dto) throws Exception {
+        UserDTO registeredUser = registerUser(dto);
+        return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
     }
 }
