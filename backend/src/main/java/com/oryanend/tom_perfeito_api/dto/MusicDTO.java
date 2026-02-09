@@ -29,14 +29,14 @@ public class MusicDTO {
     @NotNull(message = "Lyric cannot be null")
     private LyricDTO lyric;
 
-    private UserDTO createdBy;
+    private UserMinDTO createdBy;
 
     private Set<CommentDTO> comments = new HashSet<>();
 
     public MusicDTO() {
     }
 
-    public MusicDTO(String title, String description, LocalDate releaseDate, Instant createdAt, Instant updatedAt, LyricDTO lyric, UserDTO createdBy) {
+    public MusicDTO(String title, String description, LocalDate releaseDate, Instant createdAt, Instant updatedAt, LyricDTO lyric, UserMinDTO createdBy) {
         this.title = title;
         this.description = description;
         this.releaseDate = releaseDate;
@@ -61,7 +61,7 @@ public class MusicDTO {
         this.description = entity.getDescription();
         this.releaseDate = entity.getReleaseDate();
         this.lyric = new LyricDTO(entity.getLyric());
-        this.createdBy = new UserDTO(entity.getCreatedBy());
+        this.createdBy = new UserMinDTO(entity.getCreatedBy());
 
         if (entity.getCreatedAt() != null) {
             this.createdAt = entity.getCreatedAt();
@@ -145,11 +145,11 @@ public class MusicDTO {
         this.lyric = lyric;
     }
 
-    public UserDTO getCreatedBy() {
+    public UserMinDTO getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(UserDTO createdBy) {
+    public void setCreatedBy(UserMinDTO createdBy) {
         this.createdBy = createdBy;
     }
 

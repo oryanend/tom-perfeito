@@ -14,14 +14,14 @@ public class CommentDTO {
     private Instant updatedAt;
 
     private Long parentId;
-    private UserDTO author;
+    private UserMinDTO author;
     private MusicMinDTO music;
     private List<CommentDTO> replies;
 
     public CommentDTO() {
     }
 
-    public CommentDTO(Long id, String body, Long likes, Instant createdAt, Instant updatedAt, UserDTO author, MusicMinDTO music, Long parentId, List<CommentDTO> replies) {
+    public CommentDTO(Long id, String body, Long likes, Instant createdAt, Instant updatedAt, UserMinDTO author, MusicMinDTO music, Long parentId, List<CommentDTO> replies) {
         this.id = id;
         this.body = body;
         this.likes = likes;
@@ -47,7 +47,7 @@ public class CommentDTO {
         this.id = entity.getId();
         this.body = entity.getBody();
         this.likes = entity.getLikes();
-        this.author = new UserDTO(entity.getAuthor());
+        this.author = new UserMinDTO(entity.getAuthor());
         this.music = new MusicMinDTO(entity.getMusic());
         this.parentId = entity.getParent() != null ? entity.getParent().getId() : null;
 
@@ -106,11 +106,11 @@ public class CommentDTO {
         this.updatedAt = updatedAt;
     }
 
-    public UserDTO getAuthor() {
+    public UserMinDTO getAuthor() {
         return author;
     }
 
-    public void setAuthor(UserDTO author) {
+    public void setAuthor(UserMinDTO author) {
         this.author = author;
     }
 
