@@ -33,7 +33,7 @@ public class UserControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private String baseUrl, baseAuthUrl, baseLoginAuthUrl;
+    private String userUrl, authRegisterUrl, authLoginUrl;
 
     private UserDTO validUserDTO;
 
@@ -49,9 +49,9 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        baseUrl = "/users";
-        baseAuthUrl = "/auth/register";
-        baseLoginAuthUrl = "/auth/login";
+        userUrl = "/users";
+        authRegisterUrl = "/auth/register";
+        authLoginUrl = "/auth/login";
 
         invalidUsername = "iu";
         invalidPassword = "123";
@@ -76,7 +76,7 @@ public class UserControllerTest {
         // Now, authenticate as that user and call /users/me
         ResultActions getResult =
                 mockMvc
-                        .perform(get(baseUrl + "/me")
+                        .perform(get(userUrl + "/me")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", "Bearer " + validToken)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -94,7 +94,7 @@ public class UserControllerTest {
     void getMeWithInvalidToken() throws Exception {
         ResultActions getResult =
                 mockMvc
-                        .perform(get(baseUrl + "/me")
+                        .perform(get(userUrl + "/me")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", "Bearer " + invalidToken)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -116,7 +116,7 @@ public class UserControllerTest {
         // Now, try to get the user by id
         ResultActions getResult =
                 mockMvc
-                        .perform(get(baseUrl + "/" + id)
+                        .perform(get(userUrl + "/" + id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
 
@@ -136,7 +136,7 @@ public class UserControllerTest {
 
         ResultActions getResult =
                 mockMvc
-                        .perform(get(baseUrl + "/" + nonExistingId)
+                        .perform(get(userUrl + "/" + nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
 
@@ -145,7 +145,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Resource not found"))
                 .andExpect(jsonPath("$.message").value("User not found"))
-                .andExpect(jsonPath("$.path").value(baseUrl + "/" + nonExistingId))
+                .andExpect(jsonPath("$.path").value(userUrl + "/" + nonExistingId))
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
@@ -158,7 +158,7 @@ public class UserControllerTest {
     private String obtainAcessToken(String email, String password) throws Exception {
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                        .perform(post(authLoginUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", email)
                                 .param("password", password)
                                 .param("grant_type", "password")
@@ -175,7 +175,7 @@ public class UserControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));

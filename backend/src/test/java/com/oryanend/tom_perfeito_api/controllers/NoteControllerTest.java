@@ -29,12 +29,12 @@ public class NoteControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private String baseUrl;
+    private String noteUrl;
     private NoteDTO validNoteDTO, nullNameNoteDTO, nullAccidentalNoteDTO;
 
     @BeforeEach
     void setUp() {
-        baseUrl = "/notes";
+        noteUrl = "/notes";
 
         validNoteDTO = createValidNoteDTO();
         nullNameNoteDTO = createNullNameNoteDTO();
@@ -44,7 +44,7 @@ public class NoteControllerTest {
     @Test
     @DisplayName("GET `/notes` should return list of notes")
     void findAllNotes() throws Exception {
-        ResultActions result = mockMvc.perform(get(baseUrl).accept(MediaType.APPLICATION_JSON));
+        ResultActions result = mockMvc.perform(get(noteUrl).accept(MediaType.APPLICATION_JSON));
 
         result
                 .andExpect(status().isOk())
@@ -66,7 +66,7 @@ public class NoteControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(noteUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -87,7 +87,7 @@ public class NoteControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(noteUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -98,7 +98,7 @@ public class NoteControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(noteUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("name"))
                 .andExpect(jsonPath("$.errors[0].message").value("Name cannot be null"))
         ;
@@ -111,7 +111,7 @@ public class NoteControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(noteUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -122,7 +122,7 @@ public class NoteControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(noteUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("accidental"))
                 .andExpect(jsonPath("$.errors[0].message").value("Accidental cannot be null"))
         ;

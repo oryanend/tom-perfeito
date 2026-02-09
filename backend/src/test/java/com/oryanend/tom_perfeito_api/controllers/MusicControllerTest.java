@@ -41,7 +41,7 @@ public class MusicControllerTest {
     @Autowired
     private MusicRepository repository;
 
-    private String baseUrl, baseAuthUrl, baseLoginAuthUrl;
+    private String musicUrl, authRegisterUrl, authLoginUrl;
     private UUID existingId, nonExistingId;
     private String existingMusicName, nonExistingMusicName;
     private MusicDTO validMusicDTO;
@@ -58,9 +58,9 @@ public class MusicControllerTest {
 
     @BeforeEach
     void setUp() {
-        baseUrl = "/musics";
-        baseAuthUrl = "/auth/register";
-        baseLoginAuthUrl = "/auth/login";
+        musicUrl = "/musics";
+        authRegisterUrl = "/auth/register";
+        authLoginUrl = "/auth/login";
 
         nonExistingId = UUID.randomUUID();
 
@@ -83,7 +83,7 @@ public class MusicControllerTest {
     @Test
     @DisplayName("GET `/musics` should return paged list of musics")
     void findAllShouldReturnPagedList() throws Exception {
-        ResultActions result = mockMvc.perform(get(baseUrl).accept(MediaType.APPLICATION_JSON));
+        ResultActions result = mockMvc.perform(get(musicUrl).accept(MediaType.APPLICATION_JSON));
 
         result
                 .andExpect(status().isOk())
@@ -104,7 +104,7 @@ public class MusicControllerTest {
         // GET request to find musics by name
         ResultActions getResult =
                 mockMvc
-                        .perform(get(baseUrl)
+                        .perform(get(musicUrl)
                                 .param("name", validMusicDTO.getTitle())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -124,7 +124,7 @@ public class MusicControllerTest {
     void findByNameWhenNameDoesntExists() throws Exception {
         ResultActions result =
                 mockMvc
-                        .perform(get(baseUrl)
+                        .perform(get(musicUrl)
                                 .param("name", nonExistingMusicName)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -135,7 +135,7 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.error").value("Resource not found"))
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("No musics found with name containing: " + nonExistingMusicName))
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(musicUrl))
         ;
     }
 
@@ -151,7 +151,7 @@ public class MusicControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(get(baseUrl + "/" + existingId)
+                        .perform(get(musicUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
 
@@ -179,7 +179,7 @@ public class MusicControllerTest {
     void findByIdWhenIdDoesntExists() throws Exception{
         ResultActions result =
                 mockMvc
-                        .perform(get(baseUrl + "/" + nonExistingId)
+                        .perform(get(musicUrl + "/" + nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .accept(MediaType.APPLICATION_JSON));
 
@@ -189,7 +189,7 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.error").value("Resource not found"))
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Music not found"))
-                .andExpect(jsonPath("$.path").value(baseUrl + "/" + nonExistingId))
+                .andExpect(jsonPath("$.path").value(musicUrl + "/" + nonExistingId))
         ;
     }
 
@@ -201,7 +201,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -211,7 +211,7 @@ public class MusicControllerTest {
         // Try to get token with the same user
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                        .perform(post(authLoginUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", validUserDTO.getPassword())
                                 .param("grant_type", "password")
@@ -225,7 +225,7 @@ public class MusicControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(musicUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .header("Authorization", "Bearer " + objectMapper.readTree(
@@ -266,7 +266,7 @@ public class MusicControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(musicUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -279,7 +279,7 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(musicUrl))
                 .andExpect(jsonPath("$.errors").isArray())
                 .andExpect(jsonPath("$.errors[0].fieldName").value("title"))
                 .andExpect(jsonPath("$.errors[0].message").value("Title cannot be null"))
@@ -293,7 +293,7 @@ public class MusicControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(musicUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -304,7 +304,7 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(musicUrl))
                 .andExpect(jsonPath("$.errors").isArray())
                 .andExpect(jsonPath("$.errors[0].fieldName").value("description"))
                 .andExpect(jsonPath("$.errors[0].message").value("Description cannot be null"))
@@ -318,7 +318,7 @@ public class MusicControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(musicUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -329,7 +329,7 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(musicUrl))
                 .andExpect(jsonPath("$.errors").isArray())
                 .andExpect(jsonPath("$.errors[0].fieldName").value("releaseDate"))
                 .andExpect(jsonPath("$.errors[0].message").value("ReleaseDate cannot be null"))
@@ -343,7 +343,7 @@ public class MusicControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(musicUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -354,7 +354,7 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(musicUrl))
                 .andExpect(jsonPath("$.errors").isArray())
                 .andExpect(jsonPath("$.errors[0].fieldName").value("lyric"))
                 .andExpect(jsonPath("$.errors[0].message").value("Lyric cannot be null"))
@@ -377,7 +377,7 @@ public class MusicControllerTest {
         String jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
         ResultActions result =
                 mockMvc
-                        .perform(patch(baseUrl + "/" + existingId)
+                        .perform(patch(musicUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .header("Authorization", "Bearer " + registerAndGetToken)
@@ -422,7 +422,7 @@ public class MusicControllerTest {
         String jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
         ResultActions result =
                 mockMvc
-                        .perform(patch(baseUrl + "/" + existingId)
+                        .perform(patch(musicUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .header("Authorization", "Bearer " + registerAndGetTokenSecondUser)
@@ -434,7 +434,7 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.status").value(403))
                 .andExpect(jsonPath("$.error").value("Unauthorized action"))
                 .andExpect(jsonPath("$.message").value("Access denied. Should be self or admin"))
-                .andExpect(jsonPath("$.path").value(baseUrl + "/" + existingId))
+                .andExpect(jsonPath("$.path").value(musicUrl + "/" + existingId))
         ;
 
     }
@@ -453,7 +453,7 @@ public class MusicControllerTest {
         String jsonBody = objectMapper.writeValueAsString(validMusicPatchDTO);
         ResultActions result =
                 mockMvc
-                        .perform(patch(baseUrl + "/" + nonExistingId)
+                        .perform(patch(musicUrl + "/" + nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .header("Authorization", "Bearer " + registerAndGetToken)
@@ -465,7 +465,7 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Resource not found"))
                 .andExpect(jsonPath("$.message").value("Music not found"))
-                .andExpect(jsonPath("$.path").value(baseUrl + "/" + nonExistingId))
+                .andExpect(jsonPath("$.path").value(musicUrl + "/" + nonExistingId))
         ;
 
         assertNotSame(existingId, nonExistingId);
@@ -485,7 +485,7 @@ public class MusicControllerTest {
         // Delete the created music
         ResultActions result =
                 mockMvc
-                        .perform(delete(baseUrl + "/" + existingId)
+                        .perform(delete(musicUrl + "/" + existingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", "Bearer " + registerAndGetToken)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -511,7 +511,7 @@ public class MusicControllerTest {
         // Delete the created music
         ResultActions result =
                 mockMvc
-                        .perform(delete(baseUrl + "/" + nonExistingId)
+                        .perform(delete(musicUrl + "/" + nonExistingId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", "Bearer " + registerAndGetToken)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -522,7 +522,7 @@ public class MusicControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Resource not found"))
                 .andExpect(jsonPath("$.message").value("Music not found"))
-                .andExpect(jsonPath("$.path").value(baseUrl + "/" + nonExistingId))
+                .andExpect(jsonPath("$.path").value(musicUrl + "/" + nonExistingId))
         ;
 
         assertNotSame(createdMusic.getId(), nonExistingId);
@@ -533,7 +533,7 @@ public class MusicControllerTest {
     private String obtainAcessToken(String email, String password) throws Exception {
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                        .perform(post(authLoginUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", email)
                                 .param("password", password)
                                 .param("grant_type", "password")
@@ -550,7 +550,7 @@ public class MusicControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -571,7 +571,7 @@ public class MusicControllerTest {
 
         ResultActions postResult =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(musicUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .header("Authorization", "Bearer " + token)

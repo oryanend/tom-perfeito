@@ -33,14 +33,14 @@ public class ChordControllerTest {
     @Autowired
     private NoteRepository noteRepository;
 
-    private String baseUrl;
+    private String chordUrl;
     private String validChordName, nonExistingChordName;
     private ChordDTO validChordDTO, withoutNotesChordDTO, withoutNameChordDTO, withoutTypeChordDTO;
 
 
     @BeforeEach
     void setUp() {
-        baseUrl = "/chords";
+        chordUrl = "/chords";
 
         validChordName = "A Minor";
         nonExistingChordName = "NonExistingChordName";
@@ -56,7 +56,7 @@ public class ChordControllerTest {
     @Test
     @DisplayName("GET `/chords` should return paginated list of chords")
     void findAllChords() throws Exception {
-        ResultActions result = mockMvc.perform(get(baseUrl).accept(MediaType.APPLICATION_JSON));
+        ResultActions result = mockMvc.perform(get(chordUrl).accept(MediaType.APPLICATION_JSON));
 
         result
                 .andExpect(status().isOk())
@@ -72,7 +72,7 @@ public class ChordControllerTest {
     @DisplayName("GET `/chords/search` should return chords matching name with valid parameter")
     void searchChordsWithName() throws Exception {
         ResultActions result =
-                mockMvc.perform(get(baseUrl + "/search")
+                mockMvc.perform(get(chordUrl + "/search")
                                 .param("name", validChordName)
                                 .accept(MediaType.APPLICATION_JSON));
 
@@ -98,7 +98,7 @@ public class ChordControllerTest {
     @DisplayName("GET `/chords/search` should return any result when searching with non-existing name")
     void searchChordWithNonExistingName() throws Exception {
         ResultActions result =
-                mockMvc.perform(get(baseUrl + "/search")
+                mockMvc.perform(get(chordUrl + "/search")
                         .param("name", nonExistingChordName)
                         .accept(MediaType.APPLICATION_JSON));
 
@@ -116,7 +116,7 @@ public class ChordControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(chordUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -142,7 +142,7 @@ public class ChordControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(chordUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -153,7 +153,7 @@ public class ChordControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(chordUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("notes"))
                 .andExpect(jsonPath("$.errors[0].message").value("A chord must have at least three note"))
         ;
@@ -167,7 +167,7 @@ public class ChordControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(chordUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -178,7 +178,7 @@ public class ChordControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(chordUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("type"))
                 .andExpect(jsonPath("$.errors[0].message").value("Chord type cannot be null"))
         ;
@@ -191,7 +191,7 @@ public class ChordControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(chordUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -202,7 +202,7 @@ public class ChordControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(chordUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("name"))
                 .andExpect(jsonPath("$.errors[0].message").value("Chord name cannot be null"))
         ;

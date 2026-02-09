@@ -46,7 +46,7 @@ public class AuthControllerTest {
     @Autowired
     private PasswordConfig passwordConfig;
 
-    private String baseUrl, baseAuthUrl, baseLoginAuthUrl;
+    private String authUrl, authRegisterUrl, authLoginUrl;
     private String validUsername, validEmail, validPassword;
     private String invalidUsername, invalidEmail, invalidPassword;
     private String invalidToken;
@@ -66,9 +66,9 @@ public class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        baseUrl = "/auth/login";
-        baseAuthUrl = "/auth/register";
-        baseLoginAuthUrl = "/auth/login";
+        authUrl = "/auth/login";
+        authRegisterUrl = "/auth/register";
+        authLoginUrl = "/auth/login";
 
         invalidUsername = "iu";
         invalidPassword = "123";
@@ -111,7 +111,7 @@ public class AuthControllerTest {
     void invalidPasswordTest() throws Exception {
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(authUrl)
                                 .with(httpBasic(clientId, clientSecret))
                                 .param("email", validUserDTO.getEmail())
                                 .param("password", "wrongpassword")
@@ -126,7 +126,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.error").value("Invalid Credentials"))
                 .andExpect(jsonPath("$.message").isNotEmpty())
                 .andExpect(jsonPath("$.message").value("Email or Password invalid"))
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(authUrl))
         ;
     }
 
@@ -135,7 +135,7 @@ public class AuthControllerTest {
     void invalidUsernameTest() throws Exception {
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post(baseUrl)
+                        .perform(post(authUrl)
                                 .with(httpBasic(clientId, clientSecret))
                                 .param("email", "invalidEmailUsername@test.com")
                                 .param("password", validUserDTO.getPassword())
@@ -150,7 +150,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.error").value("Invalid Credentials"))
                 .andExpect(jsonPath("$.message").isNotEmpty())
                 .andExpect(jsonPath("$.message").value("Email or Password invalid"))
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(authUrl))
         ;
     }
 
@@ -183,7 +183,7 @@ public class AuthControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -194,7 +194,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").isNotEmpty())
-                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.path").value(authRegisterUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("password"))
                 .andExpect(jsonPath("$.errors[0].message").value("Password cannot be null"));
     }
@@ -206,7 +206,7 @@ public class AuthControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -216,7 +216,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").isNotEmpty())
-                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.path").value(authRegisterUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("email"))
                 .andExpect(jsonPath("$.errors[0].message").value("Email cannot be null"));
     }
@@ -228,7 +228,7 @@ public class AuthControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -239,7 +239,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").isNotEmpty())
-                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.path").value(authRegisterUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("username"))
                 .andExpect(jsonPath("$.errors[0].message").value("Username cannot be null"));
     }
@@ -251,7 +251,7 @@ public class AuthControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -261,7 +261,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").isNotEmpty())
-                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.path").value(authRegisterUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("password"))
                 .andExpect(jsonPath("$.errors[0].message").value("Password must have 5 characters at least"));
     }
@@ -273,7 +273,7 @@ public class AuthControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -284,7 +284,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").isNotEmpty())
-                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.path").value(authRegisterUrl))
                 .andExpect(jsonPath("$.errors[*].fieldName").value(hasItem("email")))
                 .andExpect(jsonPath("$.errors[*].message").value(hasItem("Email must be between 5 and 254 characters")))
                 .andExpect(jsonPath("$.errors[*].message").value(hasItem("Email should be valid")));
@@ -297,7 +297,7 @@ public class AuthControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -308,7 +308,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.error").value("Validation Exception"))
                 .andExpect(jsonPath("$.message").isNotEmpty())
-                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.path").value(authRegisterUrl))
                 .andExpect(jsonPath("$.errors[0].fieldName").value("username"))
                 .andExpect(jsonPath("$.errors[0].message").value("Username must be between 3 and 40 characters"));
     }
@@ -320,7 +320,7 @@ public class AuthControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -333,7 +333,7 @@ public class AuthControllerTest {
 
         ResultActions secondResult =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(secondJsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -343,7 +343,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("Resource already exists"))
                 .andExpect(jsonPath("$.message").value("Email already in use, try another one."))
-                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.path").value(authRegisterUrl))
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
@@ -354,7 +354,7 @@ public class AuthControllerTest {
 
         ResultActions result =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -367,7 +367,7 @@ public class AuthControllerTest {
 
         ResultActions secondResult =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(secondJsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -377,7 +377,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.error").value("Resource already exists"))
                 .andExpect(jsonPath("$.message").value("Username already in use, try another one."))
-                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.path").value(authRegisterUrl))
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
@@ -385,7 +385,7 @@ public class AuthControllerTest {
     private String obtainAcessToken(String email, String password) throws Exception {
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                        .perform(post(authLoginUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", email)
                                 .param("password", password)
                                 .param("grant_type", "password")
@@ -417,7 +417,7 @@ public class AuthControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));

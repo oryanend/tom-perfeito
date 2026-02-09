@@ -42,7 +42,7 @@ public class CommentControllerTest {
     @Autowired
     private CommentRepository repository;
 
-    private String baseUrl, baseMusicUrl, baseAuthUrl, baseLoginAuthUrl;
+    private String commentUrl, musicUrl, authRegisterUrl, authLoginUrl;
     private CommentDTO validCommentDTO;
     private MusicDTO validMusicDTO;
     private UserDTO validUserDTO, secondValidUserDTO;
@@ -58,9 +58,9 @@ public class CommentControllerTest {
 
     @BeforeEach
     void setUp() {
-        baseMusicUrl = "/musics";
-        baseAuthUrl = "/auth/register";
-        baseLoginAuthUrl = "/auth/login";
+        musicUrl = "/musics";
+        authRegisterUrl = "/auth/register";
+        authLoginUrl = "/auth/login";
 
         validMusicDTO = createValidMusicDTO();
 
@@ -91,7 +91,7 @@ public class CommentControllerTest {
         Long commentId = createdComment.getId();
 
         // Perform GET request to retrieve the comment by ID
-        ResultActions getResult = mockMvc.perform(get(baseMusicUrl + "/" + existingId + "/comments/" + commentId));
+        ResultActions getResult = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentId));
 
         getResult
                 .andExpect(status().isOk())
@@ -107,9 +107,9 @@ public class CommentControllerTest {
     @DisplayName("GET `/comments/{id}` should return 404 when comment ID does not exist")
     void getCommentByNonExistingId() throws Exception {
         // Perform GET request to retrieve the comment by non-existing ID
-        ResultActions result = mockMvc.perform(get(baseMusicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
+        ResultActions result = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
 
-        baseUrl = baseMusicUrl + "/" + existingId + "/comments/" + commentNonExistingId;
+        commentUrl = musicUrl + "/" + existingId + "/comments/" + commentNonExistingId;
 
         result
                 .andExpect(status().isNotFound())
@@ -117,7 +117,7 @@ public class CommentControllerTest {
                 .andExpect(jsonPath("$.error").value("Resource not found"))
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Comment not found"))
-                .andExpect(jsonPath("$.path").value(baseUrl))
+                .andExpect(jsonPath("$.path").value(commentUrl))
         ;
     }
 
@@ -125,7 +125,7 @@ public class CommentControllerTest {
     @DisplayName("GET `/comments` should return paged comments")
     void getComments() throws Exception {
         // Perform GET request to retrieve comments
-        ResultActions result = mockMvc.perform(get(baseMusicUrl + "/" + existingId + "/comments"));
+        ResultActions result = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments"));
 
         result
                 .andExpect(status().isOk())
@@ -168,7 +168,7 @@ public class CommentControllerTest {
 
         ResultActions postResult =
                 mockMvc
-                        .perform(post(baseMusicUrl + "/" + nonExistingId + "/comments")
+                        .perform(post(musicUrl + "/" + nonExistingId + "/comments")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .header("Authorization", "Bearer " + registerAndGetToken)
@@ -180,7 +180,7 @@ public class CommentControllerTest {
                 .andExpect(jsonPath("$.error").value("Resource not found"))
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Music not found"))
-                .andExpect(jsonPath("$.path").value(baseMusicUrl + "/" + nonExistingId + "/comments"))
+                .andExpect(jsonPath("$.path").value(musicUrl + "/" + nonExistingId + "/comments"))
         ;
     }
 
@@ -202,7 +202,7 @@ public class CommentControllerTest {
         CommentDTO replyDTO = createReplyComment(commentDTO, secondUserToken);
 
         // Check if the parent comment has the reply
-        ResultActions getResult = mockMvc.perform(get(baseMusicUrl + "/" + existingId + "/comments/" + commentDTO.getId()));
+        ResultActions getResult = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentDTO.getId()));
 
         getResult
                 .andExpect(status().isOk())
@@ -236,7 +236,7 @@ public class CommentControllerTest {
         Long commentId = createdComment.getId();
 
         // Perform DELETE request to delete the comment by ID
-        ResultActions deleteResult = mockMvc.perform(delete(baseMusicUrl + "/" + existingId + "/comments/" + commentId)
+        ResultActions deleteResult = mockMvc.perform(delete(musicUrl + "/" + existingId + "/comments/" + commentId)
                 .header("Authorization", "Bearer " + registerAndGetToken)
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -256,7 +256,7 @@ public class CommentControllerTest {
         String registerAndGetToken = registerAndGetToken(validUserDTO);
 
         // Perform DELETE request to delete the comment by ID
-        ResultActions deleteResult = mockMvc.perform(delete(baseMusicUrl + "/" + existingId + "/comments/" + commentNonExistingId)
+        ResultActions deleteResult = mockMvc.perform(delete(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId)
                 .header("Authorization", "Bearer " + registerAndGetToken)
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -266,7 +266,7 @@ public class CommentControllerTest {
                 .andExpect(jsonPath("$.error").value("Resource not found"))
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Comment not found"))
-                .andExpect(jsonPath("$.path").value(baseMusicUrl + "/" + existingId + "/comments/" + commentNonExistingId))
+                .andExpect(jsonPath("$.path").value(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId))
         ;
     }
 
@@ -295,7 +295,7 @@ public class CommentControllerTest {
 
         ResultActions patchResult =
                 mockMvc
-                        .perform(patch(baseMusicUrl + "/" + existingId + "/comments/" + commentId)
+                        .perform(patch(musicUrl + "/" + existingId + "/comments/" + commentId)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .header("Authorization", "Bearer " + firstUserToken)
@@ -320,7 +320,7 @@ public class CommentControllerTest {
     private String obtainAcessToken(String email, String password) throws Exception {
         ResultActions tokenResult =
                 mockMvc
-                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                        .perform(post(authLoginUrl).with(httpBasic(clientId, clientSecret))
                                 .param("email", email)
                                 .param("password", password)
                                 .param("grant_type", "password")
@@ -337,7 +337,7 @@ public class CommentControllerTest {
 
         ResultActions createUserResult =
                 mockMvc
-                        .perform(post(baseAuthUrl)
+                        .perform(post(authRegisterUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .accept(MediaType.APPLICATION_JSON));
@@ -358,7 +358,7 @@ public class CommentControllerTest {
 
         ResultActions postResult =
                 mockMvc
-                        .perform(post(baseMusicUrl)
+                        .perform(post(musicUrl)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .header("Authorization", "Bearer " + token)
@@ -375,7 +375,7 @@ public class CommentControllerTest {
 
         ResultActions postResult =
                 mockMvc
-                        .perform(post(baseMusicUrl + "/" + musicId + "/comments")
+                        .perform(post(musicUrl + "/" + musicId + "/comments")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonBody)
                                 .header("Authorization", "Bearer " + token)
