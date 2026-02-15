@@ -1,10 +1,25 @@
 package com.oryanend.tom_perfeito_api.controllers;
 
+import static com.oryanend.tom_perfeito_api.factory.MusicDTOFactory.createValidMusicDTO;
+import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createAdminUserDTOTemplate;
+import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createUserDTOTemplate;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oryanend.tom_perfeito_api.dto.CommentDTO;
 import com.oryanend.tom_perfeito_api.dto.MusicDTO;
+import com.oryanend.tom_perfeito_api.dto.RoleDTO;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
+import com.oryanend.tom_perfeito_api.entities.Role;
 import com.oryanend.tom_perfeito_api.repositories.CommentRepository;
+import com.oryanend.tom_perfeito_api.repositories.RoleRepository;
+import java.time.Instant;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,401 +32,469 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.UUID;
-
-import static com.oryanend.tom_perfeito_api.factory.MusicDTOFactory.createValidMusicDTO;
-import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createUserDTOTemplate;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 public class CommentControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @Autowired
-    private CommentRepository repository;
+  @Autowired private CommentRepository repository;
 
-    private String commentUrl, musicUrl, authRegisterUrl, authLoginUrl;
-    private CommentDTO validCommentDTO;
-    private MusicDTO validMusicDTO;
-    private UserDTO validUserDTO, secondValidUserDTO;
-    private UUID existingId, nonExistingId;
+  @Autowired private RoleRepository roleRepository;
 
-    private Long commentExistingId, commentNonExistingId;
+  private String commentUrl, musicUrl, authRegisterUrl, authLoginUrl;
+  private CommentDTO validCommentDTO;
+  private MusicDTO validMusicDTO;
+  private UserDTO validUserDTO, secondValidUserDTO;
+  private UserDTO adminUserDTO;
+  private UUID existingId, nonExistingId;
+  private Long commentExistingId, commentNonExistingId;
 
-    @Value("${security.client-id}")
-    private String clientId;
+  @Value("${security.client-id}")
+  private String clientId;
 
-    @Value("${security.client-secret}")
-    private String clientSecret;
+  @Value("${security.client-secret}")
+  private String clientSecret;
 
-    @BeforeEach
-    void setUp() {
-        musicUrl = "/musics";
-        authRegisterUrl = "/auth/register";
-        authLoginUrl = "/auth/login";
+  @BeforeEach
+  void setUp() {
+    musicUrl = "/musics";
+    authRegisterUrl = "/auth/register";
+    authLoginUrl = "/auth/login";
 
-        validMusicDTO = createValidMusicDTO();
+    validMusicDTO = createValidMusicDTO();
 
-        validUserDTO = createUserDTOTemplate();
-        secondValidUserDTO = createUserDTOTemplate();
+    validUserDTO = createUserDTOTemplate();
+    secondValidUserDTO = createUserDTOTemplate();
 
-        validCommentDTO = new CommentDTO();
-        validCommentDTO.setBody("This is a valid comment.");
+    validCommentDTO = new CommentDTO();
+    validCommentDTO.setBody("This is a valid comment.");
 
-        commentNonExistingId = 9999L;
+    commentNonExistingId = 9999L;
 
-        nonExistingId = UUID.randomUUID();
-    }
+    nonExistingId = UUID.randomUUID();
 
-    // GET test
-    @Test
-    @DisplayName("GET `/comments/{id}` should return comment by ID")
-    void getCommentByExistingId() throws Exception {
-        // Get token user
-        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
+    // Create admin user and add admin role to it
+    adminUserDTO = createAdminUserDTOTemplate();
 
-        // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
-        existingId = createdMusic.getId();
+    Role adminRole = roleRepository.findById(2L).orElseThrow();
+    RoleDTO adminRoleDTO = new RoleDTO(adminRole);
+    adminUserDTO.addRole(adminRoleDTO);
+  }
 
-        // Insert comment
-        CommentDTO createdComment = createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
-        Long commentId = createdComment.getId();
+  // GET test
+  @Test
+  @DisplayName("GET `/comments/{id}` should return comment by ID")
+  void getCommentByExistingId() throws Exception {
+    // Get token user
+    String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
-        // Perform GET request to retrieve the comment by ID
-        ResultActions getResult = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentId));
+    // Extract the created music ID from the POST response
+    MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
+    existingId = createdMusic.getId();
 
-        getResult
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(commentId))
-                .andExpect(jsonPath("$.body").value(validCommentDTO.getBody()))
-                .andExpect(jsonPath("$.likes").value(0))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.updatedAt").exists())
-        ;
-    }
-
-    @Test
-    @DisplayName("GET `/comments/{id}` should return 404 when comment ID does not exist")
-    void getCommentByNonExistingId() throws Exception {
-        // Perform GET request to retrieve the comment by non-existing ID
-        ResultActions result = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
-
-        commentUrl = musicUrl + "/" + existingId + "/comments/" + commentNonExistingId;
-
-        result
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.timestamp").exists())
-                .andExpect(jsonPath("$.error").value("Resource not found"))
-                .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.message").value("Comment not found"))
-                .andExpect(jsonPath("$.path").value(commentUrl))
-        ;
-    }
-
-    @Test
-    @DisplayName("GET `/comments` should return paged comments")
-    void getComments() throws Exception {
-        // Perform GET request to retrieve comments
-        ResultActions result = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments"));
-
-        result
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.pageable").exists())
-                .andExpect(jsonPath("$.totalElements").exists())
-                .andExpect(jsonPath("$.totalPages").exists())
-                .andExpect(jsonPath("$.last").exists())
-        ;
-    }
-
-    // POST test
-    @Test
-    @DisplayName("POST `/comments` should create a new comment")
-    void postComment() throws Exception {
-        // Get token user
-        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
-
-        // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
-        existingId = createdMusic.getId();
-
-        // Insert comment
+    // Insert comment
+    CommentDTO createdComment =
         createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
-    }
+    Long commentId = createdComment.getId();
 
-    @Test
-    @DisplayName("POST `/comments` should return 404 when music ID does not exist")
-    void postCommentWhenMusicIdDoesntExists() throws Exception {
-        // Get token user
-        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
+    // Perform GET request to retrieve the comment by ID
+    ResultActions getResult =
+        mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentId));
 
-        // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
-        existingId = createdMusic.getId();
+    getResult
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(commentId))
+        .andExpect(jsonPath("$.body").value(validCommentDTO.getBody()))
+        .andExpect(jsonPath("$.likes").value(0))
+        .andExpect(jsonPath("$.createdAt").exists())
+        .andExpect(jsonPath("$.updatedAt").exists());
+  }
 
-        // Insert comment
-        CommentDTO commentDTO = createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
-        String jsonBody = objectMapper.writeValueAsString(commentDTO);
+  @Test
+  @DisplayName("GET `/comments/{id}` should return 404 when comment ID does not exist")
+  void getCommentByNonExistingId() throws Exception {
+    // Perform GET request to retrieve the comment by non-existing ID
+    ResultActions result =
+        mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
 
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(musicUrl + "/" + nonExistingId + "/comments")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
-                                .accept(MediaType.APPLICATION_JSON));
+    commentUrl = musicUrl + "/" + existingId + "/comments/" + commentNonExistingId;
 
-        postResult
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.timestamp").exists())
-                .andExpect(jsonPath("$.error").value("Resource not found"))
-                .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.message").value("Music not found"))
-                .andExpect(jsonPath("$.path").value(musicUrl + "/" + nonExistingId + "/comments"))
-        ;
-    }
+    result
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.error").value("Resource not found"))
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.message").value("Comment not found"))
+        .andExpect(jsonPath("$.path").value(commentUrl));
+  }
 
-    @Test
-    @DisplayName("POST `/comments` should return 201 when your comment is a reply to another comment")
-    void postCommentAsReply() throws Exception {
-        // Get token user
-        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
+  @Test
+  @DisplayName("GET `/comments` should return paged comments")
+  void getComments() throws Exception {
+    // Perform GET request to retrieve comments
+    ResultActions result = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments"));
 
-        // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
-        existingId = createdMusic.getId();
+    result
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content").isArray())
+        .andExpect(jsonPath("$.pageable").exists())
+        .andExpect(jsonPath("$.totalElements").exists())
+        .andExpect(jsonPath("$.totalPages").exists())
+        .andExpect(jsonPath("$.last").exists());
+  }
 
-        // Insert comment
-        CommentDTO commentDTO = createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
+  // POST test
+  @Test
+  @DisplayName("POST `/comments` should create a new comment")
+  void postComment() throws Exception {
+    // Get token user
+    String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
-        // Second User creates a comment to be the parent comment and Create a reply comment DTO
-        String secondUserToken = registerUserAndObtainAcessToken(secondValidUserDTO);
-        CommentDTO replyDTO = createReplyComment(commentDTO, secondUserToken);
+    // Extract the created music ID from the POST response
+    MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
+    existingId = createdMusic.getId();
 
-        // Check if the parent comment has the reply
-        ResultActions getResult = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentDTO.getId()));
+    // Insert comment
+    createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
+  }
 
-        getResult
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(commentDTO.getId()))
-                .andExpect(jsonPath("$.body").value(commentDTO.getBody()))
-                .andExpect(jsonPath("$.likes").value(0))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.updatedAt").exists())
-                .andExpect(jsonPath("$.author").exists())
-                .andExpect(jsonPath("$.author.id").value(commentDTO.getAuthor().getId().toString()))
-                .andExpect(jsonPath("$.replies").isArray())
-                .andExpect(jsonPath("$.replies").isNotEmpty())
-                .andExpect(jsonPath("$.replies[0].body").value(replyDTO.getBody()))
-                .andExpect(jsonPath("$.replies[0].author.id").value(replyDTO.getAuthor().getId().toString()))
-        ;
-    }
+  @Test
+  @DisplayName("POST `/comments` should return 404 when music ID does not exist")
+  void postCommentWhenMusicIdDoesntExists() throws Exception {
+    // Get token user
+    String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
-    // DELETE test
-    @Test
-    @DisplayName("DELETE `/comments/{id}` should delete comment by ID")
-    void deleteComment() throws Exception {
-        // Get token user
-        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
+    // Extract the created music ID from the POST response
+    MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
+    existingId = createdMusic.getId();
 
-        // Post a valid music to ensure there is at least one music with the specified name
-        MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
-        existingId = createdMusic.getId();
+    // Insert comment
+    CommentDTO commentDTO =
+        createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
+    String jsonBody = objectMapper.writeValueAsString(commentDTO);
 
-        // Insert comment
-        CommentDTO createdComment = createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
-        Long commentId = createdComment.getId();
-
-        // Perform DELETE request to delete the comment by ID
-        ResultActions deleteResult = mockMvc.perform(delete(musicUrl + "/" + existingId + "/comments/" + commentId)
+    ResultActions postResult =
+        mockMvc.perform(
+            post(musicUrl + "/" + nonExistingId + "/comments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
                 .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
                 .accept(MediaType.APPLICATION_JSON));
 
-        deleteResult
-                .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$").doesNotExist())
-        ;
+    postResult
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.error").value("Resource not found"))
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.message").value("Music not found"))
+        .andExpect(jsonPath("$.path").value(musicUrl + "/" + nonExistingId + "/comments"));
+  }
 
-        // Verify that the music is actually deleted
-        assertFalse(repository.findById(commentId).isPresent());
-    }
+  @Test
+  @DisplayName("POST `/comments` should return 201 when your comment is a reply to another comment")
+  void postCommentAsReply() throws Exception {
+    // Get token user
+    String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
-    @Test
-    @DisplayName("DELETE `/comments/{id}` should return 404 when comment ID does not exist")
-    void deleteCommentWhenIdDoesntExists() throws Exception {
-        // Get token user
-        String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
+    // Extract the created music ID from the POST response
+    MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
+    existingId = createdMusic.getId();
 
-        // Perform DELETE request to delete the comment by ID
-        ResultActions deleteResult = mockMvc.perform(delete(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId)
+    // Insert comment
+    CommentDTO commentDTO =
+        createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
+
+    // Second User creates a comment to be the parent comment and Create a reply comment DTO
+    String secondUserToken = registerUserAndObtainAcessToken(secondValidUserDTO);
+    CommentDTO replyDTO = createReplyComment(commentDTO, secondUserToken);
+
+    // Check if the parent comment has the reply
+    ResultActions getResult =
+        mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentDTO.getId()));
+
+    getResult
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(commentDTO.getId()))
+        .andExpect(jsonPath("$.body").value(commentDTO.getBody()))
+        .andExpect(jsonPath("$.likes").value(0))
+        .andExpect(jsonPath("$.createdAt").exists())
+        .andExpect(jsonPath("$.updatedAt").exists())
+        .andExpect(jsonPath("$.author").exists())
+        .andExpect(jsonPath("$.author.id").value(commentDTO.getAuthor().getId().toString()))
+        .andExpect(jsonPath("$.replies").isArray())
+        .andExpect(jsonPath("$.replies").isNotEmpty())
+        .andExpect(jsonPath("$.replies[0].body").value(replyDTO.getBody()))
+        .andExpect(
+            jsonPath("$.replies[0].author.id").value(replyDTO.getAuthor().getId().toString()));
+  }
+
+  // DELETE test
+  @Test
+  @DisplayName("DELETE `/comments/{id}` should delete comment by ID")
+  void deleteComment() throws Exception {
+    // Get token user
+    String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
+
+    // Post a valid music to ensure there is at least one music with the specified name
+    MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
+    existingId = createdMusic.getId();
+
+    // Insert comment
+    CommentDTO createdComment =
+        createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
+    Long commentId = createdComment.getId();
+
+    // Perform DELETE request to delete the comment by ID
+    ResultActions deleteResult =
+        mockMvc.perform(
+            delete(musicUrl + "/" + existingId + "/comments/" + commentId)
                 .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
                 .accept(MediaType.APPLICATION_JSON));
 
-        deleteResult
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.timestamp").exists())
-                .andExpect(jsonPath("$.error").value("Resource not found"))
-                .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.message").value("Comment not found"))
-                .andExpect(jsonPath("$.path").value(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId))
-        ;
-    }
+    deleteResult.andExpect(status().isNoContent()).andExpect(jsonPath("$").doesNotExist());
 
-    // PATCH test
-    @Test
-    void patchComment() throws Exception {
-        // Get token user
-        String firstUserToken = registerUserAndObtainAcessToken(validUserDTO);
+    // Verify that the music is actually deleted
+    assertFalse(repository.findById(commentId).isPresent());
+  }
 
-        // Extract the created music ID from the POST response
-        MusicDTO createdMusic = createMusic(validMusicDTO, firstUserToken);
-        existingId = createdMusic.getId();
+  @Test
+  @DisplayName("DELETE `/comments/{id}` should delete comment by ID when user is admin")
+  void deleteCommentAsAdmin() throws Exception {
+    // Get token admin user
+    String adminToken = registerUserAndObtainAcessToken(adminUserDTO);
 
-        // Insert comment
-        CommentDTO commentDTO = createComment(existingId, validCommentDTO, firstUserToken);
-        Long commentId = commentDTO.getId();
+    // Post a valid music to ensure there is at least one music with the specified name
+    MusicDTO createdMusic = createMusic(validMusicDTO, adminToken);
+    existingId = createdMusic.getId();
 
-        // Patch comment
-        String updatedBody = "This is an updated comment body.";
-        CommentDTO patchDTO = new CommentDTO();
-        patchDTO.setBody(updatedBody);
+    // Insert comment
+    CommentDTO createdComment = createComment(existingId, validCommentDTO, adminToken);
+    Long commentId = createdComment.getId();
 
-        Instant createdAt = commentDTO.getCreatedAt();
+    // Perform DELETE request to delete the comment by ID
+    ResultActions deleteResult =
+        mockMvc.perform(
+            delete(musicUrl + "/" + existingId + "/comments/" + commentId)
+                .header("Authorization", "Bearer " + adminToken)
+                .accept(MediaType.APPLICATION_JSON));
 
-        String jsonBody = objectMapper.writeValueAsString(patchDTO);
+    deleteResult.andExpect(status().isNoContent()).andExpect(jsonPath("$").doesNotExist());
 
-        ResultActions patchResult =
-                mockMvc
-                        .perform(patch(musicUrl + "/" + existingId + "/comments/" + commentId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + firstUserToken)
-                                .accept(MediaType.APPLICATION_JSON));
+    // Verify that the music is actually deleted
+    assertFalse(repository.findById(commentId).isPresent());
+  }
 
-        patchResult
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(commentId))
-                .andExpect(jsonPath("$.body").value(updatedBody))
-                .andExpect(jsonPath("$.likes").value(0))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.updatedAt").exists())
-        ;
+  @Test
+  @DisplayName("DELETE `/comments/{id}` should return 404 when comment ID does not exist")
+  void deleteCommentWhenIdDoesntExists() throws Exception {
+    // Get token user
+    String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
-        // Assert that updatedAt is after createdAt
-        Instant updatedAt = Instant.parse(objectMapper.readTree(
-                patchResult.andReturn().getResponse().getContentAsString()).get("updatedAt").asText());
-        assertTrue(updatedAt.isAfter(createdAt));
-    }
+    // Perform DELETE request to delete the comment by ID
+    ResultActions deleteResult =
+        mockMvc.perform(
+            delete(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId)
+                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
+                .accept(MediaType.APPLICATION_JSON));
 
-    // Methods to help tests
+    deleteResult
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.error").value("Resource not found"))
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.message").value("Comment not found"))
+        .andExpect(
+            jsonPath("$.path")
+                .value(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
+  }
 
-    // Used to receive a valid token for a user by his email and password, also checks if the token is valid and has the correct claims
-    private String obtainAcessToken(String email, String password) throws Exception {
-        ResultActions tokenResult =
-                mockMvc
-                        .perform(post(authLoginUrl).with(httpBasic(clientId, clientSecret))
-                                .param("email", email)
-                                .param("password", password)
-                                .param("grant_type", "password")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .accept(MediaType.APPLICATION_JSON));
+  // PATCH test
+  @Test
+  @DisplayName("PATCH `/comments/{id}` should update comment by ID")
+  void patchComment() throws Exception {
+    // Get token user
+    String firstUserToken = registerUserAndObtainAcessToken(validUserDTO);
 
-        tokenResult.andExpect(status().isOk());
+    // Extract the created music ID from the POST response
+    MusicDTO createdMusic = createMusic(validMusicDTO, firstUserToken);
+    existingId = createdMusic.getId();
 
-        return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
-    }
+    // Insert comment
+    CommentDTO commentDTO = createComment(existingId, validCommentDTO, firstUserToken);
+    Long commentId = commentDTO.getId();
 
-    // Create a valid user by `UserDTO` and return the created user as `UserDTO`
-    private UserDTO registerUser(UserDTO dto) throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(dto);
+    // Patch comment
+    String updatedBody = "This is an updated comment body.";
+    CommentDTO patchDTO = new CommentDTO();
+    patchDTO.setBody(updatedBody);
 
-        ResultActions createUserResult =
-                mockMvc
-                        .perform(post(authRegisterUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON));
+    Instant createdAt = commentDTO.getCreatedAt();
 
-        createUserResult.andExpect(status().isCreated());
+    String jsonBody = objectMapper.writeValueAsString(patchDTO);
 
-        String response = createUserResult.andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(response, UserDTO.class);
-    }
+    ResultActions patchResult =
+        mockMvc.perform(
+            patch(musicUrl + "/" + existingId + "/comments/" + commentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .header("Authorization", "Bearer " + firstUserToken)
+                .accept(MediaType.APPLICATION_JSON));
 
-    // Use the `registerUser` and `obtainAcessToken` methods to create a user and obtain a valid token for that user
-    private String registerUserAndObtainAcessToken(UserDTO dto) throws Exception {
-        UserDTO registeredUser = registerUser(dto);
-        return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
-    }
+    patchResult
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(commentId))
+        .andExpect(jsonPath("$.body").value(updatedBody))
+        .andExpect(jsonPath("$.likes").value(0))
+        .andExpect(jsonPath("$.createdAt").exists())
+        .andExpect(jsonPath("$.updatedAt").exists());
 
-    // Insert a valid music and return the created music as `MusicDTO`
-    private MusicDTO createMusic(MusicDTO dto, String token) throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(dto);
+    // Assert that updatedAt is after createdAt
+    Instant updatedAt =
+        Instant.parse(
+            objectMapper
+                .readTree(patchResult.andReturn().getResponse().getContentAsString())
+                .get("updatedAt")
+                .asText());
+    assertTrue(updatedAt.isAfter(createdAt));
+  }
 
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(musicUrl)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + token)
-                                .accept(MediaType.APPLICATION_JSON));
+  @Test
+  @DisplayName("PATCH `/comments/{id}` should return 404 when comment ID does not exist")
+  void patchCommentWhenIdDoesntExists() throws Exception {
+    // Get token user
+    String firstUserToken = registerUserAndObtainAcessToken(validUserDTO);
 
-        postResult.andExpect(status().isCreated());
+    // Patch comment
+    String updatedBody = "This is an updated comment body.";
+    CommentDTO patchDTO = new CommentDTO();
+    patchDTO.setBody(updatedBody);
 
-        String postResponse = postResult.andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(postResponse, MusicDTO.class);
-    }
+    String jsonBody = objectMapper.writeValueAsString(patchDTO);
 
-    // Insert a valid comment for a music and return the created comment as `CommentDTO`
-    private CommentDTO createComment(UUID musicId, CommentDTO dto, String token) throws Exception {
-        String jsonBody = objectMapper.writeValueAsString(dto);
+    ResultActions patchResult =
+        mockMvc.perform(
+            patch(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .header("Authorization", "Bearer " + firstUserToken)
+                .accept(MediaType.APPLICATION_JSON));
 
-        ResultActions postResult =
-                mockMvc
-                        .perform(post(musicUrl + "/" + musicId + "/comments")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .header("Authorization", "Bearer " + token)
-                                .accept(MediaType.APPLICATION_JSON));
+    patchResult
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.error").value("Resource not found"))
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.message").value("Comment not found"))
+        .andExpect(
+            jsonPath("$.path")
+                .value(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
+  }
 
-        postResult
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.body").value(dto.getBody()))
-                .andExpect(jsonPath("$.likes").value(0))
-                .andExpect(jsonPath("$.createdAt").exists())
-                .andExpect(jsonPath("$.updatedAt").exists())
-                .andExpect(jsonPath("$.author").exists())
-                .andExpect(jsonPath("$.author.id").exists())
-                .andExpect(jsonPath("$.music").exists())
-        ;
+  // Methods to help tests
 
-        String postResponse = postResult.andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(postResponse, CommentDTO.class);
-    }
+  // Used to receive a valid token for a user by his email and password, also checks if the token is
+  // valid and has the correct claims
+  private String obtainAcessToken(String email, String password) throws Exception {
+    ResultActions tokenResult =
+        mockMvc.perform(
+            post(authLoginUrl)
+                .with(httpBasic(clientId, clientSecret))
+                .param("email", email)
+                .param("password", password)
+                .param("grant_type", "password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
 
-    // Insert a valid comment as a reply to another comment and return the created reply comment as `CommentDTO`
-    private CommentDTO createReplyComment(CommentDTO dto, String token) throws Exception {
-        CommentDTO replyDTO = new CommentDTO();
-        replyDTO.setBody("This is a reply to the comment with ID " + dto.getId());
-        replyDTO.setParentId(dto.getId());
-        dto.addReply(replyDTO);
-        replyDTO = createComment(dto.getMusic().getId(), replyDTO, token);
-        String jsonBody = objectMapper.writeValueAsString(replyDTO);
+    tokenResult.andExpect(status().isOk());
 
-        return objectMapper.readValue(jsonBody, CommentDTO.class);
-    }
+    return objectMapper
+        .readTree(tokenResult.andReturn().getResponse().getContentAsString())
+        .get("access_token")
+        .asText();
+  }
+
+  // Create a valid user by `UserDTO` and return the created user as `UserDTO`
+  private UserDTO registerUser(UserDTO dto) throws Exception {
+    String jsonBody = objectMapper.writeValueAsString(dto);
+
+    ResultActions createUserResult =
+        mockMvc.perform(
+            post(authRegisterUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .accept(MediaType.APPLICATION_JSON));
+
+    createUserResult.andExpect(status().isCreated());
+
+    String response = createUserResult.andReturn().getResponse().getContentAsString();
+    return objectMapper.readValue(response, UserDTO.class);
+  }
+
+  // Use the `registerUser` and `obtainAcessToken` methods to create a user and obtain a valid token
+  // for that user
+  private String registerUserAndObtainAcessToken(UserDTO dto) throws Exception {
+    UserDTO registeredUser = registerUser(dto);
+    return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
+  }
+
+  // Insert a valid music and return the created music as `MusicDTO`
+  private MusicDTO createMusic(MusicDTO dto, String token) throws Exception {
+    String jsonBody = objectMapper.writeValueAsString(dto);
+
+    ResultActions postResult =
+        mockMvc.perform(
+            post(musicUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaType.APPLICATION_JSON));
+
+    postResult.andExpect(status().isCreated());
+
+    String postResponse = postResult.andReturn().getResponse().getContentAsString();
+    return objectMapper.readValue(postResponse, MusicDTO.class);
+  }
+
+  // Insert a valid comment for a music and return the created comment as `CommentDTO`
+  private CommentDTO createComment(UUID musicId, CommentDTO dto, String token) throws Exception {
+    String jsonBody = objectMapper.writeValueAsString(dto);
+
+    ResultActions postResult =
+        mockMvc.perform(
+            post(musicUrl + "/" + musicId + "/comments")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody)
+                .header("Authorization", "Bearer " + token)
+                .accept(MediaType.APPLICATION_JSON));
+
+    postResult
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").exists())
+        .andExpect(jsonPath("$.body").value(dto.getBody()))
+        .andExpect(jsonPath("$.likes").value(0))
+        .andExpect(jsonPath("$.createdAt").exists())
+        .andExpect(jsonPath("$.updatedAt").exists())
+        .andExpect(jsonPath("$.author").exists())
+        .andExpect(jsonPath("$.author.id").exists())
+        .andExpect(jsonPath("$.music").exists());
+
+    String postResponse = postResult.andReturn().getResponse().getContentAsString();
+    return objectMapper.readValue(postResponse, CommentDTO.class);
+  }
+
+  // Insert a valid comment as a reply to another comment and return the created reply comment as
+  // `CommentDTO`
+  private CommentDTO createReplyComment(CommentDTO dto, String token) throws Exception {
+    CommentDTO replyDTO = new CommentDTO();
+    replyDTO.setBody("This is a reply to the comment with ID " + dto.getId());
+    replyDTO.setParentId(dto.getId());
+    dto.addReply(replyDTO);
+    replyDTO = createComment(dto.getMusic().getId(), replyDTO, token);
+    String jsonBody = objectMapper.writeValueAsString(replyDTO);
+
+    return objectMapper.readValue(jsonBody, CommentDTO.class);
+  }
 }
