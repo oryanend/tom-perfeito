@@ -29,9 +29,6 @@
 	<properties>
 		<java.version>21</java.version>
 		<maven.parallel.builds>false</maven.parallel.builds>
-		<sonar.coverage.jacoco.xmlReportPaths>
-			target/site/jacoco/jacoco.xml
-		</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -126,49 +123,29 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.14</version> <!-- Verifique a versão mais recente -->
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
 
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>2.44.0</version>
-
+				<version>2.34.0</version>
 				<configuration>
 					<java>
-						<googleJavaFormat>
-							<version>1.17.0</version>
-						</googleJavaFormat>
 						<removeUnusedImports/>
 						<trimTrailingWhitespace/>
 						<endWithNewline/>
 					</java>
 				</configuration>
-
-				<executions>
-					<execution>
-						<goals>
-							<goal>apply</goal>
-						</goals>
-					</execution>
-				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>21</source>
+					<target>21</target>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

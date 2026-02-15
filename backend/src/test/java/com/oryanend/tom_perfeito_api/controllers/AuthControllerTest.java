@@ -1,25 +1,11 @@
 package com.oryanend.tom_perfeito_api.controllers;
 
-import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.*;
-import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createUserDTOWithEmail;
-import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createUserDTOWithPassword;
-import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createUserDTOWithUsername;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.oryanend.tom_perfeito_api.config.PasswordConfig;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
-import java.time.Instant;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,324 +18,425 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.UUID;
+
+import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.*;
+import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createUserDTOWithEmail;
+import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createUserDTOWithPassword;
+import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.createUserDTOWithUsername;
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 public class AuthControllerTest {
-  @Autowired private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-  @Autowired private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-  @Autowired private PasswordConfig passwordConfig;
+    @Autowired
+    private PasswordConfig passwordConfig;
 
-  private String authUrl, authRegisterUrl, authLoginUrl;
-  private String validUsername, validEmail, validPassword;
-  private String invalidUsername, invalidEmail, invalidPassword;
-  private String invalidToken;
-  private UserDTO validUserDTO, secondValidUserWithSameUsernameDTO, secondValidUserWithSameEmailDTO;
-  private UserDTO nullPasswordUserDTO, nullEmailUserDTO, nullUsernameUserDTO;
-  private UserDTO invalidUsernameUserDTO, invalidEmailUserDTO, invalidPasswordUserDTO;
+    private String baseUrl, baseAuthUrl, baseLoginAuthUrl;
+    private String validUsername, validEmail, validPassword;
+    private String invalidUsername, invalidEmail, invalidPassword;
+    private String invalidToken;
+    private UserDTO validUserDTO, secondValidUserWithSameUsernameDTO, secondValidUserWithSameEmailDTO;
+    private UserDTO nullPasswordUserDTO, nullEmailUserDTO, nullUsernameUserDTO;
+    private UserDTO invalidUsernameUserDTO, invalidEmailUserDTO, invalidPasswordUserDTO;
 
-  @Value("${security.client-id}")
-  private String clientId;
 
-  @Value("${security.client-secret}")
-  private String clientSecret;
+    @Value("${security.client-id}")
+    private String clientId;
 
-  @Value("${security.jwt.duration}")
-  private Integer tokenExpiresIn;
+    @Value("${security.client-secret}")
+    private String clientSecret;
 
-  @BeforeEach
-  void setUp() {
-    authUrl = "/auth/login";
-    authRegisterUrl = "/auth/register";
-    authLoginUrl = "/auth/login";
+    @Value("${security.jwt.duration}")
+    private Integer tokenExpiresIn;
 
-    invalidUsername = "iu";
-    invalidPassword = "123";
-    invalidEmail = "mail";
+    @BeforeEach
+    void setUp() {
+        baseUrl = "/auth/login";
+        baseAuthUrl = "/auth/register";
+        baseLoginAuthUrl = "/auth/login";
 
-    validUsername = "testuser";
-    validEmail = "email@test.com";
-    validPassword = "testpassword";
+        invalidUsername = "iu";
+        invalidPassword = "123";
+        invalidEmail = "mail";
 
-    validUserDTO = createUserDTO(validUsername, validEmail, validPassword);
+        validUsername = "testuser";
+        validEmail = "email@test.com";
+        validPassword = "testpassword";
 
-    secondValidUserWithSameUsernameDTO = createUserDTOWithUsername(validUsername);
-    secondValidUserWithSameEmailDTO = createUserDTOWithEmail(validEmail);
+        validUserDTO = createUserDTO(validUsername, validEmail, validPassword);
 
-    nullPasswordUserDTO = createUserDTOWithPassword(null);
-    nullEmailUserDTO = createUserDTOWithEmail(null);
-    nullUsernameUserDTO = createUserDTOWithUsername(null);
+        secondValidUserWithSameUsernameDTO = createUserDTOWithUsername(validUsername);
+        secondValidUserWithSameEmailDTO = createUserDTOWithEmail(validEmail);
 
-    invalidPasswordUserDTO = createUserDTOWithPassword(invalidPassword);
-    invalidEmailUserDTO = createUserDTOWithEmail(invalidEmail);
-    invalidUsernameUserDTO = createUserDTOWithUsername(invalidUsername);
+        nullPasswordUserDTO = createUserDTOWithPassword(null);
+        nullEmailUserDTO = createUserDTOWithEmail(null);
+        nullUsernameUserDTO = createUserDTOWithUsername(null);
 
-    invalidToken =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30";
-  }
+        invalidPasswordUserDTO = createUserDTOWithPassword(invalidPassword);
+        invalidEmailUserDTO = createUserDTOWithEmail(invalidEmail);
+        invalidUsernameUserDTO = createUserDTOWithUsername(invalidUsername);
 
-  // Post `/auth/login` tests
+        invalidToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30";
+    }
 
-  @Test
-  @DisplayName("POST `/auth/login` with valid email and password should return token")
-  void validTokenTest() throws Exception {
-    // First, register the user
-    registerUser(validUserDTO);
+    // Post `/auth/login` tests
 
-    // Now, try to obtain a token
-    ResultActions validTokenResult =
+    @Test
+    @DisplayName("POST `/auth/login` with valid email and password should return token")
+    void validTokenTest() throws Exception {
+        // First, register the user
+        registerUser(validUserDTO);
+
+        // Now, try to obtain a token
         obtainAcessToken(validUserDTO.getEmail(), validUserDTO.getPassword());
+    }
 
-    validTokenResult
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.token_type").value("Bearer"))
-        .andExpect(jsonPath("$.expires_in").isNumber())
-        .andExpect(jsonPath("$.access_token").isString());
+    @Test
+    @DisplayName("POST `/auth/login` with invalid password should return 400")
+    void invalidPasswordTest() throws Exception {
+        ResultActions tokenResult =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .with(httpBasic(clientId, clientSecret))
+                                .param("email", validUserDTO.getEmail())
+                                .param("password", "wrongpassword")
+                                .param("grant_type", "password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
 
-    // Token validation
-    String responseString = validTokenResult.andReturn().getResponse().getContentAsString();
-    String accessToken = JsonPath.read(responseString, "$.access_token");
+        tokenResult
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.error").value("Invalid Credentials"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.message").value("Email or Password invalid"))
+                .andExpect(jsonPath("$.path").value(baseUrl))
+        ;
+    }
 
-    DecodedJWT decodedJWT = JWT.decode(accessToken);
+    @Test
+    @DisplayName("POST `/auth/login` with invalid username should return 400")
+    void invalidUsernameTest() throws Exception {
+        ResultActions tokenResult =
+                mockMvc
+                        .perform(post(baseUrl)
+                                .with(httpBasic(clientId, clientSecret))
+                                .param("email", "invalidEmailUsername@test.com")
+                                .param("password", validUserDTO.getPassword())
+                                .param("grant_type", "password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
 
-    assertEquals(clientId, decodedJWT.getSubject());
-    assertEquals(
-        decodedJWT.getExpiresAt().getTime() - decodedJWT.getIssuedAt().getTime(),
-        tokenExpiresIn * 1000);
-    assertEquals(validUserDTO.getEmail(), decodedJWT.getClaim("username").asString());
-  }
+        tokenResult
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.error").value("Invalid Credentials"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.message").value("Email or Password invalid"))
+                .andExpect(jsonPath("$.path").value(baseUrl))
+        ;
+    }
 
-  @Test
-  @DisplayName("POST `/auth/login` with invalid password should return 400")
-  void invalidPasswordTest() throws Exception {
-    ResultActions tokenResult = obtainAcessToken(validUserDTO.getEmail(), "wrongpassword");
+    // POST `/auth/register` tests
 
-    tokenResult
-        .andExpect(status().isUnauthorized())
-        .andExpect(jsonPath("$.timestamp").isNotEmpty())
-        .andExpect(jsonPath("$.status").value(401))
-        .andExpect(jsonPath("$.error").value("Invalid Credentials"))
-        .andExpect(jsonPath("$.message").isNotEmpty())
-        .andExpect(jsonPath("$.message").value("Email or Password invalid"))
-        .andExpect(jsonPath("$.path").value(authUrl));
-  }
+    @Test
+    @DisplayName("POST `/auth/register` with valid data should return success")
+    void insertUser() throws Exception {
+        // First, register the user
+        UserDTO userDTO = registerUser(validUserDTO);
 
-  @Test
-  @DisplayName("POST `/auth/login` with invalid username should return 400")
-  void invalidUsernameTest() throws Exception {
-    ResultActions tokenResult =
-        obtainAcessToken("invalidEmailUsername@test.com", validUserDTO.getPassword());
+        // Check if the returned id is a valid UUID
+        String id = userDTO.getId().toString();
+        assertDoesNotThrow(() -> UUID.fromString(id));
 
-    tokenResult
-        .andExpect(status().isUnauthorized())
-        .andExpect(jsonPath("$.timestamp").isNotEmpty())
-        .andExpect(jsonPath("$.status").value(401))
-        .andExpect(jsonPath("$.error").value("Invalid Credentials"))
-        .andExpect(jsonPath("$.message").isNotEmpty())
-        .andExpect(jsonPath("$.message").value("Email or Password invalid"))
-        .andExpect(jsonPath("$.path").value(authUrl));
-  }
+        // Check if the password is encoded correctly
+        assertTrue(passwordConfig.passwordEncoder().matches(validPassword, userDTO.getPassword()));
 
-  // POST `/auth/register` tests
+        // Check if createdAt and updatedAt are valid Instants
+        String createdAtStr = userDTO.getCreatedAt().toString();
+        String updatedAtStr = userDTO.getUpdatedAt().toString();
+        assertDoesNotThrow(() -> Instant.parse(createdAtStr));
+        assertDoesNotThrow(() -> Instant.parse(updatedAtStr));
+    }
 
-  @Test
-  @DisplayName("POST `/auth/register` with valid data should return success")
-  void insertUser() throws Exception {
-    // First, register the user
-    UserDTO userDTO = registerUser(validUserDTO);
+    @Test
+    @DisplayName("POST `/auth/register` without password should return unprocessable entity")
+    void insertWithoutPassword() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(nullPasswordUserDTO);
 
-    // Check if the returned id is a valid UUID
-    String id = userDTO.getId().toString();
-    assertDoesNotThrow(() -> UUID.fromString(id));
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-    // Check if the password is encoded correctly
-    assertTrue(passwordConfig.passwordEncoder().matches(validPassword, userDTO.getPassword()));
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("password"))
+                .andExpect(jsonPath("$.errors[0].message").value("Password cannot be null"));
+    }
 
-    // Check if createdAt and updatedAt are valid Instants
-    String createdAtStr = userDTO.getCreatedAt().toString();
-    String updatedAtStr = userDTO.getUpdatedAt().toString();
-    assertDoesNotThrow(() -> Instant.parse(createdAtStr));
-    assertDoesNotThrow(() -> Instant.parse(updatedAtStr));
-  }
+    @Test
+    @DisplayName("POST `/auth/register` without email should return unprocessable entity")
+    void insertWithoutEmail() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(nullEmailUserDTO);
 
-  @Test
-  @DisplayName("POST `/auth/register` without password should return unprocessable entity")
-  void insertWithoutPassword() throws Exception {
-    ResultActions result = insertUser(nullPasswordUserDTO);
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("email"))
+                .andExpect(jsonPath("$.errors[0].message").value("Email cannot be null"));
+    }
 
-    result
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.timestamp").isNotEmpty())
-        .andExpect(jsonPath("$.status").value(422))
-        .andExpect(jsonPath("$.error").value("Validation Exception"))
-        .andExpect(jsonPath("$.message").isNotEmpty())
-        .andExpect(jsonPath("$.path").value(authRegisterUrl))
-        .andExpect(jsonPath("$.errors[0].fieldName").value("password"))
-        .andExpect(jsonPath("$.errors[0].message").value("Password cannot be null"));
-  }
+    @Test
+    @DisplayName("POST `/auth/register` without username should return unprocessable entity")
+    void insertWithoutUsername() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(nullUsernameUserDTO);
 
-  @Test
-  @DisplayName("POST `/auth/register` without email should return unprocessable entity")
-  void insertWithoutEmail() throws Exception {
-    ResultActions result = insertUser(nullEmailUserDTO);
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-    result
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.timestamp").isNotEmpty())
-        .andExpect(jsonPath("$.status").value(422))
-        .andExpect(jsonPath("$.error").value("Validation Exception"))
-        .andExpect(jsonPath("$.message").isNotEmpty())
-        .andExpect(jsonPath("$.path").value(authRegisterUrl))
-        .andExpect(jsonPath("$.errors[0].fieldName").value("email"))
-        .andExpect(jsonPath("$.errors[0].message").value("Email cannot be null"));
-  }
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("username"))
+                .andExpect(jsonPath("$.errors[0].message").value("Username cannot be null"));
+    }
 
-  @Test
-  @DisplayName("POST `/auth/register` without username should return unprocessable entity")
-  void insertWithoutUsername() throws Exception {
-    ResultActions result = insertUser(nullUsernameUserDTO);
+    @Test
+    @DisplayName("POST `/auth/register` with a invalid password should return unprocessable entity")
+    void insertWithInvalidPassword() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(invalidPasswordUserDTO);
 
-    result
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.timestamp").isNotEmpty())
-        .andExpect(jsonPath("$.status").value(422))
-        .andExpect(jsonPath("$.error").value("Validation Exception"))
-        .andExpect(jsonPath("$.message").isNotEmpty())
-        .andExpect(jsonPath("$.path").value(authRegisterUrl))
-        .andExpect(jsonPath("$.errors[0].fieldName").value("username"))
-        .andExpect(jsonPath("$.errors[0].message").value("Username cannot be null"));
-  }
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("password"))
+                .andExpect(jsonPath("$.errors[0].message").value("Password must have 5 characters at least"));
+    }
 
-  @Test
-  @DisplayName("POST `/auth/register` with a invalid password should return unprocessable entity")
-  void insertWithInvalidPassword() throws Exception {
-    ResultActions result = insertUser(invalidPasswordUserDTO);
+    @Test
+    @DisplayName("POST `/auth/register` with a invalid password should return unprocessable entity")
+    void insertWithInvalidEmail() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(invalidEmailUserDTO);
 
-    result
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.timestamp").isNotEmpty())
-        .andExpect(jsonPath("$.status").value(422))
-        .andExpect(jsonPath("$.error").value("Validation Exception"))
-        .andExpect(jsonPath("$.message").isNotEmpty())
-        .andExpect(jsonPath("$.path").value(authRegisterUrl))
-        .andExpect(jsonPath("$.errors[0].fieldName").value("password"))
-        .andExpect(
-            jsonPath("$.errors[0].message").value("Password must have 5 characters at least"));
-  }
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-  @Test
-  @DisplayName("POST `/auth/register` with a invalid password should return unprocessable entity")
-  void insertWithInvalidEmail() throws Exception {
-    ResultActions result = insertUser(invalidEmailUserDTO);
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.errors[*].fieldName").value(hasItem("email")))
+                .andExpect(jsonPath("$.errors[*].message").value(hasItem("Email must be between 5 and 254 characters")))
+                .andExpect(jsonPath("$.errors[*].message").value(hasItem("Email should be valid")));
+    }
 
-    result
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.timestamp").isNotEmpty())
-        .andExpect(jsonPath("$.status").value(422))
-        .andExpect(jsonPath("$.error").value("Validation Exception"))
-        .andExpect(jsonPath("$.message").isNotEmpty())
-        .andExpect(jsonPath("$.path").value(authRegisterUrl))
-        .andExpect(jsonPath("$.errors[*].fieldName").value(hasItem("email")))
-        .andExpect(
-            jsonPath("$.errors[*].message")
-                .value(hasItem("Email must be between 5 and 254 characters")))
-        .andExpect(jsonPath("$.errors[*].message").value(hasItem("Email should be valid")));
-  }
+    @Test
+    @DisplayName("POST `/auth/register` with a invalid username should return unprocessable entity")
+    void insertWithInvalidUsername() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(invalidUsernameUserDTO);
 
-  @Test
-  @DisplayName("POST `/auth/register` with a invalid username should return unprocessable entity")
-  void insertWithInvalidUsername() throws Exception {
-    ResultActions result = insertUser(invalidUsernameUserDTO);
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-    result
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.timestamp").isNotEmpty())
-        .andExpect(jsonPath("$.status").value(422))
-        .andExpect(jsonPath("$.error").value("Validation Exception"))
-        .andExpect(jsonPath("$.message").isNotEmpty())
-        .andExpect(jsonPath("$.path").value(authRegisterUrl))
-        .andExpect(jsonPath("$.errors[0].fieldName").value("username"))
-        .andExpect(
-            jsonPath("$.errors[0].message").value("Username must be between 3 and 40 characters"));
-  }
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.timestamp").isNotEmpty())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Validation Exception"))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.errors[0].fieldName").value("username"))
+                .andExpect(jsonPath("$.errors[0].message").value("Username must be between 3 and 40 characters"));
+    }
 
-  @Test
-  @DisplayName("POST `/auth/register` with an already taken email should return bad request")
-  void insertWithAlreadyTakenEmail() throws Exception {
-    ResultActions result = insertUser(validUserDTO);
+    @Test
+    @DisplayName("POST `/auth/register` with an already taken email should return bad request")
+    void insertWithAlreadyTakenEmail() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
 
-    result.andExpect(status().isCreated());
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-    // Try to insert the same user again
-    ResultActions secondResult = insertUser(secondValidUserWithSameEmailDTO);
+        result.andExpect(status().isCreated());
 
-    secondResult
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.status").value(400))
-        .andExpect(jsonPath("$.error").value("Resource already exists"))
-        .andExpect(jsonPath("$.message").value("Email already in use, try another one."))
-        .andExpect(jsonPath("$.path").value(authRegisterUrl))
-        .andExpect(jsonPath("$.timestamp").isNotEmpty());
-  }
+        // Try to insert the same user again
 
-  @Test
-  @DisplayName("POST `/auth/register` with an already taken username should return bad request")
-  void insertWithAlreadyTakenUsername() throws Exception {
-    ResultActions result = insertUser(validUserDTO);
+        String secondJsonBody = objectMapper.writeValueAsString(secondValidUserWithSameEmailDTO);
 
-    result.andExpect(status().isCreated());
+        ResultActions secondResult =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(secondJsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-    // Try to insert the same user again
-    ResultActions secondResult = insertUser(secondValidUserWithSameUsernameDTO);
+        secondResult
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Resource already exists"))
+                .andExpect(jsonPath("$.message").value("Email already in use, try another one."))
+                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
+    }
 
-    secondResult
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.status").value(400))
-        .andExpect(jsonPath("$.error").value("Resource already exists"))
-        .andExpect(jsonPath("$.message").value("Username already in use, try another one."))
-        .andExpect(jsonPath("$.path").value(authRegisterUrl))
-        .andExpect(jsonPath("$.timestamp").isNotEmpty());
-  }
+    @Test
+    @DisplayName("POST `/auth/register` with an already taken username should return bad request")
+    void insertWithAlreadyTakenUsername() throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(validUserDTO);
 
-  // Methods to help tests
+        ResultActions result =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-  // Used to receive a valid token for a user by his email and password
-  private ResultActions obtainAcessToken(String email, String password) throws Exception {
-    return mockMvc.perform(
-        post(authLoginUrl)
-            .with(httpBasic(clientId, clientSecret))
-            .param("email", email)
-            .param("password", password)
-            .param("grant_type", "password")
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON));
-  }
+        result.andExpect(status().isCreated());
 
-  // Insert a user by `UserDTO` and return the ResultActions
-  private ResultActions insertUser(UserDTO dto) throws Exception {
-    String jsonBody = objectMapper.writeValueAsString(dto);
+        // Try to insert the same user again
 
-    return mockMvc.perform(
-        post(authRegisterUrl)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonBody)
-            .accept(MediaType.APPLICATION_JSON));
-  }
+        String secondJsonBody = objectMapper.writeValueAsString(secondValidUserWithSameUsernameDTO);
 
-  // Create a valid user by `UserDTO` and return the created user as `UserDTO`
-  private UserDTO registerUser(UserDTO dto) throws Exception {
-    ResultActions createUserResult = insertUser(dto);
+        ResultActions secondResult =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(secondJsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
 
-    createUserResult
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.username").value(validUsername))
-        .andExpect(jsonPath("$.email").value(validEmail))
-        .andExpect(jsonPath("$.roles").isArray())
-        .andExpect(jsonPath("$.roles[*].authority", hasItem("ROLE_CLIENT")));
+        secondResult
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Resource already exists"))
+                .andExpect(jsonPath("$.message").value("Username already in use, try another one."))
+                .andExpect(jsonPath("$.path").value(baseAuthUrl))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
+    }
 
-    String response = createUserResult.andReturn().getResponse().getContentAsString();
-    return objectMapper.readValue(response, UserDTO.class);
-  }
+    // Methods to help tests
+    private String obtainAcessToken(String email, String password) throws Exception {
+        ResultActions tokenResult =
+                mockMvc
+                        .perform(post(baseLoginAuthUrl).with(httpBasic(clientId, clientSecret))
+                                .param("email", email)
+                                .param("password", password)
+                                .param("grant_type", "password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        tokenResult
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token_type").value("Bearer"))
+                .andExpect(jsonPath("$.expires_in").isNumber())
+                .andExpect(jsonPath("$.access_token").isString())
+        ;
+
+        // Token validation
+        String responseString = tokenResult.andReturn().getResponse().getContentAsString();
+        String accessToken = JsonPath.read(responseString, "$.access_token");
+
+        DecodedJWT decodedJWT = JWT.decode(accessToken);
+
+        assertEquals(clientId, decodedJWT.getSubject());
+        assertEquals(decodedJWT.getExpiresAt().getTime() - decodedJWT.getIssuedAt().getTime(), tokenExpiresIn * 1000);
+        assertEquals(validUserDTO.getEmail(), decodedJWT.getClaim("username").asString());
+
+        return objectMapper.readTree(tokenResult.andReturn().getResponse().getContentAsString()).get("access_token").asText();
+    }
+
+    private UserDTO registerUser(UserDTO dto) throws Exception {
+        String jsonBody = objectMapper.writeValueAsString(dto);
+
+        ResultActions createUserResult =
+                mockMvc
+                        .perform(post(baseAuthUrl)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON));
+
+        createUserResult
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.username").value(validUsername))
+                .andExpect(jsonPath("$.email").value(validEmail))
+                .andExpect(jsonPath("$.roles").isArray())
+                .andExpect(jsonPath("$.roles[*].authority", hasItem("ROLE_CLIENT")))
+        ;
+
+
+        String response = createUserResult.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(response, UserDTO.class);
+    }
+
+    private String registerAndGetToken(UserDTO dto) throws Exception {
+        UserDTO registeredUser = registerUser(dto);
+        return obtainAcessToken(registeredUser.getEmail(), dto.getPassword());
+    }
 }

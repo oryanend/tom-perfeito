@@ -1,63 +1,73 @@
 package com.oryanend.tom_perfeito_api.dto;
 
 import com.oryanend.tom_perfeito_api.entities.Music;
+
 import java.time.Instant;
 import java.time.LocalDate;
 
 public class MusicPatchDTO {
-  private String title;
-  private String description;
-  private LocalDate releaseDate;
-  private Instant updatedAt;
-  private LyricDTO lyric;
+    private String title;
+    private String description;
+    private LocalDate releaseDate;
+    private Instant updatedAt;
+    private LyricDTO lyric;
 
-  public MusicPatchDTO() {}
+    public MusicPatchDTO() {
+    }
 
-  public MusicPatchDTO(Music entity) {
-    this.title = entity.getTitle();
-    this.description = entity.getDescription();
-    this.releaseDate = entity.getReleaseDate();
-    this.lyric = new LyricDTO(entity.getLyric());
-    this.updatedAt = Instant.now();
-  }
+    public MusicPatchDTO(String title, String description, LocalDate releaseDate, LyricDTO lyric, Instant updatedAt) {
+        this.title = title;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.lyric = lyric;
+        this.updatedAt = Instant.now();
+    }
 
-  public String getTitle() {
-    return title;
-  }
+    public MusicPatchDTO(Music entity) {
+        this.title = entity.getTitle();
+        this.description = entity.getDescription();
+        this.releaseDate = entity.getReleaseDate();
+        this.lyric = new LyricDTO(entity.getLyric());
+        this.updatedAt = Instant.now();
+    }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
+    public String getTitle() {
+        return title;
+    }
 
-  public String getDescription() {
-    return description;
-  }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+    public String getDescription() {
+        return description;
+    }
 
-  public LocalDate getReleaseDate() {
-    return releaseDate;
-  }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-  public void setReleaseDate(LocalDate releaseDate) {
-    this.releaseDate = releaseDate;
-  }
+    public LocalDate getReleaseDate() {
+        return releaseDate;
+    }
 
-  public Instant getUpdatedAt() {
-    return updatedAt;
-  }
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
+    }
 
-  public void setUpdatedAt(Instant updatedAt) {
-    this.updatedAt = updatedAt;
-  }
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 
-  public LyricDTO getLyric() {
-    return lyric;
-  }
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
-  public void setLyric(LyricDTO lyric) {
-    this.lyric = lyric;
-  }
+    public LyricDTO getLyric() {
+        return lyric;
+    }
+
+    public void setLyric(LyricDTO lyric) {
+        this.lyric = lyric;
+    }
 }

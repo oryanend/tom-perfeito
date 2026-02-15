@@ -9,13 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
-    "commit": "cz",
-    "jacoco": "cd backend && mvnw.cmd clean test jacoco:report",
-    "sonar:start": "cd backend && mvnw.cmd clean verify sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.token=sqa_64b59052bdc8d022bd1be1cabb1439f58284492c",
-    "sonar:logs": "docker compose logs -f sonarqube",
-    "services:up": "docker-compose -f docker-compose.yml up -d -v",
-    "service:stop": "docker-compose -f docker-compose.yml stop",
-    "services:down": "docker-compose -f docker-compose.yml down -v"
+    "commit": "cz"
   },
   "keywords": [],
   "author": "",
