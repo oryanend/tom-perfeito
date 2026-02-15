@@ -2,12 +2,11 @@ package com.oryanend.tom_perfeito_api.projections;
 
 public interface UserDetailsProjection {
 
-    String getUsername();
+  String getUsername();
 
-    String getPassword();
+  String getPassword();
 
-    Long getRoleId();
+  Long getRoleId();
 
-    String getAuthority();
-
+  String getAuthority();
 }

@@ -7,70 +7,59 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
 import java.util.HashSet;
 import java.util.Set;
 
 public class ChordDTO {
 
-    private Long id;
+  private Long id;
 
-    @NotNull(message = "Chord name cannot be null")
-    private String name;
+  @NotNull(message = "Chord name cannot be null")
+  private String name;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "Chord type cannot be null")
-    private ChordType type;
+  @Enumerated(EnumType.STRING)
+  @NotNull(message = "Chord type cannot be null")
+  private ChordType type;
 
-    @Size(message = "A chord must have at least three note", min = 3)
-    @NotNull(message = "Notes cannot be null")
-    private Set<Note> notes = new HashSet<>();
+  @Size(message = "A chord must have at least three note", min = 3)
+  @NotNull(message = "Notes cannot be null")
+  private Set<Note> notes = new HashSet<>();
 
-    public ChordDTO() {
-    }
+  public ChordDTO() {}
 
-    public ChordDTO(String name, ChordType type) {
-        this.name = name;
-        this.type = type;
-    }
+  public ChordDTO(Chord entity) {
+    this.id = entity.getId();
+    this.name = entity.getName();
+    this.type = entity.getType();
 
-    public ChordDTO(Chord entity) {
-        this.id = entity.getId();
-        this.name = entity.getName();
-        this.type = entity.getType();
+    this.notes.addAll(entity.getNotes());
+  }
 
-        this.notes.addAll(entity.getNotes());
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public ChordType getType() {
+    return type;
+  }
 
-    public ChordType getType() {
-        return type;
-    }
+  public void setType(ChordType type) {
+    this.type = type;
+  }
 
-    public void setType(ChordType type) {
-        this.type = type;
-    }
-
-    public Set<Note> getNotes() {
-        return notes;
-    }
-
-    public void addNote(Note note) {
-        this.notes.add(note);
-    }
+  public Set<Note> getNotes() {
+    return notes;
+  }
 }

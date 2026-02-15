@@ -6,66 +6,66 @@ import com.oryanend.tom_perfeito_api.entities.enums.NoteName;
 import com.oryanend.tom_perfeito_api.repositories.NoteRepository;
 
 public class ChordDTOFactory {
-    public static ChordDTO createChordDTO(NoteRepository repository, NoteName name, ChordType type, Long... noteIds) {
-        ChordDTO chordDTO = new ChordDTO();
-        chordDTO.setName(name.name());
-        chordDTO.setType(type);
+  public static ChordDTO createChordDTO(
+      NoteRepository repository, NoteName name, ChordType type, Long... noteIds) {
+    ChordDTO chordDTO = new ChordDTO();
+    chordDTO.setName(name.name());
+    chordDTO.setType(type);
 
-        for (Long noteId : noteIds) {
-            chordDTO.getNotes().add(repository.findById(noteId).orElseThrow());
-        }
-
-        return chordDTO;
-
+    for (Long noteId : noteIds) {
+      chordDTO.getNotes().add(repository.findById(noteId).orElseThrow());
     }
 
-    public static ChordDTO createValidChordDTO(NoteRepository repository) {
-        ChordDTO validChordDTO = new ChordDTO();
-        validChordDTO.setName("A Minor");
-        validChordDTO.setType(ChordType.MINOR);
+    return chordDTO;
+  }
 
-        validChordDTO.getNotes().add(repository.findById(1L).orElseThrow());
-        validChordDTO.getNotes().add(repository.findById(5L).orElseThrow());
-        validChordDTO.getNotes().add(repository.findById(10L).orElseThrow());
+  public static ChordDTO createValidChordDTO(NoteRepository repository) {
+    ChordDTO validChordDTO = new ChordDTO();
+    validChordDTO.setName("A Minor");
+    validChordDTO.setType(ChordType.MINOR);
 
-        return validChordDTO;
-    }
+    validChordDTO.getNotes().add(repository.findById(1L).orElseThrow());
+    validChordDTO.getNotes().add(repository.findById(5L).orElseThrow());
+    validChordDTO.getNotes().add(repository.findById(10L).orElseThrow());
 
-    public static ChordDTO createWithoutNameChordDTO(NoteRepository repository) {
-        ChordDTO chordDTO = new ChordDTO();
-        chordDTO.setName(null); // Null name
-        chordDTO.setType(ChordType.MINOR);
+    return validChordDTO;
+  }
 
-        chordDTO.getNotes().add(repository.findById(1L).orElseThrow());
-        chordDTO.getNotes().add(repository.findById(5L).orElseThrow());
-        chordDTO.getNotes().add(repository.findById(10L).orElseThrow());
+  public static ChordDTO createWithoutNameChordDTO(NoteRepository repository) {
+    ChordDTO chordDTO = new ChordDTO();
+    chordDTO.setName(null); // Null name
+    chordDTO.setType(ChordType.MINOR);
 
-        return chordDTO;
-    }
+    chordDTO.getNotes().add(repository.findById(1L).orElseThrow());
+    chordDTO.getNotes().add(repository.findById(5L).orElseThrow());
+    chordDTO.getNotes().add(repository.findById(10L).orElseThrow());
 
-    public static ChordDTO createWithoutTypeChordDTO(NoteRepository repository) {
-        ChordDTO chordDTO = new ChordDTO();
-        chordDTO.setName("A Minor");
-        chordDTO.setType(null); // Null type
+    return chordDTO;
+  }
 
-        chordDTO.getNotes().add(repository.findById(1L).orElseThrow());
-        chordDTO.getNotes().add(repository.findById(5L).orElseThrow());
-        chordDTO.getNotes().add(repository.findById(10L).orElseThrow());
+  public static ChordDTO createWithoutTypeChordDTO(NoteRepository repository) {
+    ChordDTO chordDTO = new ChordDTO();
+    chordDTO.setName("A Minor");
+    chordDTO.setType(null); // Null type
 
-        return chordDTO;
-    }
+    chordDTO.getNotes().add(repository.findById(1L).orElseThrow());
+    chordDTO.getNotes().add(repository.findById(5L).orElseThrow());
+    chordDTO.getNotes().add(repository.findById(10L).orElseThrow());
 
-    public static ChordDTO createWithoutNotesChordDTO() {
-        ChordDTO chordDTO = new ChordDTO();
-        chordDTO.setName("A Minor");
-        chordDTO.setType(ChordType.MINOR);
-        return chordDTO;
-    }
+    return chordDTO;
+  }
 
-    public static ChordDTO createInvalidChordDTO() {
-        ChordDTO chordDTO = new ChordDTO();
-        chordDTO.setName("NonExistingChordName"); // Invalid name
-        chordDTO.setType(null); // Invalid type
-        return chordDTO;
-    }
+  public static ChordDTO createWithoutNotesChordDTO() {
+    ChordDTO chordDTO = new ChordDTO();
+    chordDTO.setName("A Minor");
+    chordDTO.setType(ChordType.MINOR);
+    return chordDTO;
+  }
+
+  public static ChordDTO createInvalidChordDTO() {
+    ChordDTO chordDTO = new ChordDTO();
+    chordDTO.setName("NonExistingChordName"); // Invalid name
+    chordDTO.setType(null); // Invalid type
+    return chordDTO;
+  }
 }

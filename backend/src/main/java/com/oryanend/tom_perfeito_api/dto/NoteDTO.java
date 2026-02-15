@@ -8,71 +8,69 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
-
 import java.util.HashSet;
 import java.util.Set;
 
 public class NoteDTO {
-    private Long id;
+  private Long id;
 
-    @NotNull(message = "Name cannot be null")
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 1)
-    private NoteName name;
+  @NotNull(message = "Name cannot be null")
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 1)
+  private NoteName name;
 
-    @NotNull(message = "Accidental cannot be null")
-    @Enumerated(EnumType.STRING)
-    private Accidental accidental;
+  @NotNull(message = "Accidental cannot be null")
+  @Enumerated(EnumType.STRING)
+  private Accidental accidental;
 
-    private Set<Chord> chords = new HashSet<>();
+  private Set<Chord> chords = new HashSet<>();
 
-    public NoteDTO() {
+  public NoteDTO() {}
+
+  public NoteDTO(NoteName name, Accidental accidental) {
+    this.name = name;
+    this.accidental = accidental;
+  }
+
+  public NoteDTO(Note entity) {
+    this.id = entity.getId();
+    this.name = entity.getName();
+    this.accidental = entity.getAccidental();
+
+    for (Chord chord : entity.getChords()) {
+      addChords(chord);
     }
+  }
 
-    public NoteDTO(NoteName name, Accidental accidental) {
-        this.name = name;
-        this.accidental = accidental;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public NoteDTO(Note entity) {
-        this.id = entity.getId();
-        this.name = entity.getName();
-        this.accidental = entity.getAccidental();
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-        for (Chord chord : entity.getChords()) {
-            addChords(chord);
-        }
-    }
+  public NoteName getName() {
+    return name;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public void setName(NoteName name) {
+    this.name = name;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Set<Chord> getChords() {
+    return chords;
+  }
 
-    public NoteName getName() {
-        return name;
-    }
+  public void addChords(Chord chord) {
+    this.chords.add(chord);
+  }
 
-    public void setName(NoteName name) {
-        this.name = name;
-    }
+  public Accidental getAccidental() {
+    return accidental;
+  }
 
-    public Set<Chord> getChords() {
-        return chords;
-    }
-
-    public void addChords(Chord chord) {
-        this.chords.add(chord);
-    }
-
-    public Accidental getAccidental() {
-        return accidental;
-    }
-
-    public void setAccidental(Accidental accidental) {
-        this.accidental = accidental;
-    }
+  public void setAccidental(Accidental accidental) {
+    this.accidental = accidental;
+  }
 }
