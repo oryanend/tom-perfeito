@@ -3,10 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { WaitingPageComponent } from './waiting-page/waiting-page.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    WaitingPageComponent
   ],
   imports: [
     BrowserModule,
