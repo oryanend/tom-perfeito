@@ -1,0 +1,17 @@
+footer {
+  background-color: var(--secondary-bg-color);
+  text-align: center;
+  height: 8rem;
+}
+
+footer .nav-link.footer-link {
+  color: var(--main-text-color) !important;
+}
+
+footer .nav-link.footer-link:hover {
+  color: var(--secondary-text-color) !important;
+}
+
+footer p {
+  color: var(--secondary-text-color) !important;
+}
