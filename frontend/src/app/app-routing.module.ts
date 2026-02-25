@@ -3,10 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { WaitingPageComponent } from './waiting-page/waiting-page.component';
 import { FooterComponent } from './footer/footer.component';
+import { LoginPageComponent } from './login-page/login-page.component';
 
 const routes: Routes = [
   { path: 'navbar', component: NavbarComponent },
-  {path: 'footer', component: FooterComponent},
+  { path: 'footer', component: FooterComponent },
+  { path: 'login', component: LoginPageComponent },
   { path: '', component: WaitingPageComponent }
 ];
 

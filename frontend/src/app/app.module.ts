@@ -6,13 +6,15 @@ import { AppComponent } from './app.component';
 import { WaitingPageComponent } from './waiting-page/waiting-page.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
+import { LoginPageComponent } from './login-page/login-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     WaitingPageComponent,
     NavbarComponent,
-    FooterComponent
+    FooterComponent,
+    LoginPageComponent
   ],
   imports: [
     BrowserModule,
