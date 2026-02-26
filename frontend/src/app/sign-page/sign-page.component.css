@@ -22,3 +22,11 @@ h1 {
 .sub-desc {
   color: var(--main-text-color) !important;
 }
+
+.sub-desc a {
+  text-decoration: none !important;
+}
+
+.sub-desc a:hover {
+  text-decoration: underline !important;
+}

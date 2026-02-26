@@ -4,12 +4,8 @@ footer {
   height: 8rem;
 }
 
-footer .nav-link.footer-link {
-  color: var(--main-text-color) !important;
-}
-
 footer .nav-link.footer-link:hover {
-  color: var(--secondary-text-color) !important;
+  text-decoration: underline;
 }
 
 footer p {
