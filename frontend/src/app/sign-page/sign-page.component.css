@@ -1,0 +1,24 @@
+#login-label {
+  background-color: var(--secondary-bg-color);
+}
+
+input {
+  background-color: var(--main-bg-color);
+}
+
+button {
+  background-color: var(--main-text-color) !important;
+  color: var(--main-bg-color) !important;
+}
+
+label {
+  color: var(--main-text-color) !important;
+}
+
+h1 {
+  color: var(--main-text-color) !important;
+}
+
+.sub-desc {
+  color: var(--main-text-color) !important;
+}

@@ -7,6 +7,7 @@ import { WaitingPageComponent } from './waiting-page/waiting-page.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
 import { LoginPageComponent } from './login-page/login-page.component';
+import { SignPageComponent } from './sign-page/sign-page.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { LoginPageComponent } from './login-page/login-page.component';
     WaitingPageComponent,
     NavbarComponent,
     FooterComponent,
-    LoginPageComponent
+    LoginPageComponent,
+    SignPageComponent
   ],
   imports: [
     BrowserModule,

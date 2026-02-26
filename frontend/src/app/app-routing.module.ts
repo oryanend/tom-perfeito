@@ -1,14 +1,12 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { NavbarComponent } from './navbar/navbar.component';
-import { WaitingPageComponent } from './waiting-page/waiting-page.component';
-import { FooterComponent } from './footer/footer.component';
-import { LoginPageComponent } from './login-page/login-page.component';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
+import {WaitingPageComponent} from './waiting-page/waiting-page.component';
+import {LoginPageComponent} from './login-page/login-page.component';
+import {SignPageComponent} from './sign-page/sign-page.component';
 
 const routes: Routes = [
-  { path: 'navbar', component: NavbarComponent },
-  { path: 'footer', component: FooterComponent },
   { path: 'login', component: LoginPageComponent },
+  { path: 'signin', component: SignPageComponent },
   { path: '', component: WaitingPageComponent }
 ];
 
