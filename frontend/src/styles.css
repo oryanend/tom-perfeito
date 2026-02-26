@@ -1,8 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap');
+
 :root {
   --main-bg-color: #EAEBED;
   --secondary-bg-color: #FFFFFF;
   --main-text-color: #006887;
   --secondary-text-color: #98B3BC;
+}
+
+* {
+  font-family: "Google Sans Flex", sans-serif;
 }
 
 body {
