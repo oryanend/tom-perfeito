@@ -9,6 +9,7 @@ import { FooterComponent } from './footer/footer.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { SignPageComponent } from './sign-page/sign-page.component';
 import {ReactiveFormsModule} from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import {ReactiveFormsModule} from '@angular/forms';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     ReactiveFormsModule
   ],
   providers: [],
