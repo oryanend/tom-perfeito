@@ -2,9 +2,6 @@ package com.oryanend.tom_perfeito_api.repositories;
 
 import com.oryanend.tom_perfeito_api.entities.Chord;
 import java.util.List;
-
-import com.oryanend.tom_perfeito_api.entities.enums.Accidental;
-import com.oryanend.tom_perfeito_api.entities.enums.NoteName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,14 +11,15 @@ import org.springframework.stereotype.Repository;
 public interface ChordRepository extends JpaRepository<Chord, Long> {
   List<Chord> findByNameStartingWithIgnoreCase(String name);
 
-  @Query("""
+  @Query(
+      """
     SELECT c FROM Chord c
     JOIN c.notes n
     WHERE (:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%')))
     AND (
         :notes IS NULL OR
-        (n.name || 
-            CASE 
+        (n.name ||
+            CASE
                 WHEN n.accidental = 'SHARP' THEN '#'
                 WHEN n.accidental = 'FLAT' THEN 'b'
                 ELSE ''
@@ -32,8 +30,7 @@ public interface ChordRepository extends JpaRepository<Chord, Long> {
     HAVING COUNT(DISTINCT n.id) = :noteCount
 """)
   List<Chord> findByNameAndNotes(
-          @Param("name") String name,
-          @Param("notes") List<String> notes,
-          @Param("noteCount") long noteCount
-  );
+      @Param("name") String name,
+      @Param("notes") List<String> notes,
+      @Param("noteCount") long noteCount);
 }

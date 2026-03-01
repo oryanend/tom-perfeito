@@ -8,6 +8,13 @@ import com.oryanend.tom_perfeito_api.config.customgrant.CustomPasswordAuthentica
 import com.oryanend.tom_perfeito_api.config.customgrant.CustomPasswordAuthenticationProvider;
 import com.oryanend.tom_perfeito_api.config.customgrant.CustomUserAuthorities;
 import com.oryanend.tom_perfeito_api.controllers.handlers.ControllerExceptionHandler;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.time.Duration;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -39,14 +46,6 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.time.Duration;
-import java.util.List;
-import java.util.UUID;
-
 @Configuration
 public class AuthorizationServerConfig {
 
@@ -69,7 +68,7 @@ public class AuthorizationServerConfig {
 
     OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
-      // @formatter:off
+    // @formatter:off
     http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
         .tokenEndpoint(
             tokenEndpoint ->

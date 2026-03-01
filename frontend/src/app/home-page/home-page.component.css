@@ -1,0 +1,5 @@
+#window {
+  background-color: var(--secondary-bg-color);
+  padding: 1px 20px 1px 20px;
+  border-radius: 10px;
+}

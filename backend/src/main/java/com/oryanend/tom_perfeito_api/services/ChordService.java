@@ -6,13 +6,12 @@ import com.oryanend.tom_perfeito_api.entities.Note;
 import com.oryanend.tom_perfeito_api.repositories.ChordRepository;
 import com.oryanend.tom_perfeito_api.repositories.NoteRepository;
 import com.oryanend.tom_perfeito_api.services.exceptions.ResourceNotFoundException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class ChordService {
@@ -30,9 +29,16 @@ public class ChordService {
 
     if (notes != null && !notes.isEmpty()) {
 
-      List<String> normalizedNotes = notes.stream().filter(n -> n != null && !n.isBlank()).map(String::trim).map(String::toUpperCase).toList();
+      List<String> normalizedNotes =
+          notes.stream()
+              .filter(n -> n != null && !n.isBlank())
+              .map(String::trim)
+              .map(String::toUpperCase)
+              .toList();
 
-      return repository.findByNameAndNotes(name, normalizedNotes, normalizedNotes.size()).stream().map(ChordDTO::new).toList();
+      return repository.findByNameAndNotes(name, normalizedNotes, normalizedNotes.size()).stream()
+          .map(ChordDTO::new)
+          .toList();
     }
 
     if (name != null && !name.isBlank()) {

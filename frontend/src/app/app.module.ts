@@ -10,6 +10,8 @@ import { LoginPageComponent } from './login-page/login-page.component';
 import { SignPageComponent } from './sign-page/sign-page.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { HomePageComponent } from './home-page/home-page.component';
+import { PianoComponent } from './piano/piano.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { HttpClientModule } from '@angular/common/http';
     NavbarComponent,
     FooterComponent,
     LoginPageComponent,
-    SignPageComponent
+    SignPageComponent,
+    HomePageComponent,
+    PianoComponent
   ],
   imports: [
     BrowserModule,
