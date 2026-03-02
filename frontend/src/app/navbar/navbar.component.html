@@ -20,14 +20,28 @@
         <input type="text" class="form-control search-input" placeholder="Type to search...">
       </div>
 
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-row gap-3">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/login">Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" routerLink="/signin">Cadastrar</a>
-        </li>
-      </ul>
+      <div *ngIf="user$ | async as user; else guest">
+
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-row gap-3">
+          <li class="nav-item">
+            <a class="nav-link" ><span>{{ user }}</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" (click)="logout()" routerLinkActive>Sair</a>
+          </li>
+        </ul>
+      </div>
+
+      <ng-template #guest>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-row gap-3">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" routerLink="/signin">Cadastrar</a>
+          </li>
+        </ul>
+      </ng-template>
     </div>
   </div>
 </nav>

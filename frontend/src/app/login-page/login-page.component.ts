@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {Router} from '@angular/router';
+import {AuthServiceService} from '../services/AuthService/auth-service.service';
 
 @Component({
   selector: 'app-login-page',
@@ -12,7 +13,7 @@ import {Router} from '@angular/router';
 export class LoginPageComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private authService: AuthServiceService, private router: Router) {
     this.loginForm = this.fb.group({
 
       email: ['', [Validators.required, Validators.email]],
@@ -25,7 +26,18 @@ export class LoginPageComponent {
       this.loginForm.markAllAsTouched();
       return;
     }
+
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (response) => {
+        console.log('Registration successful:', response);
+        this.authService.saveToken(response.access_token);
+        this.router.navigate(['/home']);
+      },
+      error: (error) => {
+        console.error('Registration failed:', error);
+      }
+    })
+
     console.log(this.loginForm.value);
-    this.router.navigate(['/login']);
   }
 }
