@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Note } from '../../models/note';
+import {environment} from '../../../environments/environment';
 
 
 @Injectable({
@@ -9,7 +10,7 @@ import { Note } from '../../models/note';
 })
 export class NoteServiceService {
 
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = environment.apiUrl;
   constructor(private http: HttpClient) {}
 
   findAll(): Observable<Note[]> {

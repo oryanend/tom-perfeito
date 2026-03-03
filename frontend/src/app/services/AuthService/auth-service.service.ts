@@ -10,7 +10,6 @@ import {LoginResponse} from '../login-response';
 })
 
 export class AuthServiceService {
-
   private userSubject = new BehaviorSubject<string | null>(null);
   user$ = this.userSubject.asObservable();
 
@@ -19,11 +18,10 @@ export class AuthServiceService {
   }
 
   register(userData: { username: string; email: string; password: string }) {
-    return this.http.post(`http://localhost:8080/auth/register`, userData);
+    return this.http.post(`${environment.apiUrl}/auth/register`, userData);
   }
 
   login(credentials: { email: string; password: string }) {
-
     const body = new HttpParams()
       .set('email', credentials.email)
       .set('password', credentials.password)
@@ -39,7 +37,7 @@ export class AuthServiceService {
     });
 
     return this.http.post<LoginResponse>(
-      'http://localhost:8080/auth/login',
+      `${environment.apiUrl}/auth/login`,
       body.toString(),
       { headers }
     );
