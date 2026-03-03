@@ -1,0 +1,136 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: white; /* fundo neutro */
+}
+
+/* Container do piano */
+ul {
+  height: 16em;
+  width: 28em;
+  margin: 3em auto;
+  padding: 0;
+  position: relative;
+}
+
+/* Reset */
+li {
+  list-style: none;
+  position: relative;
+  float: left;
+}
+
+/* ===================== */
+/* TECLAS BRANCAS */
+/* ===================== */
+
+.white {
+  height: 16em;
+  width: 4em;
+  border: 1px solid var(--secondary-text-color);
+  background: var(--secondary-bg-color);
+  z-index: 1;
+  border-radius: 5px;
+}
+
+.white:active {
+  background: #eaeaea;
+}
+
+.black {
+  height: 9em;
+  width: 2em;
+  margin-left: -1em;
+  margin-right: -1em;
+  background: var(--main-text-color);
+  position: relative;
+  z-index: 2;
+  border-radius: 5px;
+}
+
+.black:active {
+  background: #333333;
+}
+
+.white,
+.black {
+  position: relative; /* importante */
+}
+
+.note-indicator {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #0d6efd;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.note-label {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+
+  background-color: #0d6efd;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  font-weight: bold;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
+  animation: pop 0.2s ease-out;
+}
+
+.white .note-label {
+  top: 15em;
+}
+
+.black .note-label {
+  top: 5em;
+}
+
+.note-label {
+  animation: pop 0.2s ease-out;
+}
+
+@keyframes pop {
+  from {
+    transform: translateX(-50%) scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.chords-container {
+  margin-top: 2em;
+  text-align: center;
+}
+
+.chord-badge {
+  display: inline-block;
+  margin: 0.5em;
+  padding: 0.5em 1em;
+  background: var(--main-text-color);
+  color: white;
+  border-radius: 20px;
+  font-weight: bold;
+}

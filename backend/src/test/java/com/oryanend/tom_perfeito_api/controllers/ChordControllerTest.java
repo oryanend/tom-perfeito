@@ -112,7 +112,7 @@ public class ChordControllerTest {
                 .param("notes", (String) null)
                 .accept(MediaType.APPLICATION_JSON));
 
-    result.andExpect(status().isOk()).andExpect(jsonPath("$").isEmpty());
+    result.andExpect(status().isOk()).andExpect(jsonPath("$").isNotEmpty());
   }
 
   // Tests for `/chords` POST endpoint

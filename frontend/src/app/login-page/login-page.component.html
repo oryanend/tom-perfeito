@@ -1,0 +1,33 @@
+<h1 class="text-center mb-4"><strong>Login</strong></h1>
+
+<div id="login-label">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="border p-4 shadow-sm" style="min-width: 350px;">
+
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control form-control-sm" formControlName="email" [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+      <div class="invalid-feedback">
+        Valid email required
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+
+      <input type="password" class="form-control form-control-sm" formControlName="password" [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+      <div class="invalid-feedback">
+        Minimum 6 characters
+      </div>
+    </div>
+
+    <button class="btn btn-primary w-100 btn-sm" type="submit">
+      Login
+    </button>
+
+    <div class="mt-3 text-center">
+      <sub>
+        Are you new here? <a routerLink="/signin">Create your account!</a>
+      </sub>
+    </div>
+  </form>
+</div>

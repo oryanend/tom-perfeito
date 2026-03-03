@@ -26,13 +26,26 @@ public class ChordService {
 
   @Transactional(readOnly = true)
   public List<ChordDTO> searchChords(String name, List<String> notes) {
+
     if (notes != null && !notes.isEmpty()) {
-      return repository.findByNameAndNotes(name, notes, notes.size()).stream()
+
+      List<String> normalizedNotes =
+          notes.stream()
+              .filter(n -> n != null && !n.isBlank())
+              .map(String::trim)
+              .map(String::toUpperCase)
+              .toList();
+
+      return repository.findByNameAndNotes(name, normalizedNotes, normalizedNotes.size()).stream()
           .map(ChordDTO::new)
           .toList();
-    } else {
+    }
+
+    if (name != null && !name.isBlank()) {
       return repository.findByNameStartingWithIgnoreCase(name).stream().map(ChordDTO::new).toList();
     }
+
+    return repository.findAll().stream().map(ChordDTO::new).toList();
   }
 
   @Transactional

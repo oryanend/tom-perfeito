@@ -1,2 +1,13 @@
-<app-waiting-page></app-waiting-page>
-<router-outlet />
+<div class="d-flex flex-column min-vh-100">
+
+  <app-navbar></app-navbar>
+
+  <main class="flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+
+    <router-outlet></router-outlet>
+
+  </main>
+
+  <app-footer></app-footer>
+
+</div>

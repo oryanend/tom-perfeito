@@ -1,1 +1,102 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap');
+
+:root {
+  --main-bg-color: #EAEBED;
+  --secondary-bg-color: #FFFFFF;
+  --main-text-color: #006887;
+  --secondary-text-color: #98B3BC;
+}
+
+* {
+  font-family: "Google Sans Flex", sans-serif;
+}
+
+body {
+  background-color: #EAEBED;
+}
+
+.navbar {
+  background-color: var(--secondary-bg-color);
+  height: 4rem;
+}
+
+.navbar .nav-link {
+  color: var(--main-text-color);
+}
+
+.search-wrapper {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .search-box {
+            position: relative;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            background-color: var(--main-bg-color);
+        }
+
+        .search-box:focus-within {
+            box-shadow: 0 3px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .search-input {
+            border-radius: 50px;
+            padding-left: 45px;
+            padding-right: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            height: 50px;
+            background-color: var(--main-bg-color);
+        }
+
+        .search-input::placeholder {
+          color: var(--secondary-text-color);
+        }
+
+        .search-input:focus {
+            border-color: var(--main-text-color);
+            box-shadow: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-text-color);
+            z-index: 10;
+        }
+
+        .search-button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 50px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            background-color: var(--main-text-color);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+
+@media (min-width: 992px) {
+  .center-search {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 600px;
+    transition: all 0.3s ease;
+  }
+
+  .center-search:focus-within {
+    transform: translateX(-50%) translateY(-2px) !important;
+  }
+}
