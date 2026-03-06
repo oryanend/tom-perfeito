@@ -13,6 +13,7 @@ export class SignPageComponent {
   signinForm: FormGroup;
   errorMsg: string | null = null;
   warningMsg: string | null = null;
+  isLoading = false;
 
   constructor(private fb: FormBuilder, private authService: AuthServiceService, private router: Router) {
     this.signinForm = this.fb.group({
@@ -33,11 +34,16 @@ export class SignPageComponent {
       return;
     }
 
+    this.isLoading = true;
+
     this.authService.register(this.signinForm.value).subscribe({
       next: () => {
         this.router.navigate(['/login'], { queryParams: { registered: 'true' } });
+        this.isLoading = false;
       },
       error: (error) => {
+        this.isLoading = false;
+
         if (error.status === 0){
           this.errorMsg = 'Unable to connect to the server. Please try again later.';
         } else if (error.status === 400) {

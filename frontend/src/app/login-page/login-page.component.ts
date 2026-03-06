@@ -13,7 +13,8 @@ import { ActivatedRoute } from '@angular/router';
 
 export class LoginPageComponent {
   loginForm: FormGroup;
-  registered = false;
+  isRegistered = false;
+  isLoading = false;
   errorMsg: string | null = null;
   warningMsg: string | null = null;
 
@@ -31,8 +32,8 @@ export class LoginPageComponent {
 
     // subscribe to query params here instead of ngOnInit to avoid unused lifecycle warning
     this.route.queryParams.subscribe(params => {
-      if (params['registered']) {
-        this.registered = true;
+      if (params['isRegistered']) {
+        this.isRegistered = true;
       }
     });
   }
@@ -43,14 +44,18 @@ export class LoginPageComponent {
       return;
     }
 
+    this.isLoading = true;
+
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         this.authService.saveToken(response.access_token);
-        // after saving the token the service will set user and schedule auto-logout
-        // navigate to home
         this.router.navigate(['/home']);
+
+        this.isLoading = false;
       },
       error: (error) => {
+        this.isLoading = false;
+
         if (error.status === 0){
           this.errorMsg = 'Unable to connect to the server. Please try again later.';
         } else if (error.status === 401) {
