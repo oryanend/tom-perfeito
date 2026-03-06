@@ -13,6 +13,8 @@ export class AuthServiceService {
   private userSubject = new BehaviorSubject<string | null>(null);
   user$ = this.userSubject.asObservable();
 
+  private tokenExpirationTimer: any = null;
+
   constructor(private http: HttpClient) {
     this.restoreUser();
   }
@@ -45,21 +47,60 @@ export class AuthServiceService {
 
   saveToken(token: string) {
     localStorage.setItem('access_token', token);
-    this.loadUserFromToken();
+    try {
+      const decoded: any = jwtDecode(token);
+
+      if (decoded && decoded.exp) {
+        const expMs = decoded.exp * 1000;
+        localStorage.setItem('token_exp', String(expMs));
+        this.scheduleAutoLogout(new Date(expMs));
+      }
+
+      const fallbackUser = decoded.username || decoded.sub || null;
+      if (fallbackUser) {
+        this.userSubject.next(fallbackUser);
+      }
+
+      this.loadUserFromApi();
+    } catch (e) {
+      this.logout();
+    }
   }
 
   logout() {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('token_exp');
     this.userSubject.next(null);
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+      this.tokenExpirationTimer = null;
+    }
   }
 
-  private loadUserFromToken() {
+  isAuthenticated(): boolean {
     const token = localStorage.getItem('access_token');
-    if (!token) return;
+    const exp = localStorage.getItem('token_exp');
+    if (!token || !exp) return false;
+    const expMs = Number(exp);
+    if (isNaN(expMs)) return false;
+    return Date.now() < expMs;
+  }
 
-    const decoded: any = jwtDecode(token);
+  private scheduleAutoLogout(expirationDate: Date) {
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
 
-    this.userSubject.next(decoded.username);
+    const millis = expirationDate.getTime() - Date.now();
+
+    if (millis <= 0) {
+      this.logout();
+      return;
+    }
+
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.logout();
+    }, millis);
   }
 
   private restoreUser() {
@@ -72,11 +113,47 @@ export class AuthServiceService {
 
     try {
       const decoded: any = jwtDecode(token);
+      const expMs = decoded && decoded.exp ? decoded.exp * 1000 : null;
 
-      this.userSubject.next(decoded.username || decoded.sub);
+      if (expMs && Date.now() > expMs) {
+        this.logout();
+        return;
+      }
 
+      if (expMs) {
+        this.scheduleAutoLogout(new Date(expMs));
+      }
+
+      const fallbackUser = decoded.username || decoded.sub || null;
+
+      if (fallbackUser) {
+        this.userSubject.next(fallbackUser);
+      }
+
+      this.loadUserFromApi();
     } catch {
       this.logout();
     }
+  }
+
+  private loadUserFromApi() {
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+      this.userSubject.next(null);
+      return;
+    }
+
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    this.http.get<any>(`${environment.apiUrl}/users/me`, { headers }).subscribe({
+      next: (user) => {
+        const username = user?.username ?? user?.name ?? (typeof user === 'string' ? user : null);
+        this.userSubject.next(username);
+      },
+      error: () => {
+        this.userSubject.next(null);
+      }
+    });
   }
 }

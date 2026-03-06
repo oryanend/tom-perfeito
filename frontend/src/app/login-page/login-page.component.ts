@@ -23,9 +23,13 @@ export class LoginPageComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     })
-  }
 
-  ngOnInit():void {
+    // if already authenticated, redirect to home immediately
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/home']);
+    }
+
+    // subscribe to query params here instead of ngOnInit to avoid unused lifecycle warning
     this.route.queryParams.subscribe(params => {
       if (params['registered']) {
         this.registered = true;
@@ -42,6 +46,8 @@ export class LoginPageComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         this.authService.saveToken(response.access_token);
+        // after saving the token the service will set user and schedule auto-logout
+        // navigate to home
         this.router.navigate(['/home']);
       },
       error: (error) => {
