@@ -3,3 +3,7 @@
   padding: 1px 20px 1px 20px;
   border-radius: 10px;
 }
+
+h1, p {
+  color: var(--main-text-color);
+}

@@ -11,6 +11,8 @@ import {Router} from '@angular/router';
 })
 export class SignPageComponent {
   signinForm: FormGroup;
+  errorMsg: string | null = null;
+  warningMsg: string | null = null;
 
   constructor(private fb: FormBuilder, private authService: AuthServiceService, private router: Router) {
     this.signinForm = this.fb.group({
@@ -27,15 +29,16 @@ export class SignPageComponent {
     }
 
     this.authService.register(this.signinForm.value).subscribe({
-      next: (response) => {
-        console.log('Registration successful:', response);
-        this.router.navigate(['/login']);
+      next: () => {
+        this.router.navigate(['/login'], { queryParams: { registered: 'true' } });
       },
       error: (error) => {
-        console.error('Registration failed:', error);
-      }
-    })
-
-    console.log(this.signinForm.value);
+        if (error.status === 0){
+          this.errorMsg = 'Unable to connect to the server. Please try again later.';
+        } else if (error.status === 400) {
+          this.warningMsg = error.error?.message || 'Email or username already exists. Please choose a different one.';
+        }
+      },
+    });
   }
 }
