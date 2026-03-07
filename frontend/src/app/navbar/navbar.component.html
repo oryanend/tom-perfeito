@@ -24,7 +24,7 @@
 
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-row gap-3">
           <li class="nav-item">
-            <a class="nav-link" ><span>{{ user }}</span></a>
+            <a class="nav-link" [routerLink]="['/profile']"><span>{{ user }}</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" aria-current="page" (click)="logout()" routerLinkActive>Sair</a>

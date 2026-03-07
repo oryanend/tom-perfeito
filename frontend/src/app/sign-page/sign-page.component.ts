@@ -11,6 +11,9 @@ import {Router} from '@angular/router';
 })
 export class SignPageComponent {
   signinForm: FormGroup;
+  errorMsg: string | null = null;
+  warningMsg: string | null = null;
+  isLoading = false;
 
   constructor(private fb: FormBuilder, private authService: AuthServiceService, private router: Router) {
     this.signinForm = this.fb.group({
@@ -18,6 +21,11 @@ export class SignPageComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+
+    // if already authenticated, redirect to home
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/home']);
+    }
   }
 
   onSubmit() {
@@ -26,16 +34,22 @@ export class SignPageComponent {
       return;
     }
 
+    this.isLoading = true;
+
     this.authService.register(this.signinForm.value).subscribe({
-      next: (response) => {
-        console.log('Registration successful:', response);
-        this.router.navigate(['/login']);
+      next: () => {
+        this.router.navigate(['/login'], { queryParams: { registered: 'true' } });
+        this.isLoading = false;
       },
       error: (error) => {
-        console.error('Registration failed:', error);
-      }
-    })
+        this.isLoading = false;
 
-    console.log(this.signinForm.value);
+        if (error.status === 0){
+          this.errorMsg = 'Unable to connect to the server. Please try again later.';
+        } else if (error.status === 400) {
+          this.warningMsg = error.error?.message || 'Email or username already exists. Please choose a different one.';
+        }
+      },
+    });
   }
 }

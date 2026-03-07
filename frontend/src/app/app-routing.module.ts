@@ -4,11 +4,13 @@ import {WaitingPageComponent} from './waiting-page/waiting-page.component';
 import {LoginPageComponent} from './login-page/login-page.component';
 import {SignPageComponent} from './sign-page/sign-page.component';
 import {HomePageComponent} from './home-page/home-page.component';
+import {StatusPageComponent} from './status-page/status-page.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'signin', component: SignPageComponent },
   { path: 'home', component: HomePageComponent },
+  { path: 'status', component: StatusPageComponent },
   { path: '', component: WaitingPageComponent }
 ];
 

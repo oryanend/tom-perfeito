@@ -1,9 +1,14 @@
 #window {
   background-color: var(--secondary-bg-color);
-  padding: 1px 20px 1px 20px;
+  padding: 20px;
   border-radius: 10px;
+  width: 20rem;
 }
 
-h1, p {
+h2 {
   color: var(--main-text-color);
+}
+
+p {
+  color: var(--text-color);
 }
