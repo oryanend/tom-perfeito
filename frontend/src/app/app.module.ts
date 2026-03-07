@@ -12,6 +12,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { HomePageComponent } from './home-page/home-page.component';
 import { PianoComponent } from './piano/piano.component';
+import { StatusPageComponent } from './status-page/status-page.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { PianoComponent } from './piano/piano.component';
     LoginPageComponent,
     SignPageComponent,
     HomePageComponent,
-    PianoComponent
+    PianoComponent,
+    StatusPageComponent
   ],
   imports: [
     BrowserModule,
