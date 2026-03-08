@@ -13,32 +13,49 @@ import { ActivatedRoute } from '@angular/router';
 
 export class LoginPageComponent {
   loginForm: FormGroup;
-  isRegistered = false;
+
   isLoading = false;
-  errorMsg: string | null = null;
-  warningMsg: string | null = null;
 
-  constructor(private fb: FormBuilder, private authService: AuthServiceService, private router: Router, private route:ActivatedRoute) {
+  alertType: 'success' | 'warning' | 'error' | null = null;
+  alertMessage = '';
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthServiceService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+
     this.loginForm = this.fb.group({
-
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
-    })
+    });
 
-    // if already authenticated, redirect to home immediately
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
     }
 
-    // subscribe to query params here instead of ngOnInit to avoid unused lifecycle warning
     this.route.queryParams.subscribe(params => {
       if (params['isRegistered']) {
-        this.isRegistered = true;
+        this.showAlert('success', 'Thank you for registering! Now you can log in.');
       }
     });
   }
 
+  showAlert(type: 'success' | 'warning' | 'error', message: string) {
+    this.alertType = type;
+    this.alertMessage = message;
+  }
+
+  clearAlert() {
+    this.alertType = null;
+    this.alertMessage = '';
+  }
+
   onSubmit() {
+
+    this.clearAlert();
+
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -50,17 +67,20 @@ export class LoginPageComponent {
       next: (response) => {
         this.authService.saveToken(response.access_token);
         this.router.navigate(['/home']);
-
         this.isLoading = false;
       },
       error: (error) => {
+
         this.isLoading = false;
 
-        if (error.status === 0){
-          this.errorMsg = 'Unable to connect to the server. Please try again later.';
-        } else if (error.status === 401) {
-          this.warningMsg = error.error?.message || 'Invalid email or password. Please try again.';
+        if (error.status === 0) {
+          this.showAlert('error', 'Unable to connect to the server. Please try again later.');
         }
+
+        else if (error.status === 401) {
+          this.showAlert('warning', error.error?.message || 'Invalid email or password. Please try again.');
+        }
+
       }
     });
   }
