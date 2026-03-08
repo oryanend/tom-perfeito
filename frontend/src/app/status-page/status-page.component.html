@@ -30,7 +30,7 @@
       <p>
         Latency: <br>
         <small *ngFor="let latency of latencies" class="d-inline-flex gap-5 px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
-          {{ latency }} ms
+          {{ latency | number:'1.1-1' }} ms
         </small>
       </p>
     </div>
