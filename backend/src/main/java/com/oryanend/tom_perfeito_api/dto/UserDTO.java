@@ -25,6 +25,7 @@ public class UserDTO {
   @NotNull(message = "Password cannot be null")
   private String password;
 
+  private Boolean isFirstLogin;
   private Instant createdAt;
   private Instant updatedAt;
   private Set<RoleDTO> roles = new HashSet<>();
@@ -33,10 +34,16 @@ public class UserDTO {
   public UserDTO() {}
 
   public UserDTO(
-      String username, String email, String password, Instant createdAt, Instant updatedAt) {
+      String username,
+      String email,
+      String password,
+      Instant createdAt,
+      Instant updatedAt,
+      Boolean isFirstLogin) {
     this.username = username;
     this.email = email;
     this.password = password;
+    this.isFirstLogin = true;
     if (createdAt != null) {
       this.createdAt = createdAt;
     } else {
@@ -54,6 +61,7 @@ public class UserDTO {
     this.username = entity.getUsernameUser();
     this.email = entity.getEmail();
     this.password = entity.getPassword();
+    this.isFirstLogin = entity.isFirstLogin();
     if (entity.getCreatedAt() != null) {
       this.createdAt = entity.getCreatedAt();
     } else {
@@ -130,5 +138,13 @@ public class UserDTO {
 
   public void addRole(RoleDTO role) {
     this.roles.add(role);
+  }
+
+  public Boolean isFirstLogin() {
+    return isFirstLogin;
+  }
+
+  public void setFirstLogin(Boolean firstLogin) {
+    isFirstLogin = firstLogin;
   }
 }

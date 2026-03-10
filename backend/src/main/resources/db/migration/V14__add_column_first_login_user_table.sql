@@ -1,0 +1,2 @@
+ALTER TABLE tb_user
+ADD COLUMN is_first_login BOOLEAN DEFAULT TRUE;

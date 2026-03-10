@@ -3,13 +3,13 @@ package com.oryanend.tom_perfeito_api.controllers;
 import static com.oryanend.tom_perfeito_api.factory.UserDTOFactory.*;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
+import com.oryanend.tom_perfeito_api.repositories.UserRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserControllerTest {
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
+  @Autowired private UserRepository repository;
 
   private String userUrl, authRegisterUrl, authLoginUrl;
 
@@ -143,6 +144,25 @@ public class UserControllerTest {
         .andExpect(jsonPath("$.message").value("User not found"))
         .andExpect(jsonPath("$.path").value(userUrl + "/" + nonExistingId))
         .andExpect(jsonPath("$.timestamp").isNotEmpty());
+  }
+
+  // PATCH
+  @Test
+  @DisplayName(
+      "PATCH `/users/me/first-login` with valid token should update user 'isFirstLogin' to false")
+  void patchFirstLoginWithValidToken() throws Exception {
+    String validToken = registerUserAndObtainAcessToken(validUserDTO);
+
+    ResultActions patchResult =
+        mockMvc.perform(
+            patch(userUrl + "/me/first-login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + validToken)
+                .accept(MediaType.APPLICATION_JSON));
+
+    patchResult.andExpect(status().isOk());
+
+    assert !repository.findByEmail(validEmail).get().isFirstLogin();
   }
 
   // Methods to help tests

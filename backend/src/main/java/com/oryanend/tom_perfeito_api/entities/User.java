@@ -34,6 +34,9 @@ public class User implements UserDetails {
   @Column(nullable = false, updatable = false, name = "updated_at")
   private Instant updatedAt;
 
+  @Column(name = "is_first_login")
+  private Boolean isFirstLogin;
+
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
       name = "tb_user_role",
@@ -50,11 +53,12 @@ public class User implements UserDetails {
 
   public User() {}
 
-  public User(UUID id, String username, String email, String password) {
+  public User(UUID id, String username, String email, String password, Boolean isFirstLogin) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.password = password;
+    this.isFirstLogin = isFirstLogin;
   }
 
   public UUID getId() {
@@ -108,6 +112,14 @@ public class User implements UserDetails {
 
   public void setUpdatedAt(Instant updatedAt) {
     this.updatedAt = updatedAt;
+  }
+
+  public Boolean isFirstLogin() {
+    return isFirstLogin;
+  }
+
+  public void setFirstLogin(Boolean firstLogin) {
+    isFirstLogin = firstLogin;
   }
 
   public Set<Role> getRoles() {

@@ -1,17 +1,15 @@
 <h1 class="text-center mb-4"><strong>Login</strong></h1>
 
-<div *ngIf="isRegistered" class="alert alert-success" role="alert">
-  Cadastro realizado com sucesso! Faça login para continuar.
-</div>
+<div *ngIf="alertType"
+     class="alert text-center"
+     [ngClass]="{
+       'alert-success': alertType === 'success',
+       'alert-warning': alertType === 'warning',
+       'alert-danger': alertType === 'error'
+     }">
 
-<div *ngIf="warningMsg" class="alert alert-warning" role="alert">
-  {{ warningMsg }}
-</div>
+  {{ alertMessage }}
 
-<div *ngIf="errorMsg" class="alert alert-danger d-flex align-items-center" role="alert">
-  <div>
-    {{ errorMsg }}
-  </div>
 </div>
 
 <div id="login-label">
