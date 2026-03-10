@@ -9,10 +9,12 @@ import { FooterComponent } from './footer/footer.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { SignPageComponent } from './sign-page/sign-page.component';
 import {ReactiveFormsModule} from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { HomePageComponent } from './home-page/home-page.component';
 import { PianoComponent } from './piano/piano.component';
 import { StatusPageComponent } from './status-page/status-page.component';
+import { MusicsPageComponent } from './musics-page/musics-page.component';
+import {AuthErrorInterceptor} from './interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import { StatusPageComponent } from './status-page/status-page.component';
     SignPageComponent,
     HomePageComponent,
     PianoComponent,
-    StatusPageComponent
+    StatusPageComponent,
+    MusicsPageComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +35,13 @@ import { StatusPageComponent } from './status-page/status-page.component';
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthErrorInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
