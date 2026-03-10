@@ -9,9 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
-import java.util.UUID;
-
 import com.oryanend.tom_perfeito_api.repositories.UserRepository;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -147,19 +146,19 @@ public class UserControllerTest {
         .andExpect(jsonPath("$.timestamp").isNotEmpty());
   }
 
-
   // PATCH
   @Test
-  @DisplayName("PATCH `/users/me/first-login` with valid token should update user 'isFirstLogin' to false")
+  @DisplayName(
+      "PATCH `/users/me/first-login` with valid token should update user 'isFirstLogin' to false")
   void patchFirstLoginWithValidToken() throws Exception {
     String validToken = registerUserAndObtainAcessToken(validUserDTO);
 
     ResultActions patchResult =
-            mockMvc.perform(
-                patch(userUrl + "/me/first-login")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .header("Authorization", "Bearer " + validToken)
-                    .accept(MediaType.APPLICATION_JSON));
+        mockMvc.perform(
+            patch(userUrl + "/me/first-login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + validToken)
+                .accept(MediaType.APPLICATION_JSON));
 
     patchResult.andExpect(status().isOk());
 

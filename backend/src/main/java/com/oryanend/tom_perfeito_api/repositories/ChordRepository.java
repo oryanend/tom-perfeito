@@ -11,7 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface ChordRepository extends JpaRepository<Chord, Long> {
   List<Chord> findByNameStartingWithIgnoreCase(String name);
 
-  @Query("""
+  @Query(
+      """
 SELECT c FROM Chord c
 JOIN c.notes n
 WHERE (:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%')))
@@ -30,8 +31,7 @@ GROUP BY c
 HAVING COUNT(DISTINCT n.id) = :noteCount
 """)
   List<Chord> findByNameAndNotes(
-          @Param("name") String name,
-          @Param("notes") List<String> notes,
-          @Param("noteCount") long noteCount
-  );
+      @Param("name") String name,
+      @Param("notes") List<String> notes,
+      @Param("noteCount") long noteCount);
 }

@@ -108,7 +108,7 @@ public class UserService implements UserDetailsService {
   }
 
   @Transactional
-  public void updateFirstLogin(){
+  public void updateFirstLogin() {
     User entity = authenticated();
     entity.setFirstLogin(false);
     repository.save(entity);

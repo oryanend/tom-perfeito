@@ -34,12 +34,17 @@ public class UserDTO {
   public UserDTO() {}
 
   public UserDTO(
-      String username, String email, String password, Instant createdAt, Instant updatedAt, Boolean isFirstLogin) {
+      String username,
+      String email,
+      String password,
+      Instant createdAt,
+      Instant updatedAt,
+      Boolean isFirstLogin) {
     this.username = username;
     this.email = email;
     this.password = password;
     this.isFirstLogin = true;
-      if (createdAt != null) {
+    if (createdAt != null) {
       this.createdAt = createdAt;
     } else {
       this.createdAt = Instant.now();
