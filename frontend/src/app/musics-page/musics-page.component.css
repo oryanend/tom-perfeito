@@ -1,0 +1,22 @@
+#window {
+  background-color: var(--secondary-bg-color);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+h1 {
+  color: var(--main-text-color);
+}
+
+a {
+  color: var(--main-text-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+p {
+  color: var(--text-color);
+}

@@ -13,6 +13,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { HomePageComponent } from './home-page/home-page.component';
 import { PianoComponent } from './piano/piano.component';
 import { StatusPageComponent } from './status-page/status-page.component';
+import { MusicsPageComponent } from './musics-page/musics-page.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { StatusPageComponent } from './status-page/status-page.component';
     SignPageComponent,
     HomePageComponent,
     PianoComponent,
-    StatusPageComponent
+    StatusPageComponent,
+    MusicsPageComponent
   ],
   imports: [
     BrowserModule,
