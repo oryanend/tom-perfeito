@@ -19,6 +19,12 @@ public class UserController {
     return ResponseEntity.ok(dto);
   }
 
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
+  @PatchMapping(value = "/me/first-login")
+  public void updateFirstLogin() {
+    service.updateFirstLogin();
+  }
+
   @GetMapping(value = "/{id}")
   public ResponseEntity<UserDTO> findById(@PathVariable String id) {
     UserDTO dto = service.findById(id);

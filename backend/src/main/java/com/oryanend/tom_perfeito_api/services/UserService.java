@@ -107,10 +107,18 @@ public class UserService implements UserDetailsService {
     return new UserDTO(entity);
   }
 
+  @Transactional
+  public void updateFirstLogin(){
+    User entity = authenticated();
+    entity.setFirstLogin(false);
+    repository.save(entity);
+  }
+
   private void copyDtoToEntity(UserDTO dto, User entity) {
     entity.setUsername(dto.getUsername());
     entity.setEmail(dto.getEmail());
     entity.setPassword(dto.getPassword());
+    entity.setFirstLogin(true);
 
     entity.getRoles().clear();
     for (RoleDTO roleDTO : dto.getRoles()) {
