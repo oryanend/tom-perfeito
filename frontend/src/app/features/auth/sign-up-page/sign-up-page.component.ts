@@ -6,10 +6,10 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-sign-page',
   standalone: false,
-  templateUrl: './sign-page.component.html',
-  styleUrl: './sign-page.component.css'
+  templateUrl: './sign-up-page.component.html',
+  styleUrl: './sign-up-page.component.css'
 })
-export class SignPageComponent {
+export class SignUpPageComponent {
   signinForm: FormGroup;
   isLoading = false;
 

@@ -6,7 +6,7 @@ import { WaitingPageComponent } from './features/waiting/waiting-page/waiting-pa
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { LoginPageComponent } from './features/auth/login-page/login-page.component';
-import { SignPageComponent } from './features/auth/sign-page/sign-page.component';
+import { SignUpPageComponent } from './features/auth/sign-up-page/sign-up-page.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { HomePageComponent } from './features/home/home-page/home-page.component';
@@ -22,7 +22,7 @@ import {AuthErrorInterceptor} from './core/interceptors/auth.interceptor';
     NavbarComponent,
     FooterComponent,
     LoginPageComponent,
-    SignPageComponent,
+    SignUpPageComponent,
     HomePageComponent,
     PianoComponent,
     StatusPageComponent,
