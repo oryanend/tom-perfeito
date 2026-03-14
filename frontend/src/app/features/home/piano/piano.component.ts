@@ -1,18 +1,15 @@
-import { Component } from '@angular/core';
-import { NoteServiceService } from '../../../core/services/NoteService/note-service.service';
-import { Note } from '../../../shared/models/note';
+import { Component, inject } from '@angular/core';
 import { NoteName } from '../../../shared/enums/note-name';
 import { Accidental } from '../../../shared/enums/accidental';
-import {Chord} from '../../../shared/models/chord';
-import {ChordService} from '../../../core/services/ChordService/chord.service';
+import { Chord } from '../../../shared/models/chord';
+import { ChordService } from '../../../core/services/ChordService/chord.service';
 
 @Component({
   selector: 'app-piano',
   standalone: false,
   templateUrl: './piano.component.html',
-  styleUrl: './piano.component.css'
+  styleUrl: './piano.component.css',
 })
-
 export class PianoComponent {
   selectedKeys = new Set<string>();
   chords: Chord[] = [];
@@ -29,16 +26,16 @@ export class PianoComponent {
     { name: NoteName.G, accidental: Accidental.SHARP, type: 'black' },
     { name: NoteName.A, accidental: Accidental.NATURAL, type: 'white' },
     { name: NoteName.A, accidental: Accidental.SHARP, type: 'black' },
-    { name: NoteName.B, accidental: Accidental.NATURAL, type: 'white' }
+    { name: NoteName.B, accidental: Accidental.NATURAL, type: 'white' },
   ];
 
-  constructor(private noteService: NoteServiceService, private chordService: ChordService) {}
+  private chordService = inject(ChordService);
 
   private getKeyId(name: NoteName, accidental: Accidental): string {
     return `${name}-${accidental}`;
   }
 
-  onKeyClick(key: any) {
+  onKeyClick(key: { name: NoteName; accidental: Accidental }) {
     const keyId = this.getKeyId(key.name, key.accidental);
 
     if (this.selectedKeys.has(keyId)) {
@@ -50,30 +47,17 @@ export class PianoComponent {
     this.searchChords();
   }
 
-  isSelected(key: any): boolean {
-    return this.selectedKeys.has(
-      this.getKeyId(key.name, key.accidental)
-    );
+  isSelected(key: { name: NoteName; accidental: Accidental }): boolean {
+    return this.selectedKeys.has(this.getKeyId(key.name, key.accidental));
   }
 
   private getSelectedNoteStrings(): string[] {
-    return Array.from(this.selectedKeys).map(keyId => {
+    return Array.from(this.selectedKeys).map((keyId) => {
       const [name, accidental] = keyId.split('-');
 
       if (accidental === Accidental.SHARP) return name + '#';
       if (accidental === Accidental.FLAT) return name + 'b';
       return name;
-    });
-  }
-
-  private getSelectedNotes(): { name: NoteName; accidental: Accidental }[] {
-    return Array.from(this.selectedKeys).map(keyId => {
-      const [name, accidental] = keyId.split('-');
-
-      return {
-        name: name as NoteName,
-        accidental: accidental as Accidental
-      };
     });
   }
 
@@ -85,10 +69,9 @@ export class PianoComponent {
       return;
     }
 
-    this.chordService.searchByNotes(notes)
-      .subscribe(chords => {
-        this.chords = chords;
-      });
+    this.chordService.searchByNotes(notes).subscribe((chords) => {
+      this.chords = chords;
+    });
   }
 
   getDisplayNote(note: { name: NoteName; accidental: Accidental }): string {

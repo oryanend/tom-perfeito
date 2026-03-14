@@ -8,9 +8,8 @@ describe('WaitingPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [WaitingPageComponent]
-    })
-    .compileComponents();
+      declarations: [WaitingPageComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(WaitingPageComponent);
     component = fixture.componentInstance;

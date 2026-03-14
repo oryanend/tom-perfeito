@@ -8,9 +8,8 @@ describe('PianoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PianoComponent]
-    })
-    .compileComponents();
+      declarations: [PianoComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PianoComponent);
     component = fixture.componentInstance;

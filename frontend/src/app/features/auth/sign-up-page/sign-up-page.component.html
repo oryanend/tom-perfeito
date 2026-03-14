@@ -1,43 +1,43 @@
 <h1 class="text-center mb-4"><strong>Sign-up</strong></h1>
 
-<div *ngIf="alertType" class="alert"
-     [ngClass]="{
-       'alert-warning': alertType === 'warning',
-       'alert-danger': alertType === 'error'
-     }">
-  {{ alertMessage }}
-</div>
+@if (alertType) {
+  <div class="alert" [ngClass]="{ 'alert-warning': alertType === 'warning', 'alert-danger': alertType === 'error' }">
+    {{ alertMessage }}
+  </div>
+}
 
 <div id="login-label">
   <form [formGroup]="signinForm" (ngSubmit)="onSubmit()" class="border p-4 shadow-sm" style="min-width: 435px;">
 
     <div class="mb-3">
-      <label class="form-label">Username</label>
-      <input class="form-control form-control-sm" formControlName="username" [class.is-invalid]="signinForm.get('username')?.invalid && signinForm.get('username')?.touched">
+      <label class="form-label" for="username">Username</label>
+      <input id="username" class="form-control form-control-sm" formControlName="username" [class.is-invalid]="signinForm.get('username')?.invalid && signinForm.get('username')?.touched">
       <div class="invalid-feedback">
         Username has to have 3 characters at least.
       </div>
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input type="email" class="form-control form-control-sm" formControlName="email" [class.is-invalid]="signinForm.get('email')?.invalid && signinForm.get('email')?.touched">
+      <label class="form-label" for="email">Email</label>
+      <input id="email" type="email" class="form-control form-control-sm" formControlName="email" [class.is-invalid]="signinForm.get('email')?.invalid && signinForm.get('email')?.touched">
       <div class="invalid-feedback">
         Valid email required
       </div>
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Password</label>
-      <input type="password" class="form-control form-control-sm" formControlName="password" [class.is-invalid]="signinForm.get('password')?.invalid && signinForm.get('password')?.touched">
+      <label class="form-label" for="password">Password</label>
+      <input id="password" type="password" class="form-control form-control-sm" formControlName="password" [class.is-invalid]="signinForm.get('password')?.invalid && signinForm.get('password')?.touched">
       <div class="invalid-feedback">
         Minimum 6 characters
       </div>
     </div>
 
     <button class="btn btn-primary w-100 btn-sm" type="submit" [disabled]="isLoading">
-      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-      {{ isLoading ? 'Loading...' : 'Sign In' }}
+      @if (isLoading) {
+        <span class="spinner-border spinner-border-sm me-2"></span>
+      }
+      {{ isLoading ? 'Loading...' : 'Sign Up' }}
     </button>
 
     <div class="mb-3 text-center">

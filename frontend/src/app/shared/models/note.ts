@@ -5,5 +5,5 @@ export interface Note {
   id: number;
   name: NoteName;
   accidental: Accidental;
-  chords: any[];
+  chords: unknown[];
 }

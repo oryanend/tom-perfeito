@@ -1,11 +1,11 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
-import {WaitingPageComponent} from './features/waiting/waiting-page/waiting-page.component';
-import {LoginPageComponent} from './features/auth/login-page/login-page.component';
-import {SignUpPageComponent} from './features/auth/sign-up-page/sign-up-page.component';
-import {HomePageComponent} from './features/home/home-page/home-page.component';
-import {StatusPageComponent} from './features/status/status-page/status-page.component';
-import {MusicsPageComponent} from './features/musics/musics-page/musics-page.component';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { WaitingPageComponent } from './features/waiting/waiting-page/waiting-page.component';
+import { LoginPageComponent } from './features/auth/login-page/login-page.component';
+import { SignUpPageComponent } from './features/auth/sign-up-page/sign-up-page.component';
+import { HomePageComponent } from './features/home/home-page/home-page.component';
+import { StatusPageComponent } from './features/status/status-page/status-page.component';
+import { MusicsPageComponent } from './features/musics/musics-page/musics-page.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -13,11 +13,11 @@ const routes: Routes = [
   { path: 'home', component: HomePageComponent },
   { path: 'status', component: StatusPageComponent },
   { path: 'musics', component: MusicsPageComponent },
-  { path: '', component: WaitingPageComponent }
+  { path: '', component: WaitingPageComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

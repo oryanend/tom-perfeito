@@ -1,21 +1,25 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
-import {LoginResponse} from '../login-response';
+import { LoginResponse } from '../login-response';
+import { User } from '../../../shared/models/user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class AuthServiceService {
   private userSubject = new BehaviorSubject<string | null>(null);
   user$ = this.userSubject.asObservable();
 
-  private tokenExpirationTimer: any = null;
+  // Use proper timeout type instead of any
+  private tokenExpirationTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(private http: HttpClient) {
+  // use inject() instead of constructor injection to satisfy lint
+  private http = inject(HttpClient);
+
+  constructor() {
     this.restoreUser();
   }
 
@@ -35,20 +39,18 @@ export class AuthServiceService {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': `Basic ${basicAuth}`
+      Authorization: `Basic ${basicAuth}`,
     });
 
-    return this.http.post<LoginResponse>(
-      `${environment.apiUrl}/auth/login`,
-      body.toString(),
-      { headers }
-    );
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, body.toString(), {
+      headers,
+    });
   }
 
   saveToken(token: string) {
     localStorage.setItem('access_token', token);
     try {
-      const decoded: any = jwtDecode(token);
+      const decoded = jwtDecode(token) as { exp?: number; username?: string; sub?: string };
 
       if (decoded && decoded.exp) {
         const expMs = decoded.exp * 1000;
@@ -62,7 +64,8 @@ export class AuthServiceService {
       }
 
       this.loadUserFromApi();
-    } catch (e) {
+    } catch {
+      // no need for unused error variable
       this.logout();
     }
   }
@@ -112,7 +115,7 @@ export class AuthServiceService {
     }
 
     try {
-      const decoded: any = jwtDecode(token);
+      const decoded = jwtDecode(token) as { exp?: number; username?: string; sub?: string };
       const expMs = decoded && decoded.exp ? decoded.exp * 1000 : null;
 
       if (expMs && Date.now() > expMs) {
@@ -146,14 +149,23 @@ export class AuthServiceService {
 
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
-    this.http.get<any>(`${environment.apiUrl}/users/me`, { headers }).subscribe({
-      next: (user) => {
-        const username = user?.username ?? user?.name ?? (typeof user === 'string' ? user : null);
-        this.userSubject.next(username);
-      },
-      error: () => {
-        this.userSubject.next(null);
-      }
-    });
+    // Use the known User type, fall back to a minimal shape or string
+    this.http
+      .get<User | { username?: string } | string>(`${environment.apiUrl}/users/me`, { headers })
+      .subscribe({
+        next: (user) => {
+          let username: string | null = null;
+          if (typeof user === 'string') {
+            username = user;
+          } else if (user && typeof user === 'object') {
+            const u = user as Partial<User> & { name?: string };
+            username = u.username ?? u.name ?? null;
+          }
+          this.userSubject.next(username ?? null);
+        },
+        error: () => {
+          this.userSubject.next(null);
+        },
+      });
   }
 }

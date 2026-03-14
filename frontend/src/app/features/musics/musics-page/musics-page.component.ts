@@ -1,14 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import {MusicService} from '../../../core/services/MusicService/music.service';
-import {Music} from '../../../shared/models/music';
+import { Component, OnInit, inject } from '@angular/core';
+import { MusicService } from '../../../core/services/MusicService/music.service';
+import { Music } from '../../../shared/models/music';
 
 @Component({
   selector: 'app-musics-page',
   standalone: false,
   templateUrl: './musics-page.component.html',
-  styleUrl: './musics-page.component.css'
+  styleUrl: './musics-page.component.css',
 })
-
 export class MusicsPageComponent implements OnInit {
   musics: Music[] = [];
 
@@ -16,15 +15,14 @@ export class MusicsPageComponent implements OnInit {
   totalPages = 0;
   pages: number[] = [];
 
-  constructor(private musicService: MusicService) {}
+  private musicService = inject(MusicService);
 
   ngOnInit(): void {
     this.loadMusics();
   }
 
-  loadMusics(page: number = 0) {
-    this.musicService.getAllMusics(page).subscribe(response => {
-
+  loadMusics(page = 0) {
+    this.musicService.getAllMusics(page).subscribe((response) => {
       this.musics = response.content;
 
       this.currentPage = response.number;

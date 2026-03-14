@@ -4,42 +4,64 @@
 
 <div id="window" class="mb-3">
 
-  <div *ngFor="let music of musics" class="mb-3">
-    <h3>
-      <strong>
-      <a [href]="music.link" target="_blank">
-        {{ music.title }}
-      </a>
-      </strong>
-    </h3>
-    <p>
-      {{ music.description | slice:0:50 }}<span *ngIf="music.description.length > 50">...</span>
-    </p>
-  </div>
+  @for (music of musics; track music) {
+    <div class="mb-3">
+      <h3>
+        <strong>
+          <a [href]="music.link" target="_blank" rel="noopener noreferrer">
+            {{ music.title }}
+          </a>
+        </strong>
+      </h3>
+
+      <p>
+        {{ music.description | slice:0:50 }}
+        @if (music.description.length > 50) {
+          <span>...</span>
+        }
+      </p>
+    </div>
+  }
 
 </div>
 
+@if (totalPages > 1) {
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
 
-<nav aria-label="Page navigation example" *ngIf="totalPages > 1">
-  <ul class="pagination justify-content-center">
-    <li class="page-item" [class.disabled]="currentPage === 0">
-      <a class="page-link" (click)="previousPage()">
-        &laquo;
-      </a>
-    </li>
-    <li
-      class="page-item"
-      *ngFor="let page of pages"
-      [class.active]="page === currentPage"
-    >
-      <a class="page-link" (click)="goToPage(page)">
-        {{ page + 1 }}
-      </a>
-    </li>
-    <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-      <a class="page-link" (click)="nextPage()">
-        &raquo;
-      </a>
-    </li>
-  </ul>
-</nav>
+      <li class="page-item" [class.disabled]="currentPage === 0">
+        <button
+          type="button"
+          class="page-link btn-plain"
+          (click)="previousPage()"
+          [attr.aria-disabled]="currentPage === 0"
+        >
+          &laquo;
+        </button>
+      </li>
+
+      @for (page of pages; track page) {
+        <li class="page-item" [class.active]="page === currentPage">
+          <button
+            type="button"
+            class="page-link btn-plain"
+            (click)="goToPage(page)"
+          >
+            {{ page + 1 }}
+          </button>
+        </li>
+      }
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+        <button
+          type="button"
+          class="page-link btn-plain"
+          (click)="nextPage()"
+          [attr.aria-disabled]="currentPage === totalPages - 1"
+        >
+          &raquo;
+        </button>
+      </li>
+    </ul>
+  </nav>
+}

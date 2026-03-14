@@ -1,44 +1,58 @@
 <h1 class="text-center mb-4"><strong>Login</strong></h1>
 
-<div *ngIf="alertType"
-     class="alert text-center"
-     [ngClass]="{
-       'alert-success': alertType === 'success',
-       'alert-warning': alertType === 'warning',
-       'alert-danger': alertType === 'error'
-     }">
-
-  {{ alertMessage }}
-
-</div>
+@if (alertType) {
+  <div
+    class="alert text-center"
+    [ngClass]="{
+      'alert-success': alertType === 'success',
+      'alert-warning': alertType === 'warning',
+      'alert-danger': alertType === 'error'
+    }"
+  >
+    {{ alertMessage }}
+  </div>
+}
 
 <div id="login-label">
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="border p-4 shadow-sm" style="min-width: 435px;">
     <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input type="email" class="form-control form-control-sm" formControlName="email" [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+      <label class="form-label" for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        class="form-control form-control-sm"
+        formControlName="email"
+        [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+      >
       <div class="invalid-feedback">
         Valid email required
       </div>
     </div>
 
     <div class="mb-3">
-      <label class="form-label">Password</label>
-
-      <input type="password" class="form-control form-control-sm" formControlName="password" [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+      <label class="form-label" for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        class="form-control form-control-sm"
+        formControlName="password"
+        [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+      >
       <div class="invalid-feedback">
         Minimum 6 characters
       </div>
     </div>
 
     <button class="btn btn-primary w-100 btn-sm" type="submit" [disabled]="isLoading">
-      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+      @if (isLoading) {
+        <span class="spinner-border spinner-border-sm me-2"></span>
+      }
       {{ isLoading ? 'Loading...' : 'Login' }}
     </button>
 
     <div class="mt-3 text-center">
       <sub>
-        Are you new here? <a routerLink="/signin">Create your account!</a>
+        Are you new here? <a routerLink="/signup">Create your account!</a>
       </sub>
     </div>
   </form>

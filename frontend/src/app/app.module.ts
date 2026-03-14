@@ -7,13 +7,13 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { LoginPageComponent } from './features/auth/login-page/login-page.component';
 import { SignUpPageComponent } from './features/auth/sign-up-page/sign-up-page.component';
-import {ReactiveFormsModule} from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HomePageComponent } from './features/home/home-page/home-page.component';
 import { PianoComponent } from './features/home/piano/piano.component';
 import { StatusPageComponent } from './features/status/status-page/status-page.component';
 import { MusicsPageComponent } from './features/musics/musics-page/musics-page.component';
-import {AuthErrorInterceptor} from './core/interceptors/auth.interceptor';
+import { AuthErrorInterceptor } from './core/interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -26,21 +26,16 @@ import {AuthErrorInterceptor} from './core/interceptors/auth.interceptor';
     HomePageComponent,
     PianoComponent,
     StatusPageComponent,
-    MusicsPageComponent
+    MusicsPageComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    ReactiveFormsModule
-  ],
+  imports: [BrowserModule, AppRoutingModule, HttpClientModule, ReactiveFormsModule],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthErrorInterceptor,
-      multi: true
-    }
+      multi: true,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

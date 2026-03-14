@@ -5,5 +5,5 @@ export enum NoteName {
   F = 'F',
   G = 'G',
   A = 'A',
-  B = 'B'
+  B = 'B',
 }
