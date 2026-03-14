@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { NoteServiceService } from '../services/NoteService/note-service.service';
-import { Note } from '../models/note';
-import { NoteName } from '../enums/note-name';
-import { Accidental } from '../enums/accidental';
-import {Chord} from '../models/chord';
-import {ChordService} from '../services/ChordService/chord.service';
+import { NoteServiceService } from '../../../core/services/NoteService/note-service.service';
+import { Note } from '../../../shared/models/note';
+import { NoteName } from '../../../shared/enums/note-name';
+import { Accidental } from '../../../shared/enums/accidental';
+import {Chord} from '../../../shared/models/chord';
+import {ChordService} from '../../../core/services/ChordService/chord.service';
 
 @Component({
   selector: 'app-piano',

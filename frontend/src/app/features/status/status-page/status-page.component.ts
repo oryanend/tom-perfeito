@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {StatusService} from '../services/StatusService/status.service';
-import {Status} from '../models/status';
+import {StatusService} from '../../../core/services/StatusService/status.service';
+import {Status} from '../../../shared/models/status';
 
 @Component({
   selector: 'app-status-page',

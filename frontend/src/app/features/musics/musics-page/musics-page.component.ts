@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {MusicService} from '../services/MusicService/music.service';
-import {Music} from '../models/music';
+import {MusicService} from '../../../core/services/MusicService/music.service';
+import {Music} from '../../../shared/models/music';
 
 @Component({
   selector: 'app-musics-page',

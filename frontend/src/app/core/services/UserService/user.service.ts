@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {User} from '../../models/user';
+import {User} from '../../../shared/models/user';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {environment} from '../../../environments/environment';
+import {environment} from '../../../../environments/environment';
 import {map} from 'rxjs';
 
 @Injectable({
