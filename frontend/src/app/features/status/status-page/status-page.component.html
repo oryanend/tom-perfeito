@@ -1,0 +1,102 @@
+<div class="d-flex justify-content-between gap-5">
+  @if (status) {
+    <div id="window">
+      <div>
+        <h2><strong>Database</strong></h2>
+
+        <p>
+          Status:
+          <small class="d-inline-flex px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
+            {{ status.dependencies.database.status }}
+          </small>
+        </p>
+
+        <p>
+          Available connections:
+          <small class="d-inline-flex px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
+            {{ status.dependencies.database.max_connections }}
+          </small>
+        </p>
+
+        <p>
+          Open connections:
+          <small class="d-inline-flex px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
+            {{ status.dependencies.database.open_connections }}
+          </small>
+        </p>
+
+        <p>
+          Version:
+          <small class="d-inline-flex px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
+            {{ status.dependencies.database.version }}
+          </small>
+        </p>
+
+        <p>
+          Latency: <br>
+
+          @for (latency of latencies; track latency) {
+            <small class="d-inline-flex gap-5 px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
+              {{ latency | number:'1.1-1' }} ms
+            </small>
+          }
+        </p>
+      </div>
+    </div>
+
+    <div id="window">
+      <div>
+        <h2><strong>Web Server</strong></h2>
+
+        <p>
+          Status:
+          <small class="d-inline-flex px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
+            {{ status.dependencies.webserver.status }}
+          </small>
+        </p>
+
+        <p>
+          Version:
+          <small class="d-inline-flex px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
+            {{ status.dependencies.webserver.version }}
+          </small>
+        </p>
+
+        <p>
+          Environment:
+          <small class="d-inline-flex px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
+            {{ status.dependencies.webserver.environment }}
+          </small>
+        </p>
+
+        <p>
+          Providers:
+          <small class="d-inline-flex px-2 py-1 fw-semibold text-info-emphasis bg-info-subtle border border-info-subtle rounded-2">
+            {{ status.dependencies.webserver.provider }}
+          </small>
+        </p>
+      </div>
+    </div>
+  } @else {
+    <div id="window">
+      <h2><strong>Database</strong></h2>
+      <p>
+        Status:
+        <small class="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">
+          Down
+        </small>
+      </p>
+    </div>
+
+    <div id="window">
+      <h2><strong>Web Server</strong></h2>
+
+      <p>
+        Status:
+        <small class="d-inline-flex px-2 py-1 fw-semibold text-danger-emphasis bg-danger-subtle border border-danger-subtle rounded-2">
+          Down
+        </small>
+      </p>
+    </div>
+  }
+</div>

@@ -49,9 +49,9 @@ public class NoteControllerTest {
         .andExpect(jsonPath("$").isArray())
         .andExpect(jsonPath("$.length()").value(12))
         .andExpect(jsonPath("$[0].id").isNotEmpty())
-        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].id").value(10))
         .andExpect(jsonPath("$[0].name").isNotEmpty())
-        .andExpect(jsonPath("$[0].name").value("C"))
+        .andExpect(jsonPath("$[0].name").value("A"))
         .andExpect(jsonPath("$[0].accidental").isNotEmpty())
         .andExpect(jsonPath("$[0].accidental").value("NATURAL"));
   }

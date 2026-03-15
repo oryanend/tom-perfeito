@@ -1,0 +1,31 @@
+<ul class="piano">
+  @for (key of keys; track key) {
+    <li
+      class="key"
+      [ngClass]="key.type"
+      (click)="onKeyClick(key)"
+      (keyup.enter)="onKeyClick(key)"
+      tabindex="0"
+      [class.active]="isSelected(key)"
+    >
+
+      @if (isSelected(key)) {
+        <span class="note-label">
+          {{ getDisplayNote(key) }}
+        </span>
+      }
+    </li>
+  }
+</ul>
+
+@if (chords.length > 0) {
+  <div class="chords-container">
+    <h4>Acordes encontrados:</h4>
+
+    @for (chord of chords; track chord) {
+      <div class="chord-badge">
+        {{ chord.name }}
+      </div>
+    }
+  </div>
+}

@@ -15,7 +15,7 @@ public interface ChordRepository extends JpaRepository<Chord, Long> {
       """
 SELECT c FROM Chord c
 JOIN c.notes n
-WHERE (:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%')))
+WHERE (:name IS NULL OR c.name LIKE CONCAT(CAST(:name as string), '%'))
 AND (
     :notes IS NULL OR
     CONCAT(
