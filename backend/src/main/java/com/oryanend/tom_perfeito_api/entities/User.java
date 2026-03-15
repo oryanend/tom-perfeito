@@ -10,7 +10,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Table(name = "tb_user")
+@Table(name = "tb_user", indexes = {
+        @Index(name = "idx_user_email", columnList = "email"),
+        @Index(name = "idx_user_username", columnList = "username")
+})
 public class User implements UserDetails {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,11 +47,11 @@ public class User implements UserDetails {
       inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Role> roles = new HashSet<>();
 
-  @OneToMany(mappedBy = "createdBy")
+  @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
   @JsonManagedReference
   private List<Music> musicList = new ArrayList<>();
 
-  @OneToMany(mappedBy = "author")
+  @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
   private List<Comment> comments = new ArrayList<>();
 
   public User() {}

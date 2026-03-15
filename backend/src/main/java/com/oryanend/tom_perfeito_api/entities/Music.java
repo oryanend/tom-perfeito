@@ -12,7 +12,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "tb_music")
+@Table(name = "tb_music", indexes = {
+        @Index(name = "idx_music_title", columnList = "title"),
+})
 public class Music {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,11 +41,11 @@ public class Music {
   @OneToOne(mappedBy = "music", cascade = CascadeType.ALL)
   private Lyric lyric;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JsonBackReference
   private User createdBy;
 
-  @OneToMany(mappedBy = "music", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "music", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private Set<Comment> comments = new HashSet<>();
 
   public Music() {}
