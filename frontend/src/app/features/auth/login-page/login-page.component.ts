@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthServiceService } from '../../../core/services/AuthService/auth-service.service';
+import { NetworkError } from '../../../core/errors/network/network-error';
+import { ApiError } from '../../../core/errors/api/api-errors';
 
 @Component({
   selector: 'app-login-page',
@@ -67,12 +69,14 @@ export class LoginPageComponent {
       error: (error) => {
         this.isLoading = false;
 
-        if (error.status === 0) {
+        if (error instanceof NetworkError) {
           this.showAlert('error', 'Unable to connect to the server. Please try again later.');
-        } else if (error.status === 401) {
+        }
+
+        if (error instanceof ApiError) {
           this.showAlert(
             'warning',
-            error.error?.message || 'Invalid email or password. Please try again.'
+            (error.message = 'Invalid email or password. Please try again.')
           );
         }
       },

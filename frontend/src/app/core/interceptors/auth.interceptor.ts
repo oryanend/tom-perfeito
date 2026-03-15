@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, inject, Injector } from '@angular/core';
 import {
   HttpEvent,
   HttpHandler,
@@ -12,14 +12,11 @@ import { AuthServiceService } from '../services/AuthService/auth-service.service
 
 @Injectable()
 export class AuthErrorInterceptor implements HttpInterceptor {
-
-  constructor(private injector: Injector) {}
+  private injector = inject(Injector);
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-
     return next.handle(req).pipe(
       catchError((error: unknown) => {
-
         const httpError = error as HttpErrorResponse;
 
         if (httpError.status === 0) {

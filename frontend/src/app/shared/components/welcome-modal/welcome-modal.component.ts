@@ -1,11 +1,11 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
-import {UserService} from '../../../core/services/UserService/user.service';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { UserService } from '../../../core/services/UserService/user.service';
 
 @Component({
   selector: 'app-welcome-modal',
   standalone: false,
   templateUrl: './welcome-modal.component.html',
-  styleUrl: './welcome-modal.component.css'
+  styleUrl: './welcome-modal.component.css',
 })
 export class WelcomeModalComponent {
   @Input() isOpen = false;

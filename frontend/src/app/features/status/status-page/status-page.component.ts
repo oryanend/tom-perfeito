@@ -21,7 +21,7 @@ export class StatusPageComponent implements OnInit {
         this.latencies = Object.values(data.dependencies.database.latency);
       },
       error: (err) => {
-        console.error('Erro ao buscar status', err);
+        throw err;
       },
     });
   }

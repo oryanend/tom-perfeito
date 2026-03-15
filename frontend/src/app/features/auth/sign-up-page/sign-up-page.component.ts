@@ -2,6 +2,8 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthServiceService } from '../../../core/services/AuthService/auth-service.service';
 import { Router } from '@angular/router';
+import { ApiError } from '../../../core/errors/api/api-errors';
+import { NetworkError } from '../../../core/errors/network/network-error';
 
 @Component({
   selector: 'app-sign-page',
@@ -60,14 +62,12 @@ export class SignUpPageComponent {
       error: (error) => {
         this.isLoading = false;
 
-        if (error.status === 0) {
+        if (error instanceof NetworkError) {
           this.showAlert('error', 'Unable to connect to the server. Please try again later.');
-        } else if (error.status === 400) {
-          this.showAlert(
-            'warning',
-            error.error?.message ||
-              'Email or username already exists. Please choose a different one.'
-          );
+        }
+
+        if (error instanceof ApiError) {
+          this.showAlert('warning', error.message || 'Email or username already exists.');
         }
       },
     });

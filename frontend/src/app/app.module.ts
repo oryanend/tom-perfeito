@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +15,8 @@ import { StatusPageComponent } from './features/status/status-page/status-page.c
 import { MusicsPageComponent } from './features/musics/musics-page/musics-page.component';
 import { AuthErrorInterceptor } from './core/interceptors/auth.interceptor';
 import { WelcomeModalComponent } from './shared/components/welcome-modal/welcome-modal.component';
+import { GlobalErrorHandler } from './core/handlers/global-error-handler';
+import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,15 @@ import { WelcomeModalComponent } from './shared/components/welcome-modal/welcome
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthErrorInterceptor,
+      multi: true,
+    },
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
       multi: true,
     },
   ],
