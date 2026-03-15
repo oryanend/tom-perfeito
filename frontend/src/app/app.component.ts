@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
+import {AuthServiceService} from './core/services/AuthService/auth-service.service';
 
 @Component({
   selector: 'app-root',
@@ -6,6 +7,13 @@ import { Component } from '@angular/core';
   standalone: false,
   styleUrl: './app.component.css',
 })
-export class AppComponent {
-  title = 'frontend';
+
+export class AppComponent implements OnInit {
+  title = 'frontend'
+
+  private authService = inject(AuthServiceService);
+
+  ngOnInit() {
+    this.authService.restoreSession();
+  }
 }

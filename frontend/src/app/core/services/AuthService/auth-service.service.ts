@@ -168,4 +168,8 @@ export class AuthServiceService {
         },
       });
   }
+
+  restoreSession() {
+    this.restoreUser();
+  }
 }

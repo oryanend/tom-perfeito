@@ -9,14 +9,9 @@ import { Observable } from 'rxjs';
   styleUrl: './navbar.component.css',
 })
 export class NavbarComponent {
-  user$!: Observable<string | null>;
-
-  // use inject() to satisfy lint rule and remove constructor
   private authService = inject(AuthServiceService);
 
-  constructor() {
-    this.user$ = this.authService.user$;
-  }
+  user$: Observable<string | null> = this.authService.user$;
 
   logout() {
     this.authService.logout();
