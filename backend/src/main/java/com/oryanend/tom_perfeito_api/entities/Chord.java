@@ -6,9 +6,11 @@ import jakarta.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "tb_chord", indexes = {
-        @Index(name = "idx_chord_name", columnList = "name"),
-})
+@Table(
+    name = "tb_chord",
+    indexes = {
+      @Index(name = "idx_chord_name", columnList = "name"),
+    })
 public class Chord {
 
   @Id

@@ -11,7 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface ChordRepository extends JpaRepository<Chord, Long> {
   List<Chord> findByNameStartingWithIgnoreCase(String name);
 
-  @Query("""
+  @Query(
+      """
 SELECT c FROM Chord c
 JOIN c.notes n
 WHERE (:name IS NULL OR c.name LIKE CONCAT(CAST(:name as string), '%'))

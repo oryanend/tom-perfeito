@@ -9,10 +9,12 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "tb_note", indexes = {
-        @Index(name = "idx_note_name_accidental", columnList = "name, accidental"),
-        @Index(name = "idx_note_name", columnList = "name")
-})
+@Table(
+    name = "tb_note",
+    indexes = {
+      @Index(name = "idx_note_name_accidental", columnList = "name, accidental"),
+      @Index(name = "idx_note_name", columnList = "name")
+    })
 public class Note {
 
   @Id
