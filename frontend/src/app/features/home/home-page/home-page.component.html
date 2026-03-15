@@ -4,43 +4,9 @@
 </div>
 
 <div id="window">
-
-  @if (welcomeModal) {
-    <div class="modal fade show d-block" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-
-          <div class="modal-header">
-            <h5 class="modal-title">Welcome 🎵</h5>
-            <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
-          </div>
-
-          <div class="modal-body">
-            <p>
-              Welcome to <strong>Tom Perfeito</strong>, it's a pleasure to have you here!
-              This app is designed to help you identify chords based on the notes you select.
-              <br><br>
-              Whether you're a <strong>beginner</strong> or an <strong>experienced musician</strong>,
-              this tool can assist you in understanding and
-              <strong>discovering chords more easily</strong>.
-              Just choose the notes you want, and let the app do the rest.
-              <strong>Happy playing!</strong>
-            </p>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn btn-primary" (click)="closeModal()">OK!</button>
-            <button class="btn btn-light" (click)="closeModal()">Close</button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  }
-
-  @if (welcomeModal) {
-    <div class="modal-backdrop fade show"></div>
-  }
-
+  <app-welcome-modal
+    [isOpen]="welcomeModal"
+    (closed)="onModalClosed()">
+  </app-welcome-modal>
   <app-piano></app-piano>
 </div>

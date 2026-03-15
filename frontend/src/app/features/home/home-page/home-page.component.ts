@@ -8,6 +8,7 @@ import { UserService } from '../../../core/services/UserService/user.service';
   styleUrl: './home-page.component.css',
 })
 export class HomePageComponent implements OnInit {
+
   welcomeModal = false;
 
   private userService = inject(UserService);
@@ -20,8 +21,7 @@ export class HomePageComponent implements OnInit {
     });
   }
 
-  closeModal() {
+  onModalClosed() {
     this.welcomeModal = false;
-    this.userService.updateFirstLogin().subscribe();
   }
 }

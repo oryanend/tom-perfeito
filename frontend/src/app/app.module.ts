@@ -14,6 +14,7 @@ import { PianoComponent } from './features/home/piano/piano.component';
 import { StatusPageComponent } from './features/status/status-page/status-page.component';
 import { MusicsPageComponent } from './features/musics/musics-page/musics-page.component';
 import { AuthErrorInterceptor } from './core/interceptors/auth.interceptor';
+import { WelcomeModalComponent } from './shared/components/welcome-modal/welcome-modal.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { AuthErrorInterceptor } from './core/interceptors/auth.interceptor';
     PianoComponent,
     StatusPageComponent,
     MusicsPageComponent,
+    WelcomeModalComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, ReactiveFormsModule],
   providers: [
