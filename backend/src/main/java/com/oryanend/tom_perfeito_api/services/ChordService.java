@@ -1,6 +1,7 @@
 package com.oryanend.tom_perfeito_api.services;
 
 import com.oryanend.tom_perfeito_api.dto.ChordDTO;
+import com.oryanend.tom_perfeito_api.dto.ChordMinDTO;
 import com.oryanend.tom_perfeito_api.entities.Chord;
 import com.oryanend.tom_perfeito_api.entities.Note;
 import com.oryanend.tom_perfeito_api.repositories.ChordRepository;
@@ -8,6 +9,7 @@ import com.oryanend.tom_perfeito_api.repositories.NoteRepository;
 import com.oryanend.tom_perfeito_api.services.exceptions.ResourceNotFoundException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,8 @@ public class ChordService {
   }
 
   @Transactional(readOnly = true)
-  public List<ChordDTO> searchChords(String name, List<String> notes) {
+  @Cacheable("chords")
+  public List<ChordMinDTO> searchChords(String name, List<String> notes) {
 
     if (notes != null && !notes.isEmpty()) {
 
@@ -37,15 +40,17 @@ public class ChordService {
               .toList();
 
       return repository.findByNameAndNotes(name, normalizedNotes, normalizedNotes.size()).stream()
-          .map(ChordDTO::new)
+          .map(p -> new ChordMinDTO(p.getName(), p.getId()))
           .toList();
     }
 
     if (name != null && !name.isBlank()) {
-      return repository.findByNameStartingWithIgnoreCase(name).stream().map(ChordDTO::new).toList();
+      return repository.findByNameStartingWithIgnoreCase(name).stream()
+          .map(ChordMinDTO::new)
+          .toList();
     }
 
-    return repository.findAll().stream().map(ChordDTO::new).toList();
+    return repository.findAll().stream().map(ChordMinDTO::new).toList();
   }
 
   @Transactional

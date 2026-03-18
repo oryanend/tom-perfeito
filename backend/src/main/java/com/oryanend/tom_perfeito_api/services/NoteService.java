@@ -7,6 +7,7 @@ import com.oryanend.tom_perfeito_api.repositories.ChordRepository;
 import com.oryanend.tom_perfeito_api.repositories.NoteRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class NoteService {
   @Autowired private ChordRepository chordRepository;
 
   @Transactional(readOnly = true)
+  @Cacheable("notes")
   public List<NoteDTO> findAll() {
     List<Note> list = repository.findAll();
     return list.stream().map(NoteDTO::new).toList();

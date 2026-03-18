@@ -8,10 +8,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class NoteDTO {
+public class NoteDTO implements Serializable {
   private Long id;
 
   @NotNull(message = "Name cannot be null")

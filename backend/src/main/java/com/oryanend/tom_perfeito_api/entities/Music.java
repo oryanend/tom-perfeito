@@ -2,6 +2,7 @@ package com.oryanend.tom_perfeito_api.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ import org.hibernate.annotations.UpdateTimestamp;
     indexes = {
       @Index(name = "idx_music_title", columnList = "title"),
     })
-public class Music {
+public class Music implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Column(nullable = false)

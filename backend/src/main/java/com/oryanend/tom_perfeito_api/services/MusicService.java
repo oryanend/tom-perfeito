@@ -8,6 +8,7 @@ import com.oryanend.tom_perfeito_api.entities.Chord;
 import com.oryanend.tom_perfeito_api.entities.Lyric;
 import com.oryanend.tom_perfeito_api.entities.Music;
 import com.oryanend.tom_perfeito_api.entities.User;
+import com.oryanend.tom_perfeito_api.projections.MusicProjection;
 import com.oryanend.tom_perfeito_api.repositories.ChordRepository;
 import com.oryanend.tom_perfeito_api.repositories.MusicRepository;
 import com.oryanend.tom_perfeito_api.services.exceptions.DatabaseException;
@@ -15,6 +16,7 @@ import com.oryanend.tom_perfeito_api.services.exceptions.ResourceNotFoundExcepti
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,20 +33,23 @@ public class MusicService {
   @Autowired private AuthService authService;
 
   @Transactional(readOnly = true)
+  @Cacheable("musics")
   public Page<MusicMinDTO> findAllPaged(String name, Pageable pageable) {
+
     if (name != null && !name.isEmpty()) {
-      return findByNameContaining(name, pageable);
+      return repository.findByTitleContainingIgnoreCase(name, pageable).map(MusicMinDTO::new);
     }
 
-    Page<Music> list = repository.findAll(pageable);
-    return list.map(MusicMinDTO::new);
+    return repository.findAllBy(pageable).map(MusicMinDTO::new);
   }
 
   public Page<MusicMinDTO> findByNameContaining(String name, Pageable pageable) {
-    Page<Music> list = repository.findByTitleContainingIgnoreCase(name, pageable);
+    Page<MusicProjection> list = repository.findByTitleContainingIgnoreCase(name, pageable);
+
     if (list.isEmpty()) {
       throw new ResourceNotFoundException("No musics found with name containing: " + name);
     }
+
     return list.map(MusicMinDTO::new);
   }
 

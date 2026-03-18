@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.oryanend.tom_perfeito_api.entities.enums.Accidental;
 import com.oryanend.tom_perfeito_api.entities.enums.NoteName;
 import jakarta.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
       @Index(name = "idx_note_name_accidental", columnList = "name, accidental"),
       @Index(name = "idx_note_name", columnList = "name")
     })
-public class Note {
+public class Note implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

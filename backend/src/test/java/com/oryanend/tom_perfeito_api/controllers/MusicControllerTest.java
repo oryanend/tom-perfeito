@@ -136,15 +136,7 @@ public class MusicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
-    result
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.timestamp").exists())
-        .andExpect(jsonPath("$.error").value("Resource not found"))
-        .andExpect(jsonPath("$.status").value(404))
-        .andExpect(
-            jsonPath("$.message")
-                .value("No musics found with name containing: " + nonExistingMusicName))
-        .andExpect(jsonPath("$.path").value(musicUrl));
+    result.andExpect(status().isOk()).andExpect(jsonPath("$.content").isEmpty());
   }
 
   @Test
