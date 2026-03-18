@@ -1,7 +1,6 @@
 package com.oryanend.tom_perfeito_api.dto;
 
 import com.oryanend.tom_perfeito_api.entities.Chord;
-
 import java.io.Serializable;
 
 public class ChordMinDTO implements Serializable {

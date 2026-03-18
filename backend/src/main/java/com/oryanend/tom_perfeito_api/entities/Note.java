@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.oryanend.tom_perfeito_api.entities.enums.Accidental;
 import com.oryanend.tom_perfeito_api.entities.enums.NoteName;
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;

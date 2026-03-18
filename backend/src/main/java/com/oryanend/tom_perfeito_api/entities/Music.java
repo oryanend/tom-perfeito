@@ -2,7 +2,6 @@ package com.oryanend.tom_perfeito_api.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;

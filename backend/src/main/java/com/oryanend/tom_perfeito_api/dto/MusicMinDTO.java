@@ -6,7 +6,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import com.oryanend.tom_perfeito_api.controllers.MusicController;
 import com.oryanend.tom_perfeito_api.entities.Music;
 import com.oryanend.tom_perfeito_api.projections.MusicProjection;
-
 import java.io.Serializable;
 import java.util.UUID;
 

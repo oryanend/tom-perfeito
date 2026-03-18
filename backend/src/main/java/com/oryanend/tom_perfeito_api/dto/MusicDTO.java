@@ -3,7 +3,6 @@ package com.oryanend.tom_perfeito_api.dto;
 import com.oryanend.tom_perfeito_api.entities.Music;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
-
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;

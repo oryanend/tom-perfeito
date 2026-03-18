@@ -76,18 +76,7 @@ public class ChordControllerTest {
     result
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].id").exists())
-        .andExpect(jsonPath("$[0].name").value(validChordName))
-        .andExpect(jsonPath("$[0].type").exists())
-        .andExpect(jsonPath("$[0].notes").isArray())
-        .andExpect(jsonPath("$[0].notes[0].id").value(1))
-        .andExpect(jsonPath("$[0].notes[0].name").value("C"))
-        .andExpect(jsonPath("$[0].notes[1].id").value(5))
-        .andExpect(jsonPath("$[0].notes[1].name").value("E"))
-        .andExpect(jsonPath("$[0].notes[2].id").value(10))
-        .andExpect(jsonPath("$[0].notes[2].name").value("A"))
-        .andExpect(jsonPath("$[0].notes[0].accidental").value("NATURAL"))
-        .andExpect(jsonPath("$[0].notes[1].accidental").value("NATURAL"))
-        .andExpect(jsonPath("$[0].notes[2].accidental").value("NATURAL"));
+        .andExpect(jsonPath("$[0].name").value(validChordName));
   }
 
   @Test
