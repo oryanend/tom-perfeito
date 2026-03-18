@@ -1,6 +1,7 @@
 package com.oryanend.tom_perfeito_api.controllers;
 
 import com.oryanend.tom_perfeito_api.dto.ChordDTO;
+import com.oryanend.tom_perfeito_api.dto.ChordMinDTO;
 import com.oryanend.tom_perfeito_api.services.ChordService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -24,10 +25,10 @@ public class ChordController {
   }
 
   @GetMapping("/search")
-  public ResponseEntity<List<ChordDTO>> searchChords(
+  public ResponseEntity<List<ChordMinDTO>> searchChords(
       @RequestParam(value = "name", required = false) String name,
       @RequestParam(value = "notes", required = false) List<String> notes) {
-    List<ChordDTO> list = service.searchChords(name, notes);
+    List<ChordMinDTO> list = service.searchChords(name, notes);
     return ResponseEntity.ok(list);
   }
 

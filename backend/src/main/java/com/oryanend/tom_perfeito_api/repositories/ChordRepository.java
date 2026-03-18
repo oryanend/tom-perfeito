@@ -1,6 +1,7 @@
 package com.oryanend.tom_perfeito_api.repositories;
 
 import com.oryanend.tom_perfeito_api.entities.Chord;
+import com.oryanend.tom_perfeito_api.projections.ChordProjection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,8 @@ public interface ChordRepository extends JpaRepository<Chord, Long> {
 
   @Query(
       """
-SELECT c FROM Chord c
+SELECT c.id AS id, c.name AS name
+FROM Chord c
 JOIN c.notes n
 WHERE (:name IS NULL OR c.name LIKE CONCAT(CAST(:name as string), '%'))
 AND (
@@ -27,10 +29,10 @@ AND (
         END
     ) IN :notes
 )
-GROUP BY c
+GROUP BY c.id, c.name
 HAVING COUNT(DISTINCT n.id) = :noteCount
 """)
-  List<Chord> findByNameAndNotes(
+  List<ChordProjection> findByNameAndNotes(
       @Param("name") String name,
       @Param("notes") List<String> notes,
       @Param("noteCount") long noteCount);

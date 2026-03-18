@@ -1,6 +1,7 @@
 package com.oryanend.tom_perfeito_api.services;
 
 import com.oryanend.tom_perfeito_api.dto.ChordDTO;
+import com.oryanend.tom_perfeito_api.dto.ChordMinDTO;
 import com.oryanend.tom_perfeito_api.entities.Chord;
 import com.oryanend.tom_perfeito_api.entities.Note;
 import com.oryanend.tom_perfeito_api.repositories.ChordRepository;
@@ -25,7 +26,7 @@ public class ChordService {
   }
 
   @Transactional(readOnly = true)
-  public List<ChordDTO> searchChords(String name, List<String> notes) {
+  public List<ChordMinDTO> searchChords(String name, List<String> notes) {
 
     if (notes != null && !notes.isEmpty()) {
 
@@ -37,15 +38,17 @@ public class ChordService {
               .toList();
 
       return repository.findByNameAndNotes(name, normalizedNotes, normalizedNotes.size()).stream()
-          .map(ChordDTO::new)
+          .map(p -> new ChordMinDTO(p.getName(), p.getId()))
           .toList();
     }
 
     if (name != null && !name.isBlank()) {
-      return repository.findByNameStartingWithIgnoreCase(name).stream().map(ChordDTO::new).toList();
+      return repository.findByNameStartingWithIgnoreCase(name).stream()
+          .map(ChordMinDTO::new)
+          .toList();
     }
 
-    return repository.findAll().stream().map(ChordDTO::new).toList();
+    return repository.findAll().stream().map(ChordMinDTO::new).toList();
   }
 
   @Transactional
