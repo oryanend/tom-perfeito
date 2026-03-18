@@ -9,6 +9,7 @@ import com.oryanend.tom_perfeito_api.repositories.NoteRepository;
 import com.oryanend.tom_perfeito_api.services.exceptions.ResourceNotFoundException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class ChordService {
   }
 
   @Transactional(readOnly = true)
+  @Cacheable("chords")
   public List<ChordMinDTO> searchChords(String name, List<String> notes) {
 
     if (notes != null && !notes.isEmpty()) {

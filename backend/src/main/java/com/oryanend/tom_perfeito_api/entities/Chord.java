@@ -3,6 +3,8 @@ package com.oryanend.tom_perfeito_api.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.oryanend.tom_perfeito_api.entities.enums.ChordType;
 import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.util.*;
 
 @Entity
@@ -11,7 +13,7 @@ import java.util.*;
     indexes = {
       @Index(name = "idx_chord_name", columnList = "name"),
     })
-public class Chord {
+public class Chord implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

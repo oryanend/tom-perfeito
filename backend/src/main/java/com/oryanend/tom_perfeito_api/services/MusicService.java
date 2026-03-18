@@ -16,6 +16,7 @@ import com.oryanend.tom_perfeito_api.services.exceptions.ResourceNotFoundExcepti
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,7 @@ public class MusicService {
   @Autowired private AuthService authService;
 
   @Transactional(readOnly = true)
+  @Cacheable("musics")
   public Page<MusicMinDTO> findAllPaged(String name, Pageable pageable) {
 
     if (name != null && !name.isEmpty()) {
