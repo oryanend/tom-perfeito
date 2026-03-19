@@ -72,6 +72,21 @@ public class StatusService {
 
     return dbInfo;
   }
+  private String detectProvider() {
+    Map<String, String> env = System.getenv();
+
+    if (env.containsKey("DYNO")) return "Heroku";
+    if (env.containsKey("RENDER")) return "Render";
+    if (env.containsKey("VERCEL")) return "Vercel";
+    if (env.containsKey("RAILWAY_ENVIRONMENT")) return "Railway";
+    if (env.containsKey("K_SERVICE")) return "GCP (Cloud Run)";
+    if (env.containsKey("AWS_EXECUTION_ENV")) return "AWS";
+    if (env.containsKey("WEBSITE_SITE_NAME")) return "Azure";
+
+    return "local";
+  }
+
+  String provider = System.getenv("APP_PROVIDER");
 
   private Map<String, Object> getWebServerInfo() {
     Map<String, Object> webInfo = new LinkedHashMap<>();
@@ -81,7 +96,7 @@ public class StatusService {
 
     String[] profiles = springEnv.getActiveProfiles();
     webInfo.put("version", SpringBootVersion.getVersion());
-    webInfo.put("provider", System.getenv("RENDER") != null ? "Render" : "local");
+    webInfo.put("provider", provider != null ? provider : detectProvider());
     webInfo.put("environment", profiles.length > 0 ? profiles[0] : "default");
 
     return webInfo;
