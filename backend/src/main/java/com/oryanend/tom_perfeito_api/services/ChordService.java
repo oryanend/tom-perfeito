@@ -21,6 +21,7 @@ public class ChordService {
   @Autowired private NoteRepository noteRepository;
 
   @Transactional(readOnly = true)
+  @Cacheable("allChords")
   public Page<ChordDTO> findAllPaged(Pageable pageable) {
     Page<Chord> list = repository.findAll(pageable);
     return list.map(ChordDTO::new);

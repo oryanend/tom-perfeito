@@ -21,4 +21,9 @@ public class CacheUtil {
   @Scheduled(fixedDelay = 2, timeUnit = TimeUnit.MINUTES)
   @CacheEvict(value = "chords", allEntries = true)
   public void clearCacheChords() {}
+
+  // Clears `allChords` cache
+  @Scheduled(fixedDelay = 2, timeUnit = TimeUnit.MINUTES)
+  @CacheEvict(value = "allChords", allEntries = true)
+  public void clearCacheAllChords() {}
 }
