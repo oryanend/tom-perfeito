@@ -72,6 +72,7 @@ public class StatusService {
 
     return dbInfo;
   }
+
   private String detectProvider() {
     Map<String, String> env = System.getenv();
 
