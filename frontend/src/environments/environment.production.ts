@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://tom-perfeito-api-3e1f688c2104.herokuapp.com',
+  apiUrl: 'https://tom-perfeito-api-bmagenbthkdcbfhn.brazilsouth-01.azurewebsites.net',
 };
