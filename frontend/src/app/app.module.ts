@@ -7,7 +7,7 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { LoginPageComponent } from './features/auth/login-page/login-page.component';
 import { SignUpPageComponent } from './features/auth/sign-up-page/sign-up-page.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HomePageComponent } from './features/home/home-page/home-page.component';
 import { PianoComponent } from './features/home/piano/piano.component';
@@ -17,6 +17,7 @@ import { AuthErrorInterceptor } from './core/interceptors/auth.interceptor';
 import { WelcomeModalComponent } from './shared/components/welcome-modal/welcome-modal.component';
 import { GlobalErrorHandler } from './core/handlers/global-error-handler';
 import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
+import { SearchBarComponent } from './shared/components/search-bar/search-bar/search-bar.component';
 
 @NgModule({
   declarations: [
@@ -31,8 +32,9 @@ import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor
     StatusPageComponent,
     MusicsPageComponent,
     WelcomeModalComponent,
+    SearchBarComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule, ReactiveFormsModule],
+  imports: [BrowserModule, AppRoutingModule, HttpClientModule, ReactiveFormsModule, FormsModule],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
