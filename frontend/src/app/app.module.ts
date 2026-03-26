@@ -18,6 +18,8 @@ import { WelcomeModalComponent } from './shared/components/welcome-modal/welcome
 import { GlobalErrorHandler } from './core/handlers/global-error-handler';
 import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 import { SearchBarComponent } from './shared/components/search-bar/search-bar/search-bar.component';
+import { MusicComponent } from './features/musics/music/music.component';
+import { CommentsComponent } from './features/musics/comments/comments.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,8 @@ import { SearchBarComponent } from './shared/components/search-bar/search-bar/se
     MusicsPageComponent,
     WelcomeModalComponent,
     SearchBarComponent,
+    MusicComponent,
+    CommentsComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, ReactiveFormsModule, FormsModule],
   providers: [

@@ -8,7 +8,7 @@
     <div class="mb-3">
       <h3>
         <strong>
-          <a [href]="music.link" target="_blank" rel="noopener noreferrer">
+          <a [routerLink]="['/music', music.id]" rel="noopener noreferrer">
             {{ music.title }}
           </a>
         </strong>

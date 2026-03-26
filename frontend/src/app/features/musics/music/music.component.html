@@ -1,0 +1,55 @@
+<div id="window">
+  <div *ngIf="music">
+
+    <h1><strong>{{ music.title }}</strong> <span> by </span> <strong>{{ music.createdBy.username }}</strong></h1>
+    <p>{{ getTimeAgo(music.createdAt) }} |
+      <span *ngIf="music.comments as comments">
+        {{ comments.length }} comentário{{ comments.length !== 1 ? 's' : '' }}
+      </span>
+    </p>
+
+    <p class="description">{{ music.description }}</p>
+
+    <hr>
+
+    <div *ngIf="hasChordsLoaded()" class="lyric">
+
+      <div *ngFor="let line of getProcessedLyric()" class="lyric-line">
+
+        <!-- acordes -->
+        <div class="chords-line">
+      <span
+        *ngFor="let chord of line.chords"
+        class="chord"
+        [style.left.px]="chord.position * 8"
+      >
+        {{ chord.chord }}
+      </span>
+        </div>
+
+        <!-- letra -->
+        <div class="text-line">
+          {{ line.text }}
+        </div>
+      </div>
+    </div>
+
+    <hr>
+    <div>
+      <h2><strong>Acordes</strong></h2>
+
+      <div class="chords-list">
+    <span *ngFor="let chord of getUniqueChords()" class="chord-badge">
+      {{ chord }}
+    </span>
+      </div>
+    </div>
+    <hr>
+
+    <app-comments
+      [musicId]="music.id"
+      [musicAuthorId]="music.createdBy.id">
+    </app-comments>
+  </div>
+</div>
+

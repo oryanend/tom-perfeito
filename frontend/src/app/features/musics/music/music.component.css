@@ -1,0 +1,73 @@
+#window {
+  background-color: var(--secondary-bg-color);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.lyric {
+  font-family: monospace;
+}
+
+.lyric-line {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.chords-line {
+  position: relative;
+  height: 20px;
+}
+
+.chord {
+  position: absolute;
+  font-weight: bold;
+  color: var(--main-text-color);
+}
+
+.text-line {
+  white-space: pre;
+}
+
+h1 {
+  color: var(--main-text-color);
+}
+
+p {
+  color: var(--secondary-text-color);
+}
+
+.description {
+  color: var(--text-color);
+}
+
+.text-line {
+  color: var(--text-color);
+}
+
+h1 > span {
+  color: var(--secondary-text-color);
+  font-weight: lighter;
+}
+
+h2 {
+  color: var(--main-text-color);
+}
+
+h2 {
+  font-size: 1.5rem
+}
+
+.chords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.chord-badge {
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: var(--main-text-color);
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
