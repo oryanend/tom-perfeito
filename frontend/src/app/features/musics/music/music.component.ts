@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MusicPage } from '../../../shared/models/music-page';
 import { ChordService } from '../../../core/services/ChordService/chord.service';
 import { Chord } from '../../../shared/models/chord';
+import { CommentService } from '../../../core/services/CommentService/comment.service';
 
 @Component({
   selector: 'app-music',
@@ -14,11 +15,13 @@ import { Chord } from '../../../shared/models/chord';
 export class MusicComponent implements OnInit {
   music!: MusicPage;
   chordMap: { [key: number]: Chord } = {};
+  commentsCount: number = 0;
 
   constructor(
     private route: ActivatedRoute,
     private musicService: MusicService,
-    private chordService: ChordService
+    private chordService: ChordService,
+    private commentService: CommentService
   ) {}
 
   ngOnInit() {
@@ -33,6 +36,10 @@ export class MusicComponent implements OnInit {
     if (id) {
       this.musicService.getById(id).subscribe((response) => {
         this.music = response;
+      });
+
+      this.commentService.getCommentByMusic(id).subscribe((res) => {
+        this.commentsCount = res.totalElements; // 👈 AQUI
       });
     }
   }

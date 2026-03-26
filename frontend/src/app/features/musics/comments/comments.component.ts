@@ -3,6 +3,9 @@ import { CommentService } from '../../../core/services/CommentService/comment.se
 import { Comment } from '../../../shared/models/comment';
 import { PageResponse } from '../../../shared/models/page-response';
 import { CommentUI } from '../../../shared/models/comment-ui';
+import { AuthError } from '../../../core/errors/auth/auth-error';
+import { Modal } from 'bootstrap';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-comments',
@@ -14,9 +17,13 @@ export class CommentsComponent implements OnInit {
   newCommentBody: string = '';
   @Input() musicId!: string;
   @Input() musicAuthorId!: string;
+  modalInstance!: Modal;
   comments: CommentUI[] = [];
 
-  constructor(private commentService: CommentService) {}
+  constructor(
+    private commentService: CommentService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadComments();
@@ -51,8 +58,30 @@ export class CommentsComponent implements OnInit {
         } as CommentUI);
         this.newCommentBody = '';
       },
-      error: (err) => console.log(err),
+      error: (err) => {
+        if (err instanceof AuthError) {
+          this.openLoginModal();
+        } else {
+          console.error(err);
+        }
+      },
     });
+  }
+
+  openLoginModal() {
+    const element = document.getElementById('loginModal');
+    if (!element) return;
+
+    this.modalInstance = new Modal(element);
+    this.modalInstance.show();
+  }
+
+  goToLogin() {
+    if (this.modalInstance) {
+      this.modalInstance.hide();
+    }
+
+    this.router.navigate(['/login']);
   }
 
   toggleReplyBox(comment: CommentUI) {

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { Comment } from '../../../shared/models/comment';
 import { PageResponse } from '../../../shared/models/page-response';
+import { AuthError } from '../../errors/auth/auth-error';
 
 @Injectable({
   providedIn: 'root',
@@ -21,8 +22,7 @@ export class CommentService {
     const token = localStorage.getItem('access_token');
 
     if (!token) {
-      console.error('Token não encontrado! Usuário pode não estar logado.');
-      throw new Error('Token não encontrado');
+      return throwError(() => new AuthError());
     }
 
     const headers = new HttpHeaders({
