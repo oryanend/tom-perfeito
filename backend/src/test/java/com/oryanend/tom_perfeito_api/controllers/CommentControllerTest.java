@@ -116,6 +116,13 @@ public class CommentControllerTest {
   @Test
   @DisplayName("GET `/comments/{id}` should return 404 when comment ID does not exist")
   void getCommentByNonExistingId() throws Exception {
+    // Get token admin user
+    String adminToken = registerUserAndObtainAcessToken(adminUserDTO);
+
+    // Post a valid music to ensure there is at least one music with the specified name
+    MusicDTO createdMusic = createMusic(validMusicDTO, adminToken);
+    existingId = createdMusic.getId();
+
     // Perform GET request to retrieve the comment by non-existing ID
     ResultActions result =
         mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
@@ -134,6 +141,13 @@ public class CommentControllerTest {
   @Test
   @DisplayName("GET `/comments` should return paged comments")
   void getComments() throws Exception {
+    // Get token user
+    String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
+
+    // Extract the created music ID from the POST response
+    MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
+    existingId = createdMusic.getId();
+
     // Perform GET request to retrieve comments
     ResultActions result = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments"));
 
@@ -290,6 +304,13 @@ public class CommentControllerTest {
   @Test
   @DisplayName("DELETE `/comments/{id}` should return 404 when comment ID does not exist")
   void deleteCommentWhenIdDoesntExists() throws Exception {
+    // Get token admin user
+    String adminToken = registerUserAndObtainAcessToken(adminUserDTO);
+
+    // Post a valid music to ensure there is at least one music with the specified name
+    MusicDTO createdMusic = createMusic(validMusicDTO, adminToken);
+    existingId = createdMusic.getId();
+
     // Get token user
     String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
 
@@ -306,9 +327,7 @@ public class CommentControllerTest {
         .andExpect(jsonPath("$.error").value("Resource not found"))
         .andExpect(jsonPath("$.status").value(404))
         .andExpect(jsonPath("$.message").value("Comment not found"))
-        .andExpect(
-            jsonPath("$.path")
-                .value(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
+        .andExpect(jsonPath("$.path").value(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
   }
 
   // PATCH test
