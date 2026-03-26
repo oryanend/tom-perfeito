@@ -31,10 +31,12 @@
     <div class="suggestions"
          *ngIf="showSuggestions && musics.length">
 
-      <div class="suggestion-item"
-           *ngFor="let music of musics"
-           (mousedown)="selectItem(music)">
-        <a routerLink="">{{ music.title }}</a> <!-- Adicionar o link para a pagina da musica futuramente -->
+      <div
+        class="suggestion-item"
+        *ngFor="let music of musics"
+        (mousedown)="goToMusic(music)"
+      >
+        {{ music.title }}
       </div>
     </div>
 </div>

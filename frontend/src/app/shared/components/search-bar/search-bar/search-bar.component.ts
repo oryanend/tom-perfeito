@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MusicService } from '../../../../core/services/MusicService/music.service';
 import { debounceTime, Subject, switchMap } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-search-bar',
@@ -11,11 +12,13 @@ import { debounceTime, Subject, switchMap } from 'rxjs';
 export class SearchBarComponent implements OnInit {
   searchTerm: string = '';
   showSuggestions = false;
-
   musics: any[] = [];
   search$ = new Subject<string>();
 
-  constructor(private musicService: MusicService) {}
+  constructor(
+    private musicService: MusicService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.search$
@@ -46,5 +49,9 @@ export class SearchBarComponent implements OnInit {
     setTimeout(() => {
       this.showSuggestions = false;
     }, 200);
+  }
+
+  goToMusic(music: any) {
+    this.router.navigate(['/music', music.id]);
   }
 }

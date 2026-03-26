@@ -25,23 +25,33 @@ export class MusicComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
 
-    this.chordService.getAll().subscribe((response) => {
-      response.content.forEach((c) => {
-        this.chordMap[c.id] = c;
+      if (id) {
+        this.loadMusic(id);
+
+        this.musicService.getById(id).subscribe((response) => {
+          this.music = response;
+        });
+
+        this.commentService.getCommentByMusic(id).subscribe((res) => {
+          this.commentsCount = res.totalElements; // 👈 AQUI
+        });
+      }
+
+      this.chordService.getAll().subscribe((response) => {
+        response.content.forEach((c) => {
+          this.chordMap[c.id] = c;
+        });
       });
     });
+  }
 
-    if (id) {
-      this.musicService.getById(id).subscribe((response) => {
-        this.music = response;
-      });
-
-      this.commentService.getCommentByMusic(id).subscribe((res) => {
-        this.commentsCount = res.totalElements; // 👈 AQUI
-      });
-    }
+  loadMusic(id: string) {
+    this.musicService.getById(id).subscribe((response) => {
+      this.music = response;
+    });
   }
 
   getTimeAgo(dateString: string): string {
