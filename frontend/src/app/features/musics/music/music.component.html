@@ -1,0 +1,76 @@
+<div id="window">
+
+  @if (music) {
+    <div>
+
+      <h1>
+        <strong>{{ music.title }}</strong>
+        <span> by </span>
+        <strong>{{ music.createdBy.username }}</strong>
+      </h1>
+
+      <p>
+        {{ getTimeAgo(music.createdAt) }} |
+        <span>
+          {{ commentsCount }} comentário{{ commentsCount !== 1 ? 's' : '' }}
+        </span>
+      </p>
+
+      <p class="description">{{ music.description }}</p>
+
+      <hr>
+
+      @if (hasChordsLoaded()) {
+        <div class="lyric">
+
+          @for (line of getProcessedLyric(); track $index) {
+            <div class="lyric-line">
+
+              <!-- acordes -->
+              <div class="chords-line">
+                @for (chord of line.chords; track $index) {
+                  <span
+                    class="chord"
+                    [style.left.px]="chord.position * 8"
+                  >
+                    {{ chord.chord }}
+                  </span>
+                }
+              </div>
+
+              <!-- letra -->
+              <div class="text-line">
+                {{ line.text }}
+              </div>
+
+            </div>
+          }
+
+        </div>
+      }
+
+      <hr>
+
+      <div>
+        <h2><strong>Acordes</strong></h2>
+
+        <div class="chords-list">
+          @for (chord of getUniqueChords(); track chord) {
+            <span class="chord-badge">
+              {{ chord }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <hr>
+
+      <app-comments
+        [musicId]="music.id"
+        [musicAuthorId]="music.createdBy.id">
+      </app-comments>
+
+    </div>
+  }
+
+</div>

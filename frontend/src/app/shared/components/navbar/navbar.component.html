@@ -1,37 +1,13 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary position-relative">
+<nav class="navbar navbar-expand-lg bg-body-tertiary position-relative mb-3">
   <div class="container-fluid">
 
     <div class="container">
-      <a class="navbar-brand" href="#">
-        Tom Perfeito
+      <a class="navbar-brand" routerLink="/home">
+        <img src="favicon.png" alt="tom-perfeito-logo">
       </a>
     </div>
 
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarTogglerDemo02"
-      aria-controls="navbarTogglerDemo02"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-
-      <div class="search-box center-search my-3 my-lg-0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search search-icon" viewBox="0 0 16 16">
-          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-        </svg>
-
-        <input
-          type="text"
-          class="form-control search-input"
-          placeholder="Type to search..."
-        >
-      </div>
+    <app-search-bar></app-search-bar>
 
       @if (user$ | async; as user) {
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-row gap-3">
@@ -63,5 +39,4 @@
 
       }
     </div>
-  </div>
 </nav>
