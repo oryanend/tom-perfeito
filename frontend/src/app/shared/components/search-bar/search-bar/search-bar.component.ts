@@ -1,7 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MusicService } from '../../../../core/services/MusicService/music.service';
 import { debounceTime, Subject, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
+
+// 🔥 Crie um tipo para o autocomplete (mínimo necessário)
+interface MusicSearchItem {
+  id: string;
+  title: string;
+}
 
 @Component({
   selector: 'app-search-bar',
@@ -10,15 +16,14 @@ import { Router } from '@angular/router';
   styleUrl: './search-bar.component.css',
 })
 export class SearchBarComponent implements OnInit {
-  searchTerm: string = '';
-  showSuggestions = false;
-  musics: any[] = [];
-  search$ = new Subject<string>();
+  private musicService = inject(MusicService);
+  private router = inject(Router);
 
-  constructor(
-    private musicService: MusicService,
-    private router: Router
-  ) {}
+  searchTerm = '';
+  showSuggestions = false;
+
+  musics: MusicSearchItem[] = [];
+  search$ = new Subject<string>();
 
   ngOnInit() {
     this.search$
@@ -27,7 +32,7 @@ export class SearchBarComponent implements OnInit {
         switchMap((value) => this.musicService.searchMusicByName(value))
       )
       .subscribe((response) => {
-        this.musics = response.content; // Page<MusicMinDTO>
+        this.musics = response.content;
       });
   }
 
@@ -40,8 +45,8 @@ export class SearchBarComponent implements OnInit {
     this.search$.next(this.searchTerm);
   }
 
-  selectItem(music: any) {
-    this.searchTerm = music.name;
+  selectItem(music: MusicSearchItem) {
+    this.searchTerm = music.title;
     this.showSuggestions = false;
   }
 
@@ -51,7 +56,7 @@ export class SearchBarComponent implements OnInit {
     }, 200);
   }
 
-  goToMusic(music: any) {
+  goToMusic(music: MusicSearchItem) {
     this.router.navigate(['/music', music.id]);
   }
 }

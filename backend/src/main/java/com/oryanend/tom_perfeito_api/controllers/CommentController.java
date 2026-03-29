@@ -20,19 +20,13 @@ public class CommentController {
   @Autowired private CommentService service;
 
   @GetMapping
-  public ResponseEntity<Page<CommentDTO>> findAll(
-          Pageable pageable,
-          @PathVariable UUID musicId
-  ) {
+  public ResponseEntity<Page<CommentDTO>> findAll(Pageable pageable, @PathVariable UUID musicId) {
     Page<CommentDTO> list = service.findByMusic(musicId, pageable);
     return ResponseEntity.ok(list);
   }
 
   @GetMapping(value = "/{id}")
-  public ResponseEntity<CommentDTO> findById(
-          @PathVariable UUID musicId,
-          @PathVariable Long id
-  ) {
+  public ResponseEntity<CommentDTO> findById(@PathVariable UUID musicId, @PathVariable Long id) {
     CommentDTO dto = service.findByIdAndMusic(id, musicId);
     return ResponseEntity.ok(dto);
   }
@@ -54,10 +48,7 @@ public class CommentController {
 
   @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CLIENT')")
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(
-          @PathVariable Long id,
-          @PathVariable UUID musicId
-  ) {
+  public ResponseEntity<Void> delete(@PathVariable Long id, @PathVariable UUID musicId) {
     service.delete(id, musicId);
     return ResponseEntity.noContent().build();
   }

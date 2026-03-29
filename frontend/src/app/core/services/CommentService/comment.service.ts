@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -12,7 +12,7 @@ import { AuthError } from '../../errors/auth/auth-error';
 export class CommentService {
   private ApiUrl = `${environment.apiUrl}/musics`;
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getCommentByMusic(musicId: string): Observable<PageResponse<Comment>> {
     return this.http.get<PageResponse<Comment>>(`${this.ApiUrl}/${musicId}/comments`);

@@ -14,18 +14,22 @@
 
 <div class="container">
   <div class="comment-section">
+
     <!-- New Comment Input -->
     <div class="mb-4">
       <div class="d-flex gap-3">
         <div class="flex-grow-1">
-      <textarea
-        class="form-control comment-input"
-        rows="3"
-        placeholder="Write a comment..."
-        [(ngModel)]="newCommentBody"
-      ></textarea>
+          <textarea
+            class="form-control comment-input"
+            rows="3"
+            placeholder="Write a comment..."
+            [(ngModel)]="newCommentBody"
+          ></textarea>
+
           <div class="mt-3 text-end">
-            <button class="btn btn-comment text-white" (click)="postComment()">Post Comment</button>
+            <button class="btn btn-comment text-white" (click)="postComment()">
+              Post Comment
+            </button>
           </div>
         </div>
       </div>
@@ -33,66 +37,104 @@
 
     <!-- Comments List -->
     <div class="comments-list">
-      <div *ngFor="let comment of comments" class="comment-box mb-3">
-        <!-- Comentário principal -->
-        <div class="d-flex gap-3">
-          <div class="flex-grow-1">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="mb-0">
-                <strong>{{ comment.author.username }}</strong>
-                <span
-                  *ngIf="comment.author.id === musicAuthorId"
-                  class="d-inline-flex ms-2  px-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2"
-                >
-                Autor
+
+      @for (comment of comments; track comment.id) {
+        <div class="comment-box mb-3">
+
+          <!-- Comentário principal -->
+          <div class="d-flex gap-3">
+            <div class="flex-grow-1">
+
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">
+                  <strong>{{ comment.author.username }}</strong>
+
+                  @if (comment.author.id === musicAuthorId) {
+                    <span class="d-inline-flex ms-2 px-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">
+                      Autor
+                    </span>
+                  }
+
+                </h6>
+
+                <span class="comment-time">
+                  {{ getTimeAgo(comment.createdAt) }}
                 </span>
-              </h6>
-              <span class="comment-time">{{ getTimeAgo(comment.createdAt) }}</span>
-            </div>
-            <p class="mb-2">{{ comment.body }}</p>
-            <div class="comment-actions mb-2">
-              <a ><i class="bi bi-heart"></i> Like</a>
-              <a (click)="toggleReplyBox(comment)">Reply</a>
-            </div>
-
-            <!-- Caixa de reply -->
-            <div *ngIf="comment.showReplyBox" class="reply-box mb-2">
-          <textarea
-            [(ngModel)]="comment.newReplyBody"
-            class="form-control"
-            rows="2"
-            placeholder="Write a reply..."
-          ></textarea>
-              <div class="text-end mt-2">
-                <button class="btn btn-sm btn-primary" (click)="postReply(comment)">Reply</button>
               </div>
-            </div>
 
-            <!-- Replies -->
-            <div class="reply-section mt-3" *ngIf="comment.replies?.length">
-              <div *ngFor="let reply of comment.replies" class="comment-box mb-2">
-                <div class="d-flex gap-3">
-                  <div class="flex-grow-1">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <h6 class="mb-0">
-                        <strong>{{ reply.author.username }}</strong>
-                        <span
-                          *ngIf="comment.author.id === musicAuthorId"
-                          class="d-inline-flex ms-2  px-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2"
-                        >
-                        Autor
-                        </span>
-                      </h6>
-                      <span class="comment-time">{{ getTimeAgo(reply.createdAt) }}</span>
-                    </div>
-                    <p class="mb-2">{{ reply.body }}</p>
+              <p class="mb-2">{{ comment.body }}</p>
+
+              <div class="comment-actions mb-2">
+                <button class="btn btn-link p-0">
+                  <i class="bi bi-heart"></i> Like
+                </button>
+
+                <button
+                  class="btn btn-link p-0"
+                  (click)="toggleReplyBox(comment)"
+                >
+                  Reply
+                </button>
+              </div>
+
+              <!-- Caixa de reply -->
+              @if (comment.showReplyBox) {
+                <div class="reply-box mb-2">
+                  <textarea
+                    [(ngModel)]="comment.newReplyBody"
+                    class="form-control"
+                    rows="2"
+                    placeholder="Write a reply..."
+                  ></textarea>
+
+                  <div class="text-end mt-2">
+                    <button
+                      class="btn btn-sm btn-primary"
+                      (click)="postReply(comment)"
+                    >
+                      Reply
+                    </button>
                   </div>
                 </div>
-              </div>
+              }
+
+              <!-- Replies -->
+              @if (comment.replies?.length) {
+                <div class="reply-section mt-3">
+
+                  @for (reply of comment.replies; track reply.id) {
+                    <div class="comment-box mb-2">
+                      <div class="d-flex gap-3">
+                        <div class="flex-grow-1">
+
+                          <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">
+                              <strong>{{ reply.author.username }}</strong>
+
+                              @if (comment.author.id === musicAuthorId) {
+                                <span class="d-inline-flex ms-2 px-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">
+                                  Autor
+                                </span>
+                              }
+
+                            </h6>
+
+                            <span class="comment-time">
+                              {{ getTimeAgo(reply.createdAt) }}
+                            </span>
+                          </div>
+
+                          <p class="mb-2">{{ reply.body }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
             </div>
           </div>
         </div>
-      </div>
+      }
     </div>
   </div>
 </div>

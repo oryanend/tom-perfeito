@@ -327,7 +327,9 @@ public class CommentControllerTest {
         .andExpect(jsonPath("$.error").value("Resource not found"))
         .andExpect(jsonPath("$.status").value(404))
         .andExpect(jsonPath("$.message").value("Comment not found"))
-        .andExpect(jsonPath("$.path").value(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
+        .andExpect(
+            jsonPath("$.path")
+                .value(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
   }
 
   // PATCH test

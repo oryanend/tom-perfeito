@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommentService } from '../../../core/services/CommentService/comment.service';
 import { Comment } from '../../../shared/models/comment';
 import { PageResponse } from '../../../shared/models/page-response';
@@ -14,16 +14,14 @@ import { Router } from '@angular/router';
   styleUrl: './comments.component.css',
 })
 export class CommentsComponent implements OnInit {
-  newCommentBody: string = '';
+  private commentService = inject(CommentService);
+  private router = inject(Router);
+
+  newCommentBody = '';
   @Input() musicId!: string;
   @Input() musicAuthorId!: string;
   modalInstance!: Modal;
   comments: CommentUI[] = [];
-
-  constructor(
-    private commentService: CommentService,
-    private router: Router
-  ) {}
 
   ngOnInit() {
     this.loadComments();
@@ -34,7 +32,6 @@ export class CommentsComponent implements OnInit {
 
     this.commentService.getCommentByMusic(this.musicId).subscribe({
       next: (res: PageResponse<Comment>) => {
-        // Map para adicionar propriedades extras do frontend
         this.comments = res.content.map((c) => ({
           ...c,
           showReplyBox: false,
@@ -50,7 +47,6 @@ export class CommentsComponent implements OnInit {
 
     this.commentService.insertCommentByMusic(this.musicId, this.newCommentBody).subscribe({
       next: (comment: Comment) => {
-        // Adiciona o novo comentário com propriedades do frontend
         this.comments.push({
           ...comment,
           showReplyBox: false,

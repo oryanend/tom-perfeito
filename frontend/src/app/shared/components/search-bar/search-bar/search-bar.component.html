@@ -1,4 +1,3 @@
-
 <button
   class="navbar-toggler"
   type="button"
@@ -28,16 +27,20 @@
       (blur)="hideSuggestions()"
     >
 
-    <div class="suggestions"
-         *ngIf="showSuggestions && musics.length">
+    @if (showSuggestions && musics.length) {
+      <div class="suggestions">
 
-      <div
-        class="suggestion-item"
-        *ngFor="let music of musics"
-        (mousedown)="goToMusic(music)"
-      >
-        {{ music.title }}
+        @for (music of musics; track music.id) {
+          <div
+            class="suggestion-item"
+            (mousedown)="goToMusic(music)"
+          >
+            {{ music.title }}
+          </div>
+        }
+
       </div>
-    </div>
-</div>
+    }
+
+  </div>
 </div>

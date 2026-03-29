@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    Page<Comment> findByMusic(Music music, Pageable pageable);
+  Page<Comment> findByMusic(Music music, Pageable pageable);
 }

@@ -29,7 +29,9 @@ public class CommentService {
   @Transactional(readOnly = true)
   public Page<CommentDTO> findByMusic(UUID musicId, Pageable pageable) {
 
-    Music music = musicRepository.findById(musicId)
+    Music music =
+        musicRepository
+            .findById(musicId)
             .orElseThrow(() -> new ResourceNotFoundException("Music not found"));
 
     Page<Comment> list = repository.findByMusic(music, pageable);
@@ -39,12 +41,15 @@ public class CommentService {
 
   @Transactional(readOnly = true)
   public CommentDTO findByIdAndMusic(Long commentId, UUID musicId) {
-    Music music = musicRepository.findById(musicId)
+    Music music =
+        musicRepository
+            .findById(musicId)
             .orElseThrow(() -> new ResourceNotFoundException("Music not found"));
 
-    Comment comment = repository.findById(commentId)
+    Comment comment =
+        repository
+            .findById(commentId)
             .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
-
 
     if (!comment.getMusic().getId().equals(music.getId())) {
       throw new ResourceNotFoundException("Comment does not belong to this music");
@@ -97,7 +102,9 @@ public class CommentService {
   @Transactional
   public void delete(Long id, UUID musicId) {
     try {
-      Comment comment = repository.findById(id)
+      Comment comment =
+          repository
+              .findById(id)
               .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
       if (!comment.getMusic().getId().equals(musicId)) {

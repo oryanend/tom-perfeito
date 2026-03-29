@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MusicService } from '../../../core/services/MusicService/music.service';
 import { ActivatedRoute } from '@angular/router';
 import { MusicPage } from '../../../shared/models/music-page';
@@ -13,16 +13,14 @@ import { CommentService } from '../../../core/services/CommentService/comment.se
   styleUrl: './music.component.css',
 })
 export class MusicComponent implements OnInit {
-  music!: MusicPage;
-  chordMap: { [key: number]: Chord } = {};
-  commentsCount: number = 0;
+  private route = inject(ActivatedRoute);
+  private musicService = inject(MusicService);
+  private chordService = inject(ChordService);
+  private commentService = inject(CommentService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private musicService: MusicService,
-    private chordService: ChordService,
-    private commentService: CommentService
-  ) {}
+  music!: MusicPage;
+  chordMap: Record<number, Chord> = {};
+  commentsCount = 0;
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
@@ -36,7 +34,7 @@ export class MusicComponent implements OnInit {
         });
 
         this.commentService.getCommentByMusic(id).subscribe((res) => {
-          this.commentsCount = res.totalElements; // 👈 AQUI
+          this.commentsCount = res.totalElements;
         });
       }
 
