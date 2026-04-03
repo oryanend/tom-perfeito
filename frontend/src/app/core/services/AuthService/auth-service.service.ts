@@ -10,13 +10,10 @@ import { User } from '../../../shared/models/user';
   providedIn: 'root',
 })
 export class AuthServiceService {
-  private userSubject = new BehaviorSubject<string | null>(null);
+  private userSubject = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject.asObservable();
 
-  // Use proper timeout type instead of any
   private tokenExpirationTimer: ReturnType<typeof setTimeout> | null = null;
-
-  // use inject() instead of constructor injection to satisfy lint
   private http = inject(HttpClient);
 
   constructor() {
@@ -33,9 +30,7 @@ export class AuthServiceService {
       .set('password', credentials.password)
       .set('grant_type', 'password');
 
-    const clientId = 'myclientid';
-    const clientSecret = 'myclientsecret';
-    const basicAuth = btoa(`${clientId}:${clientSecret}`);
+    const basicAuth = btoa(`myclientid:myclientsecret`);
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -49,23 +44,18 @@ export class AuthServiceService {
 
   saveToken(token: string) {
     localStorage.setItem('access_token', token);
-    try {
-      const decoded = jwtDecode(token) as { exp?: number; username?: string; sub?: string };
 
-      if (decoded && decoded.exp) {
+    try {
+      const decoded = jwtDecode(token) as { exp?: number };
+
+      if (decoded.exp) {
         const expMs = decoded.exp * 1000;
         localStorage.setItem('token_exp', String(expMs));
         this.scheduleAutoLogout(new Date(expMs));
       }
 
-      const fallbackUser = decoded.username || decoded.sub || null;
-      if (fallbackUser) {
-        this.userSubject.next(fallbackUser);
-      }
-
       this.loadUserFromApi();
     } catch {
-      // no need for unused error variable
       this.logout();
     }
   }
@@ -74,6 +64,7 @@ export class AuthServiceService {
     localStorage.removeItem('access_token');
     localStorage.removeItem('token_exp');
     this.userSubject.next(null);
+
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
       this.tokenExpirationTimer = null;
@@ -83,10 +74,10 @@ export class AuthServiceService {
   isAuthenticated(): boolean {
     const token = localStorage.getItem('access_token');
     const exp = localStorage.getItem('token_exp');
+
     if (!token || !exp) return false;
-    const expMs = Number(exp);
-    if (isNaN(expMs)) return false;
-    return Date.now() < expMs;
+
+    return Date.now() < Number(exp);
   }
 
   private scheduleAutoLogout(expirationDate: Date) {
@@ -115,22 +106,17 @@ export class AuthServiceService {
     }
 
     try {
-      const decoded = jwtDecode(token) as { exp?: number; username?: string; sub?: string };
-      const expMs = decoded && decoded.exp ? decoded.exp * 1000 : null;
+      const decoded = jwtDecode(token) as { exp?: number };
 
-      if (expMs && Date.now() > expMs) {
-        this.logout();
-        return;
-      }
+      if (decoded.exp) {
+        const expMs = decoded.exp * 1000;
 
-      if (expMs) {
+        if (Date.now() > expMs) {
+          this.logout();
+          return;
+        }
+
         this.scheduleAutoLogout(new Date(expMs));
-      }
-
-      const fallbackUser = decoded.username || decoded.sub || null;
-
-      if (fallbackUser) {
-        this.userSubject.next(fallbackUser);
       }
 
       this.loadUserFromApi();
@@ -147,26 +133,18 @@ export class AuthServiceService {
       return;
     }
 
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
 
-    // Use the known User type, fall back to a minimal shape or string
-    this.http
-      .get<User | { username?: string } | string>(`${environment.apiUrl}/users/me`, { headers })
-      .subscribe({
-        next: (user) => {
-          let username: string | null = null;
-          if (typeof user === 'string') {
-            username = user;
-          } else if (user && typeof user === 'object') {
-            const u = user as Partial<User> & { name?: string };
-            username = u.username ?? u.name ?? null;
-          }
-          this.userSubject.next(username ?? null);
-        },
-        error: () => {
-          this.userSubject.next(null);
-        },
-      });
+    this.http.get<User>(`${environment.apiUrl}/users/me`, { headers }).subscribe({
+      next: (user) => {
+        this.userSubject.next(user);
+      },
+      error: () => {
+        this.userSubject.next(null);
+      },
+    });
   }
 
   restoreSession() {

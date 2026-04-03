@@ -33,6 +33,13 @@ public class MusicController {
     return ResponseEntity.ok(dto);
   }
 
+  @GetMapping(value = "/user/{userId}")
+  public ResponseEntity<Page<MusicMinDTO>> findByUser(
+      @PathVariable UUID userId, Pageable pageable) {
+    Page<MusicMinDTO> list = service.findByUser(userId, pageable);
+    return ResponseEntity.ok(list);
+  }
+
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
   @PostMapping
   public ResponseEntity<MusicDTO> insert(@Valid @RequestBody MusicDTO dto) {

@@ -6,7 +6,7 @@
       <h1>
         <strong>{{ music.title }}</strong>
         <span> by </span>
-        <strong>{{ music.createdBy.username }}</strong>
+        <strong><a routerLink="/user/{{ music.createdBy.id }}">{{ music.createdBy.username }}</a></strong>
       </h1>
 
       <p>

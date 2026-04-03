@@ -18,6 +18,10 @@ export class UserService {
     return this.http.get<User>(`${environment.apiUrl}/users/me`, { headers });
   }
 
+  getUserById(id: string) {
+    return this.http.get<User>(`${environment.apiUrl}/users/${id}`);
+  }
+
   updateFirstLogin() {
     const token = localStorage.getItem('access_token');
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });

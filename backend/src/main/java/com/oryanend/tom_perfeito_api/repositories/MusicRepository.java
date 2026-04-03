@@ -13,4 +13,6 @@ public interface MusicRepository extends JpaRepository<Music, UUID> {
   Page<MusicProjection> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
   Page<MusicProjection> findAllBy(Pageable pageable);
+
+  Page<MusicProjection> findByCreatedById(UUID userId, Pageable pageable);
 }

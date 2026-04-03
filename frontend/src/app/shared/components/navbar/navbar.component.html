@@ -12,8 +12,8 @@
       @if (user$ | async; as user) {
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 flex-row gap-3">
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/profile']">
-              <span>{{ user }}</span>
+            <a class="nav-link" [routerLink]="['/user', user.id]">
+              <span>{{ user.username }}</span>
             </a>
           </li>
 
