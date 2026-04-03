@@ -7,6 +7,7 @@ import { HomePageComponent } from './features/home/home-page/home-page.component
 import { StatusPageComponent } from './features/status/status-page/status-page.component';
 import { MusicsPageComponent } from './features/musics/musics-page/musics-page.component';
 import { MusicComponent } from './features/musics/music/music.component';
+import { UserPageComponent } from './features/user/user-page/user-page.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: 'status', component: StatusPageComponent },
   { path: 'musics', component: MusicsPageComponent },
   { path: 'music/:id', component: MusicComponent },
+  { path: 'user/:id', component: UserPageComponent },
   { path: '', component: WaitingPageComponent },
 ];
 

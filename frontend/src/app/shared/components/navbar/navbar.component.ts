@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthServiceService } from '../../../core/services/AuthService/auth-service.service';
 import { Observable } from 'rxjs';
+import { User } from '../../models/user';
 
 @Component({
   selector: 'app-navbar',
@@ -11,7 +12,7 @@ import { Observable } from 'rxjs';
 export class NavbarComponent {
   private authService = inject(AuthServiceService);
 
-  user$: Observable<string | null> = this.authService.user$;
+  user$: Observable<User | null> = this.authService.user$;
 
   logout() {
     this.authService.logout();

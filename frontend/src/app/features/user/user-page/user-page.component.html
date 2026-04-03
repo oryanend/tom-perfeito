@@ -1,0 +1,70 @@
+<div id="window">
+  @if (user) {
+    <div>
+      <h1 class="user-username">
+        <strong>{{ user.username }}</strong>
+      </h1>
+      <hr>
+      <div>
+        @if (musics && musics.length > 0) {
+          @for (music of musics; track music.id; let i = $index) {
+              <div>
+                <a [routerLink]="['/music', music.id]" class="music-title">
+                  {{ music.title }}
+                </a>
+
+                <p class="music-description">
+                  {{ music.description | slice:0:50 }}
+                  @if (music.description.length > 50) {
+                    <span>...</span>
+                  }
+                </p>
+              </div>
+          }
+          @if (totalPages > 1) {
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center">
+
+                <li class="page-item" [class.disabled]="currentPage === 0">
+                  <button
+                    type="button"
+                    class="page-link btn-plain"
+                    (click)="previousPage()"
+                    [attr.aria-disabled]="currentPage === 0"
+                  >
+                    &laquo;
+                  </button>
+                </li>
+
+                @for (page of pages; track page) {
+                  <li class="page-item" [class.active]="page === currentPage">
+                    <button
+                      type="button"
+                      class="page-link btn-plain"
+                      (click)="goToPage(page)"
+                    >
+                      {{ page + 1 }}
+                    </button>
+                  </li>
+                }
+
+                <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                  <button
+                    type="button"
+                    class="page-link btn-plain"
+                    (click)="nextPage()"
+                    [attr.aria-disabled]="currentPage === totalPages - 1"
+                  >
+                    &raquo;
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          }
+        } @else {
+          <p> {{ user.username }} ainda não criou nenhuma música.</p>
+        }
+      </div>
+    </div>
+  }
+</div>

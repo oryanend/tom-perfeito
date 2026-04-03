@@ -20,6 +20,7 @@ import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor
 import { SearchBarComponent } from './shared/components/search-bar/search-bar/search-bar.component';
 import { MusicComponent } from './features/musics/music/music.component';
 import { CommentsComponent } from './features/musics/comments/comments.component';
+import { UserPageComponent } from './features/user/user-page/user-page.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { CommentsComponent } from './features/musics/comments/comments.component
     SearchBarComponent,
     MusicComponent,
     CommentsComponent,
+    UserPageComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, ReactiveFormsModule, FormsModule],
   providers: [

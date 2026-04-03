@@ -1,0 +1,36 @@
+#window {
+  padding: 20px;
+  background-color: var(--secondary-bg-color);
+  border-radius: 10px;
+}
+
+ul {
+  list-style-type: none;
+  color: var(--secondary-text-color);
+}
+
+.music-title {
+  font-weight: bold;
+  color: var(--main-text-color);
+  text-decoration: none;
+  font-size: 1.5rem;
+}
+
+.music-title:hover {
+  color: var(--secondary-text-color);
+  text-decoration: underline;
+}
+
+.music-description {
+  color: var(--text-color);
+}
+
+.user-username {
+  color: var(--main-text-color);
+}
+
+p {
+  color: var(--text-color);
+}
+
+
