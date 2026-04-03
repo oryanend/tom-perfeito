@@ -1,13 +1,7 @@
 package com.oryanend.tom_perfeito_api.services;
 
-import com.oryanend.tom_perfeito_api.dto.LyricChordDTO;
-import com.oryanend.tom_perfeito_api.dto.MusicDTO;
-import com.oryanend.tom_perfeito_api.dto.MusicMinDTO;
-import com.oryanend.tom_perfeito_api.dto.MusicPatchDTO;
-import com.oryanend.tom_perfeito_api.entities.Chord;
-import com.oryanend.tom_perfeito_api.entities.Lyric;
-import com.oryanend.tom_perfeito_api.entities.Music;
-import com.oryanend.tom_perfeito_api.entities.User;
+import com.oryanend.tom_perfeito_api.dto.*;
+import com.oryanend.tom_perfeito_api.entities.*;
 import com.oryanend.tom_perfeito_api.projections.MusicProjection;
 import com.oryanend.tom_perfeito_api.repositories.ChordRepository;
 import com.oryanend.tom_perfeito_api.repositories.MusicRepository;
@@ -48,6 +42,17 @@ public class MusicService {
 
     if (list.isEmpty()) {
       throw new ResourceNotFoundException("No musics found with name containing: " + name);
+    }
+
+    return list.map(MusicMinDTO::new);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<MusicMinDTO> findByUser(UUID userId, Pageable pageable) {
+    Page<MusicProjection> list = repository.findByCreatedById(userId, pageable);
+
+    if (list.isEmpty()) {
+      throw new ResourceNotFoundException("No musics found for user with id: " + userId);
     }
 
     return list.map(MusicMinDTO::new);
