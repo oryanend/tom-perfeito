@@ -1,0 +1,58 @@
+#window {
+  padding: 20px;
+  background: var(--secondary-bg-color);
+  border-radius: 10px;
+}
+
+h2 {
+  text-align: left;
+  font-weight: bold;
+  color: var(--main-text-color);
+}
+
+label {
+  color: var(--main-text-color);
+}
+
+.char-container {
+  display: inline-block;
+  position: relative;
+  margin-right: 0.05em; /* mantém espaçamento mínimo entre caracteres */
+}
+
+.chord-badge {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-30%);
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  background-color: var(--main-text-color);
+  opacity: 80%;
+  color: white;
+  border-radius: 4px;
+  text-align: center;
+  box-sizing: border-box;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.remove-chord {
+  margin-left: 4px;
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+}
+
+.add-chord-sign {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  color: var(--main-text-color);
+  cursor: pointer;
+}

@@ -21,6 +21,7 @@ import { SearchBarComponent } from './shared/components/search-bar/search-bar/se
 import { MusicComponent } from './features/musics/music/music.component';
 import { CommentsComponent } from './features/musics/comments/comments.component';
 import { UserPageComponent } from './features/user/user-page/user-page.component';
+import { MusicCreatePageComponent } from './features/musics/music-create-page/music-create-page.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { UserPageComponent } from './features/user/user-page/user-page.component
     MusicComponent,
     CommentsComponent,
     UserPageComponent,
+    MusicCreatePageComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, ReactiveFormsModule, FormsModule],
   providers: [
