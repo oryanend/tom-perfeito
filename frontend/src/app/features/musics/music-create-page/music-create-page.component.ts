@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MusicService } from '../../../core/services/MusicService/music.service';
 import { ChordService } from '../../../core/services/ChordService/chord.service';
 import { LyricChord } from '../../../shared/models/lyric-chord';
@@ -14,16 +14,14 @@ import { Router } from '@angular/router';
   styleUrl: './music-create-page.component.css',
 })
 export class MusicCreatePageComponent implements OnInit {
+  private musicService = inject(MusicService);
+  private chordService = inject(ChordService);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+
   currentStep = 1;
   signinForm!: FormGroup;
   isLoading = false;
-
-  constructor(
-    private musicService: MusicService,
-    private chordService: ChordService,
-    private router: Router,
-    private fb: FormBuilder
-  ) {}
 
   music = {
     title: '',
@@ -39,11 +37,10 @@ export class MusicCreatePageComponent implements OnInit {
   hoverIndex: number | null = null;
   selectedPosition: number | null = null;
 
-  // 🔥 POSIÇÃO DO POPUP
+  // POSIÇÃO DO POPUP
   popupX = 0;
   popupY = 0;
 
-  // 🔹 CHORDS
   chords: LyricChord[] = [];
   allChords: Chord[] = [];
   filteredChords: Chord[] = [];
@@ -74,26 +71,15 @@ export class MusicCreatePageComponent implements OnInit {
     this.textArray = Array.from(this.music.lyric.text);
   }
 
-  openChordInput(position: number, event: MouseEvent) {
-    this.selectedPosition = position;
-    this.filteredChords = this.allChords;
+  openChordInput(index: number, event: Event) {
+    const mouseEvent = event as MouseEvent;
 
-    const popupWidth = 300;
-    const popupHeight = 200;
-
-    let x = event.clientX;
-    let y = event.clientY;
-
-    if (x + popupWidth > window.innerWidth) {
-      x -= popupWidth;
+    if (mouseEvent.clientX !== undefined) {
+      this.popupX = mouseEvent.clientX;
+      this.popupY = mouseEvent.clientY;
     }
 
-    if (y + popupHeight > window.innerHeight) {
-      y -= popupHeight;
-    }
-
-    this.popupX = x;
-    this.popupY = y;
+    this.selectedPosition = index;
   }
 
   filterChords() {
