@@ -29,7 +29,7 @@ export class AuthErrorInterceptor implements HttpInterceptor {
           this.injector.get(AuthServiceService).logout();
         }
 
-        return throwError(() => httpError);
+        return throwError(() => error);
       })
     );
   }

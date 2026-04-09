@@ -67,7 +67,7 @@ export class SignUpPageComponent {
         }
 
         if (error instanceof ApiError) {
-          this.showAlert('warning', error.message || 'Email or username already exists.');
+          this.showAlert('warning', error.message);
         }
       },
     });

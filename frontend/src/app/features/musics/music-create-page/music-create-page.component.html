@@ -105,11 +105,8 @@
 
     @if (currentStep === 2) {
       <div>
-
         <div class="lyrics-line" style="white-space: pre-wrap; font-family: monospace;">
-
           @for (char of textArray; track $index; let i = $index) {
-
             @if (char !== '\n') {
               <span
                 class="char-container"

@@ -22,7 +22,9 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           return throwError(() => new NetworkError());
         }
 
-        return throwError(() => new ApiError(error.message, error.status, error));
+        const backendMessage = error.error?.message || error.error || error.message;
+
+        return throwError(() => new ApiError(backendMessage, error.status, error));
       })
     );
   }
