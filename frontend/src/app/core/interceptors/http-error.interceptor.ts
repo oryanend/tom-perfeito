@@ -12,6 +12,7 @@ import { catchError } from 'rxjs/operators';
 
 import { ApiError } from '../errors/api/api-errors';
 import { NetworkError } from '../errors/network/network-error';
+import { InvalidRequestError } from '../errors/auth/invalid-request-error';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
@@ -22,7 +23,13 @@ export class HttpErrorInterceptor implements HttpInterceptor {
           return throwError(() => new NetworkError());
         }
 
-        return throwError(() => new ApiError(error.message, error.status, error));
+        if (error.status === 422) {
+          return throwError(() => new InvalidRequestError());
+        }
+
+        const backendMessage = error.error?.message || error.error || error.message;
+
+        return throwError(() => new ApiError(backendMessage, error.status, error));
       })
     );
   }

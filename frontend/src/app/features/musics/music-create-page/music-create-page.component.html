@@ -1,0 +1,238 @@
+@if (alertType) {
+  <div
+    class="alert text-center"
+    [ngClass]="{
+      'alert-success': alertType === 'success',
+      'alert-warning': alertType === 'warning',
+      'alert-danger': alertType === 'error'
+    }"
+  >
+    {{ alertMessage }}
+  </div>
+}
+
+<!-- Modal Login -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4 text-center">
+      <h5>Você precisa estar logado</h5>
+      <p>Faça login para comentar.</p>
+
+      <button class="btn btn-comment text-white" (click)="goToLogin()">
+        Ir para página de login
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="window">
+  <div class="container my-4">
+
+    <h2 class="mb-4">New Music</h2>
+
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="currentStep === 1"
+          (click)="currentStep = 1"
+        >
+          Music Infos
+        </button>
+      </li>
+
+      <li class="nav-item">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="currentStep === 2"
+          (click)="currentStep = 2"
+        >
+          Chord Editor
+        </button>
+      </li>
+    </ul>
+
+    @if (currentStep === 1) {
+      <div>
+        <form [formGroup]="signinForm">
+
+          <!-- TÍTULO -->
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input
+              id="title"
+              type="text"
+              class="form-control"
+              formControlName="title"
+              [class.is-invalid]="signinForm.get('title')?.invalid && signinForm.get('title')?.touched"
+            >
+            <div class="invalid-feedback">
+              Title is required
+            </div>
+          </div>
+
+          <!-- DESCRIÇÃO -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input
+              id="description"
+              type="text"
+              class="form-control"
+              formControlName="description"
+              [class.is-invalid]="signinForm.get('description')?.invalid && signinForm.get('description')?.touched"
+            >
+            <div class="invalid-feedback">
+              Description is required
+            </div>
+          </div>
+
+          <!-- DATA -->
+          <div class="mb-3">
+            <label for="releaseDate" class="form-label">Release Date</label>
+            <input
+              id="releaseDate"
+              type="date"
+              class="form-control"
+              formControlName="releaseDate"
+              [class.is-invalid]="signinForm.get('releaseDate')?.invalid && signinForm.get('releaseDate')?.touched"
+            >
+            <div class="invalid-feedback">
+              A release date is required
+            </div>
+          </div>
+
+          <!-- LETRA -->
+          <div class="mb-3">
+            <label for="lyrics" class="form-label">Lyrics</label>
+            <textarea
+              id="lyrics"
+              class="form-control"
+              rows="5"
+              formControlName="lyrics"
+              [class.is-invalid]="signinForm.get('lyrics')?.invalid && signinForm.get('lyrics')?.touched"
+            ></textarea>
+            <div class="invalid-feedback">
+              Lyrics are required
+            </div>
+          </div>
+
+          <button
+            class="btn btn-primary w-100 btn-sm"
+            type="button"
+            (click)="goToEditor()"
+          >
+            Add chords!
+          </button>
+
+        </form>
+      </div>
+    }
+
+    @if (currentStep === 2) {
+      <div>
+        <div class="lyrics-line" style="white-space: pre-wrap; font-family: monospace;">
+          @for (char of textArray; track $index; let i = $index) {
+            @if (char !== '\n') {
+              <span
+                class="char-container"
+                (mouseenter)="hoverIndex = i"
+                (mouseleave)="hoverIndex = null"
+                (click)="openChordInput(i, $event)"
+                (keydown.enter)="openChordInput(i, $event)"
+                tabindex="0"
+              >
+
+                @if (getChordAt(i)) {
+                  <span class="chord-badge">
+                    {{ getChordAt(i) }}
+
+                    <button
+                      type="button"
+                      class="remove-chord"
+                      (click)="removeChord(i)"
+                    >
+                      ×
+                    </button>
+                  </span>
+                }
+
+                {{ char }}
+
+                @if (hoverIndex === i && !getChordAt(i)) {
+                  <span class="add-chord-sign">+</span>
+                }
+              </span>
+            }
+
+            @if (char === '\n') {
+              <br>
+            }
+
+          }
+        </div>
+
+        <!-- POPUP -->
+        @if (selectedPosition !== null) {
+          <div
+            class="card p-3"
+            [ngStyle]="{
+              position: 'fixed',
+              top: popupY + 'px',
+              left: popupX + 'px',
+              'max-width': '300px',
+              'z-index': 1000
+            }"
+          >
+            <div class="mb-2">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="searchChord"
+                (input)="filterChords()"
+                placeholder="Buscar acorde..."
+              />
+            </div>
+
+            <ul
+              class="list-group mb-2"
+              style="max-height: 200px; overflow-y: auto;"
+            >
+              @for (chord of filteredChords; track chord.id) {
+                <li
+                  class="list-group-item list-group-item-action"
+                  (click)="selectChord(chord)"
+                  (keydown.enter)="selectChord(chord)"
+                  tabindex="0"
+                >
+                  {{ chord.name }}
+                </li>
+              }
+            </ul>
+
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              (click)="selectedPosition = null"
+            >
+              Fechar
+            </button>
+          </div>
+        }
+
+        <button
+          class="btn btn-primary w-100 btn-sm"
+          type="button"
+          [disabled]="isLoading"
+          (click)="submit()"
+        >
+          @if (isLoading) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          }
+          {{ isLoading ? 'Loading...' : 'Send it!' }}
+        </button>
+      </div>
+    }
+  </div>
+</div>

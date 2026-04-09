@@ -8,6 +8,7 @@ import { StatusPageComponent } from './features/status/status-page/status-page.c
 import { MusicsPageComponent } from './features/musics/musics-page/musics-page.component';
 import { MusicComponent } from './features/musics/music/music.component';
 import { UserPageComponent } from './features/user/user-page/user-page.component';
+import { MusicCreatePageComponent } from './features/musics/music-create-page/music-create-page.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'musics', component: MusicsPageComponent },
   { path: 'music/:id', component: MusicComponent },
   { path: 'user/:id', component: UserPageComponent },
+  { path: 'create/music', component: MusicCreatePageComponent },
   { path: '', component: WaitingPageComponent },
 ];
 

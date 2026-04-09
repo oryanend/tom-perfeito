@@ -4,6 +4,7 @@ import { AuthError } from '../errors/auth/auth-error';
 import { PermissionError } from '../errors/auth/permission-error';
 import { NetworkError } from '../errors/network/network-error';
 import { ApiError } from '../errors/api/api-errors';
+import { InvalidRequestError } from '../errors/auth/invalid-request-error';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
@@ -21,6 +22,7 @@ export class GlobalErrorHandler implements ErrorHandler {
       [AuthError, (e) => console.error('Auth Error:', e.message)],
       [PermissionError, (e) => console.error('Permission Error:', e.message)],
       [NetworkError, (e) => console.error('Network Error:', e.message)],
+      [InvalidRequestError, (e) => console.error('InvalidRequestError:', e.message)],
       [ApiError, (e) => console.error('API Error:', e.message)],
     ]);
 
