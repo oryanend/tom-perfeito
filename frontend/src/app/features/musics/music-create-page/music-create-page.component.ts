@@ -6,6 +6,9 @@ import { Lyric } from '../../../shared/models/lyric';
 import { Chord } from '../../../shared/models/chord';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NetworkError } from '../../../core/errors/network/network-error';
+import { InvalidRequestError } from '../../../core/errors/auth/invalid-request-error';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-music-create-page',
@@ -19,6 +22,7 @@ export class MusicCreatePageComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
 
+  modalInstance!: Modal;
   currentStep = 1;
   signinForm!: FormGroup;
   isLoading = false;
@@ -46,8 +50,13 @@ export class MusicCreatePageComponent implements OnInit {
   filteredChords: Chord[] = [];
   searchChord = '';
 
+  // AlertType
+  alertType: 'success' | 'warning' | 'error' | null = null;
+  alertMessage = '';
+
   ngOnInit() {
     this.loadChords();
+    this.clearAlert();
 
     this.signinForm = this.fb.group({
       title: ['', Validators.required],
@@ -55,6 +64,32 @@ export class MusicCreatePageComponent implements OnInit {
       releaseDate: ['', Validators.required],
       lyrics: ['', Validators.required],
     });
+  }
+
+  openLoginModal() {
+    const element = document.getElementById('loginModal');
+    if (!element) return;
+
+    this.modalInstance = new Modal(element);
+    this.modalInstance.show();
+  }
+
+  goToLogin() {
+    if (this.modalInstance) {
+      this.modalInstance.hide();
+    }
+
+    this.router.navigate(['/login']);
+  }
+
+  showAlert(type: 'success' | 'warning' | 'error', message: string) {
+    this.alertType = type;
+    this.alertMessage = message;
+  }
+
+  clearAlert() {
+    this.alertType = null;
+    this.alertMessage = '';
   }
 
   loadChords() {
@@ -118,6 +153,7 @@ export class MusicCreatePageComponent implements OnInit {
   }
 
   goToEditor() {
+    this.clearAlert();
     if (this.signinForm.invalid) {
       this.signinForm.markAllAsTouched();
       return;
@@ -139,15 +175,20 @@ export class MusicCreatePageComponent implements OnInit {
     const token = localStorage.getItem('access_token');
 
     if (!token) {
-      alert('Usuário não autenticado');
+      this.openLoginModal();
       return;
     }
 
     this.musicService.createMusic(this.music, token).subscribe({
       next: (res) => {
-        console.log('Música salva com sucesso!', res);
-        alert('Música salva!');
         this.isLoading = false;
+
+        this.clearAlert();
+        console.log('Music successfully created!', res);
+
+        this.showAlert('success', 'Music successfully created! 🎉');
+
+        this.signinForm.reset();
 
         // reset
         this.music = {
@@ -160,13 +201,17 @@ export class MusicCreatePageComponent implements OnInit {
         this.textArray = [];
         this.chords = [];
         this.currentStep = 1;
-
-        this.router.navigate(['/home']).then((r) => console.log('Navegação para home', r));
       },
       error: (err) => {
-        console.error('Erro ao salvar música', err);
-        alert('Erro ao salvar música');
         this.isLoading = false;
+
+        if (err instanceof NetworkError) {
+          this.showAlert('error', 'Unable to connect to the server. Please try again later.');
+        }
+
+        if (err instanceof InvalidRequestError) {
+          this.showAlert('warning', err.message);
+        }
       },
     });
   }
