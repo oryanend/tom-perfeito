@@ -1,7 +1,51 @@
 a:hover {
-  color: var(--secondary-text-color)
+  color: var(--secondary-text-color);
 }
 
-* {
-  z-index: 3;
+.navbar {
+  position: relative;
+}
+
+.navbar-collapse {
+  transition: all 0.3s ease;
+}
+
+.navbar-collapse .nav-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+@media (max-width: 991px) {
+  .navbar-collapse {
+    position: absolute;
+    top: 100%;
+    left: 10px;
+    right: 10px;
+
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 10px;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    z-index: 1000;
+  }
+
+  .navbar-collapse .nav-link {
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: 0.2s;
+  }
+
+  .navbar-collapse .nav-link:hover {
+    background-color: var(--main-text-color);
+    color: white;
+  }
+
+  .navbar-nav .nav-item {
+    margin-bottom: 5px;
+  }
 }
