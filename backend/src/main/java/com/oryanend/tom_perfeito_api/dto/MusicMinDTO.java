@@ -7,6 +7,7 @@ import com.oryanend.tom_perfeito_api.controllers.MusicController;
 import com.oryanend.tom_perfeito_api.entities.Music;
 import com.oryanend.tom_perfeito_api.projections.MusicProjection;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.UUID;
 
 public class MusicMinDTO implements Serializable {
@@ -16,29 +17,17 @@ public class MusicMinDTO implements Serializable {
   private String description;
   private String link;
 
-  public MusicMinDTO() {}
+  private Instant createdAt;
+  private UserMinDTO createdBy;
 
-  public MusicMinDTO(UUID id, String title, String description, String link) {
-    this.id = id;
-    this.title = title;
-    this.description = description;
-    this.link = link;
-  }
+  public MusicMinDTO() {}
 
   public MusicMinDTO(Music entity) {
     this.id = entity.getId();
     this.title = entity.getTitle();
     this.description = entity.getDescription();
-    this.link =
-        linkTo(methodOn(MusicController.class).findById(entity.getId().toString()))
-            .toUri()
-            .toString();
-  }
-
-  public MusicMinDTO(MusicDTO entity) {
-    this.id = entity.getId();
-    this.title = entity.getTitle();
-    this.description = entity.getDescription();
+    this.createdAt = entity.getCreatedAt();
+    this.createdBy = new UserMinDTO(entity.getCreatedBy());
     this.link =
         linkTo(methodOn(MusicController.class).findById(entity.getId().toString()))
             .toUri()
@@ -49,6 +38,8 @@ public class MusicMinDTO implements Serializable {
     this.id = entity.getId();
     this.title = entity.getTitle();
     this.description = entity.getDescription();
+    this.createdAt = entity.getCreatedAt();
+    this.createdBy = new UserMinDTO(entity.getCreatedBy());
     this.link =
         linkTo(methodOn(MusicController.class).findById(entity.getId().toString()))
             .toUri()
@@ -69,5 +60,13 @@ public class MusicMinDTO implements Serializable {
 
   public UUID getId() {
     return id;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public UserMinDTO getCreatedBy() {
+    return createdBy;
   }
 }
