@@ -7,10 +7,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.oryanend.tom_perfeito_api.controllers.UserController;
 import com.oryanend.tom_perfeito_api.entities.User;
 import com.oryanend.tom_perfeito_api.projections.UserMinProjection;
+import java.io.Serializable;
 import java.util.UUID;
 
 @JsonPropertyOrder({"id", "username", "email"})
-public class UserMinDTO {
+public class UserMinDTO implements Serializable {
   private UUID id;
   private String username;
   private String email;
