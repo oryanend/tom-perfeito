@@ -14,12 +14,14 @@
         </strong>
       </h3>
 
-      <p>
-        {{ music.description | slice:0:50 }}
-        @if (music.description.length > 50) {
+      <p class="text-music-description">
+        {{ getTimeAgo(music.createdAt) }} | <a routerLink="/user/{{ music.createdBy.id }}">{{ music.createdBy.username }}</a> |
+        {{ music.description | slice:0:25 }}
+        @if (music.description.length > 25) {
           <span>...</span>
         }
       </p>
+
     </div>
   }
 

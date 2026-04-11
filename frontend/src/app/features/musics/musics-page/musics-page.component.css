@@ -20,3 +20,12 @@ a:hover {
 p {
   color: var(--text-color);
 }
+
+.text-music-description {
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.text-music-description a{
+  color: var(--text-color);
+}
