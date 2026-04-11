@@ -1,11 +1,13 @@
 package com.oryanend.tom_perfeito_api.services;
 
 import com.oryanend.tom_perfeito_api.dto.CommentDTO;
+import com.oryanend.tom_perfeito_api.dto.CommentMinDTO;
 import com.oryanend.tom_perfeito_api.entities.Comment;
 import com.oryanend.tom_perfeito_api.entities.Music;
 import com.oryanend.tom_perfeito_api.entities.User;
 import com.oryanend.tom_perfeito_api.repositories.CommentRepository;
 import com.oryanend.tom_perfeito_api.repositories.MusicRepository;
+import com.oryanend.tom_perfeito_api.repositories.UserRepository;
 import com.oryanend.tom_perfeito_api.services.exceptions.DatabaseException;
 import com.oryanend.tom_perfeito_api.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +26,7 @@ public class CommentService {
   @Autowired private AuthService authService;
 
   @Autowired private MusicRepository musicRepository;
+  @Autowired private UserRepository userRepository;
   @Autowired private CommentRepository repository;
 
   @Transactional(readOnly = true)
@@ -56,6 +59,17 @@ public class CommentService {
     }
 
     return new CommentDTO(comment);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<CommentMinDTO> findByUser(UUID userId, Pageable pageable) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    Page<Comment> list = repository.findByAuthorId(user.getId(), pageable);
+
+    return list.map(CommentMinDTO::new);
   }
 
   @Transactional

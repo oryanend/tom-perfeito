@@ -29,7 +29,6 @@ public class UserDTO {
   private Instant createdAt;
   private Instant updatedAt;
   private Set<RoleDTO> roles = new HashSet<>();
-  private List<MusicMinDTO> musics = new ArrayList<MusicMinDTO>();
 
   public UserDTO() {}
 
@@ -73,7 +72,6 @@ public class UserDTO {
       this.updatedAt = Instant.now();
     }
     entity.getRoles().forEach(role -> roles.add(new RoleDTO(role)));
-    entity.getMusicList().forEach(music -> musics.add(new MusicMinDTO(music)));
   }
 
   public UUID getId() {
@@ -130,10 +128,6 @@ public class UserDTO {
 
   public void setId(UUID id) {
     this.id = id;
-  }
-
-  public List<MusicMinDTO> getMusics() {
-    return musics;
   }
 
   public void addRole(RoleDTO role) {

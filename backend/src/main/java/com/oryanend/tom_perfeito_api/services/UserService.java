@@ -1,9 +1,7 @@
 package com.oryanend.tom_perfeito_api.services;
 
-import com.oryanend.tom_perfeito_api.dto.MusicMinDTO;
 import com.oryanend.tom_perfeito_api.dto.RoleDTO;
 import com.oryanend.tom_perfeito_api.dto.UserDTO;
-import com.oryanend.tom_perfeito_api.entities.Music;
 import com.oryanend.tom_perfeito_api.entities.Role;
 import com.oryanend.tom_perfeito_api.entities.User;
 import com.oryanend.tom_perfeito_api.projections.UserDetailsProjection;
@@ -124,12 +122,6 @@ public class UserService implements UserDetailsService {
     for (RoleDTO roleDTO : dto.getRoles()) {
       Role role = roleRepository.getReferenceById(roleDTO.getId());
       entity.getRoles().add(role);
-    }
-
-    entity.getMusicList().clear();
-    for (MusicMinDTO musicMinDTO : dto.getMusics()) {
-      Music music = musicRepository.getReferenceById(musicMinDTO.getId());
-      entity.getMusicList().add(music);
     }
   }
 }
