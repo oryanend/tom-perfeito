@@ -30,6 +30,7 @@ public class UserDTO {
   private Instant updatedAt;
   private Set<RoleDTO> roles = new HashSet<>();
   private List<MusicMinDTO> musics = new ArrayList<MusicMinDTO>();
+  private List<CommentMinDTO> comments = new ArrayList<CommentMinDTO>();
 
   public UserDTO() {}
 
@@ -74,6 +75,7 @@ public class UserDTO {
     }
     entity.getRoles().forEach(role -> roles.add(new RoleDTO(role)));
     entity.getMusicList().forEach(music -> musics.add(new MusicMinDTO(music)));
+    entity.getComments().forEach(comment -> comments.add(new CommentMinDTO(comment)));
   }
 
   public UUID getId() {
@@ -146,5 +148,9 @@ public class UserDTO {
 
   public void setFirstLogin(Boolean firstLogin) {
     isFirstLogin = firstLogin;
+  }
+
+  public List<CommentMinDTO> getComments() {
+    return comments;
   }
 }
