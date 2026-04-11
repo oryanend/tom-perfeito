@@ -109,7 +109,7 @@
 
                           <div class="d-flex justify-content-between align-items-center mb-2">
                             <h6 class="mb-0">
-                              <strong>{{ reply.author.username }}</strong>
+                              <strong><a routerLink="/user/{{ comment.author.id }}">{{ reply.author.username }}</a></strong>
 
                               @if (comment.author.id === musicAuthorId) {
                                 <span class="d-inline-flex ms-2 px-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">

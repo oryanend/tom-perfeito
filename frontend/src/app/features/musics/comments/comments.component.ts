@@ -32,11 +32,13 @@ export class CommentsComponent implements OnInit {
 
     this.commentService.getCommentByMusic(this.musicId).subscribe({
       next: (res: PageResponse<Comment>) => {
-        this.comments = res.content.map((c) => ({
-          ...c,
-          showReplyBox: false,
-          newReplyBody: '',
-        })) as CommentUI[];
+        this.comments = res.content
+          .filter((c) => !c.parentId)
+          .map((c) => ({
+            ...c,
+            showReplyBox: false,
+            newReplyBody: '',
+          })) as CommentUI[];
       },
       error: (err) => console.error('Erro ao carregar comentários', err),
     });

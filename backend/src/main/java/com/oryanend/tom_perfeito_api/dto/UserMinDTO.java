@@ -6,6 +6,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.oryanend.tom_perfeito_api.controllers.UserController;
 import com.oryanend.tom_perfeito_api.entities.User;
+import com.oryanend.tom_perfeito_api.projections.UserMinProjection;
 import java.util.UUID;
 
 @JsonPropertyOrder({"id", "username", "email"})
@@ -21,6 +22,16 @@ public class UserMinDTO {
     this.id = id;
     this.username = username;
     this.email = email;
+  }
+
+  public UserMinDTO(UserMinProjection entity) {
+    this.id = entity.getId();
+    this.username = entity.getUsername();
+    this.email = entity.getEmail();
+    this.link =
+        linkTo(methodOn(UserController.class).findById(entity.getId().toString()))
+            .toUri()
+            .toString();
   }
 
   public UserMinDTO(User entity) {
