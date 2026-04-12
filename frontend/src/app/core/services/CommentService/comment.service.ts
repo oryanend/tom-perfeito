@@ -12,7 +12,6 @@ import { CommentMin } from '../../../shared/models/comment-min';
 })
 export class CommentService {
   private ApiUrl = `${environment.apiUrl}/musics`;
-
   private http = inject(HttpClient);
 
   getCommentByMusic(musicId: string): Observable<PageResponse<Comment>> {

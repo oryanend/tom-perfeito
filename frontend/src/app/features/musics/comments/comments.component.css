@@ -40,19 +40,6 @@
   border-color: var(--secondary-text-color);
 }
 
-.btn-comment {
-  border-radius: 20px;
-  padding: 8px 25px;
-  background: var(--main-text-color);
-  border: none;
-  transition: all 0.3s;
-}
-
-.btn-comment:hover {
-  background: var(--secondary-text-color);
-  transform: translateY(-1px);
-}
-
 .comment-actions {
   font-size: 0.9rem;
 }
@@ -77,14 +64,6 @@
   margin-left: 60px;
   border-left: 2px solid #e9ecef;
   padding-left: 20px;
-}
-
-h6, h5{
-  color: var(--main-text-color);
-}
-
-p {
-  color: var(--text-color);
 }
 
 a {
