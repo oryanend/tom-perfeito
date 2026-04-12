@@ -5,6 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { Comment } from '../../../shared/models/comment';
 import { PageResponse } from '../../../shared/models/page-response';
 import { AuthError } from '../../errors/auth/auth-error';
+import { CommentMin } from '../../../shared/models/comment-min';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,12 @@ export class CommentService {
 
   getCommentByMusic(musicId: string): Observable<PageResponse<Comment>> {
     return this.http.get<PageResponse<Comment>>(`${this.ApiUrl}/${musicId}/comments`);
+  }
+
+  getCommentByUserId(userId: string, page = 0): Observable<PageResponse<CommentMin>> {
+    return this.http.get<PageResponse<CommentMin>>(
+      `${environment.apiUrl}/users/${userId}/comments?page=${page}&size=4`
+    );
   }
 
   insertCommentByMusic(musicId: string, body: string, parentId?: number): Observable<Comment> {

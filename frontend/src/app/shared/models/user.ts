@@ -1,4 +1,5 @@
 import { MusicPage } from './music-page';
+import { CommentMin } from './comment-min';
 
 export interface User {
   id: string;
@@ -6,4 +7,5 @@ export interface User {
   email: string;
   firstLogin: boolean;
   musics: MusicPage[];
+  comments: CommentMin[];
 }

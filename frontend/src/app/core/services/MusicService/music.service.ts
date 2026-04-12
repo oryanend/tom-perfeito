@@ -20,7 +20,7 @@ export class MusicService {
   }
 
   getMusicByUserId(userId: string, page = 0): Observable<PageResponse<Music>> {
-    return this.http.get<PageResponse<Music>>(`${this.API}/user/${userId}?page=${page}&size=5`);
+    return this.http.get<PageResponse<Music>>(`${this.API}/user/${userId}?page=${page}&size=4`);
   }
 
   searchMusicByName(name: string, page = 0): Observable<PageResponse<Music>> {

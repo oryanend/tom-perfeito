@@ -127,6 +127,10 @@ public class User implements UserDetails {
     isFirstLogin = firstLogin;
   }
 
+  public List<Comment> getComments() {
+    return comments;
+  }
+
   public Set<Role> getRoles() {
     return roles;
   }
