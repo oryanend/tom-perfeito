@@ -22,6 +22,7 @@ import { MusicComponent } from './features/musics/music/music.component';
 import { CommentsComponent } from './features/musics/comments/comments.component';
 import { UserPageComponent } from './features/user/user-page/user-page.component';
 import { MusicCreatePageComponent } from './features/musics/music-create-page/music-create-page.component';
+import { TimeAgoPipe } from './shared/utils/time-ago.pipe';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { MusicCreatePageComponent } from './features/musics/music-create-page/mu
     CommentsComponent,
     UserPageComponent,
     MusicCreatePageComponent,
+    TimeAgoPipe,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, ReactiveFormsModule, FormsModule],
   providers: [

@@ -38,7 +38,7 @@
                 </a>
 
                 <p class="music-description">
-                  {{ getTimeAgo(music.createdAt) }} |
+                  {{ music.createdAt | timeAgo }} |
                   {{ music.description | slice:0:25 }}
                   @if (music.description.length > 25) {
                     <span>...</span>
@@ -108,7 +108,7 @@
 
                 <small class="text-muted">
                   {{ comment.likes }} likes |
-                  {{ getTimeAgo(comment.createdAt) }}
+                  {{ comment.createdAt | timeAgo }}
                 </small>
               </div>
             }
@@ -145,11 +145,9 @@
                       &raquo;
                     </button>
                   </li>
-
                 </ul>
               </nav>
             }
-
           } @else {
             <p>{{ user.username }} ainda não fez comentários.</p>
           }

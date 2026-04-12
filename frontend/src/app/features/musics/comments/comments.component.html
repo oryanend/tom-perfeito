@@ -58,7 +58,7 @@
                 </h6>
 
                 <span class="comment-time">
-                  {{ getTimeAgo(comment.createdAt) }}
+                  {{ comment.createdAt | timeAgo }}
                 </span>
               </div>
 
@@ -120,7 +120,7 @@
                             </h6>
 
                             <span class="comment-time">
-                              {{ getTimeAgo(reply.createdAt) }}
+                              {{ reply.createdAt | timeAgo }}
                             </span>
                           </div>
 

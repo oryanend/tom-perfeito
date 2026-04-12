@@ -10,7 +10,7 @@
       </h1>
 
       <p>
-        {{ getTimeAgo(music.createdAt) }} |
+        {{ music.createdAt | timeAgo }} |
         <span>
           {{ commentsCount }} comentário{{ commentsCount !== 1 ? 's' : '' }}
         </span>

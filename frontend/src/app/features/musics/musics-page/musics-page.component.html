@@ -15,7 +15,7 @@
       </h3>
 
       <p class="text-music-description">
-        {{ getTimeAgo(music.createdAt) }} | <a routerLink="/user/{{ music.createdBy.id }}">{{ music.createdBy.username }}</a> |
+        {{ music.createdAt | timeAgo }} | <a routerLink="/user/{{ music.createdBy.id }}">{{ music.createdBy.username }}</a> |
         {{ music.description | slice:0:25 }}
         @if (music.description.length > 25) {
           <span>...</span>
