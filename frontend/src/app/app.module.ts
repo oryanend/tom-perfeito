@@ -24,6 +24,7 @@ import { UserPageComponent } from './features/user/user-page/user-page.component
 import { MusicCreatePageComponent } from './features/musics/music-create-page/music-create-page.component';
 import { TimeAgoPipe } from './shared/utils/time-ago.pipe';
 import { AlertComponent } from './shared/components/alert/alert.component';
+import { LoginModalComponent } from './shared/components/login-modal/login-modal.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { AlertComponent } from './shared/components/alert/alert.component';
     UserPageComponent,
     MusicCreatePageComponent,
     TimeAgoPipe,
+    LoginModalComponent,
   ],
   imports: [
     BrowserModule,

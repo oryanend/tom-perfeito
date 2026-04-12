@@ -4,18 +4,7 @@
 </app-alert>
 
 <!-- Modal Login -->
-<div class="modal fade" id="loginModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5>Você precisa estar logado</h5>
-      <p>Faça login para comentar.</p>
-
-      <button class="btn btn-comment text-white" (click)="goToLogin()">
-        Ir para página de login
-      </button>
-    </div>
-  </div>
-</div>
+<app-login-modal #loginModal></app-login-modal>
 
 <div id="window">
   <div class="container my-4">
