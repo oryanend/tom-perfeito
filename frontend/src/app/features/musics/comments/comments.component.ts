@@ -43,7 +43,7 @@ export class CommentsComponent implements OnInit {
             newReplyBody: '',
           })) as CommentUI[];
       },
-      error: (err) => console.error('Erro ao carregar comentários', err),
+      error: (err) => console.error('Failed to load comments', err),
     });
   }
 

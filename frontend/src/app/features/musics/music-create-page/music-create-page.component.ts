@@ -85,7 +85,7 @@ export class MusicCreatePageComponent implements OnInit {
         this.allChords = res.content;
         this.filteredChords = this.allChords;
       },
-      error: (err) => console.error('Erro ao carregar acordes', err),
+      error: (err) => console.error('Failed to load chords', err),
     });
   }
 

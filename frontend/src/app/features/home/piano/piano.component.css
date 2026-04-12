@@ -5,10 +5,9 @@
 
 body {
   margin: 0;
-  background: white; /* fundo neutro */
+  background: white;
 }
 
-/* Container do piano */
 ul {
   height: 16em;
   width: 28em;
@@ -23,10 +22,6 @@ li {
   position: relative;
   float: left;
 }
-
-/* ===================== */
-/* TECLAS BRANCAS */
-/* ===================== */
 
 .white {
   height: 16em;
@@ -58,7 +53,7 @@ li {
 
 .white,
 .black {
-  position: relative; /* importante */
+  position: relative;
 }
 
 .note-indicator {
