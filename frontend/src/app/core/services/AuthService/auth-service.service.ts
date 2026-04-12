@@ -10,11 +10,11 @@ import { User } from '../../../shared/models/user';
   providedIn: 'root',
 })
 export class AuthServiceService {
-  private userSubject = new BehaviorSubject<User | null>(null);
-  user$ = this.userSubject.asObservable();
-
-  private tokenExpirationTimer: ReturnType<typeof setTimeout> | null = null;
   private http = inject(HttpClient);
+  private userSubject = new BehaviorSubject<User | null>(null);
+  private tokenExpirationTimer: ReturnType<typeof setTimeout> | null = null;
+
+  user$ = this.userSubject.asObservable();
 
   constructor() {
     this.restoreUser();
@@ -118,7 +118,6 @@ export class AuthServiceService {
 
         this.scheduleAutoLogout(new Date(expMs));
       }
-
       this.loadUserFromApi();
     } catch {
       this.logout();

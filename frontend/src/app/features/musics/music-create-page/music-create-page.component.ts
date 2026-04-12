@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { MusicService } from '../../../core/services/MusicService/music.service';
 import { ChordService } from '../../../core/services/ChordService/chord.service';
 import { LyricChord } from '../../../shared/models/lyric-chord';
@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { NetworkError } from '../../../core/errors/network/network-error';
 import { InvalidRequestError } from '../../../core/errors/auth/invalid-request-error';
 import { Modal } from 'bootstrap';
+import { LoginModalComponent } from '../../../shared/components/login-modal/login-modal.component';
 
 @Component({
   selector: 'app-music-create-page',
@@ -21,6 +22,8 @@ export class MusicCreatePageComponent implements OnInit {
   private chordService = inject(ChordService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
+
+  @ViewChild('loginModal') loginModal!: LoginModalComponent;
 
   modalInstance!: Modal;
   currentStep = 1;
@@ -66,22 +69,6 @@ export class MusicCreatePageComponent implements OnInit {
     });
   }
 
-  openLoginModal() {
-    const element = document.getElementById('loginModal');
-    if (!element) return;
-
-    this.modalInstance = new Modal(element);
-    this.modalInstance.show();
-  }
-
-  goToLogin() {
-    if (this.modalInstance) {
-      this.modalInstance.hide();
-    }
-
-    this.router.navigate(['/login']);
-  }
-
   showAlert(type: 'success' | 'warning' | 'error', message: string) {
     this.alertType = type;
     this.alertMessage = message;
@@ -98,7 +85,7 @@ export class MusicCreatePageComponent implements OnInit {
         this.allChords = res.content;
         this.filteredChords = this.allChords;
       },
-      error: (err) => console.error('Erro ao carregar acordes', err),
+      error: (err) => console.error('Failed to load chords', err),
     });
   }
 
@@ -175,7 +162,7 @@ export class MusicCreatePageComponent implements OnInit {
     const token = localStorage.getItem('access_token');
 
     if (!token) {
-      this.openLoginModal();
+      this.loginModal.openLoginModal();
       return;
     }
 

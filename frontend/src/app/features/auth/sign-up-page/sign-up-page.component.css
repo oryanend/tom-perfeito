@@ -2,8 +2,8 @@
   background-color: var(--secondary-bg-color);
 }
 
-input {
-  background-color: var(--main-bg-color);
+h1 {
+  color: var(--main-text-color) !important;
 }
 
 button {
@@ -11,22 +11,6 @@ button {
   color: var(--main-bg-color) !important;
 }
 
-label {
-  color: var(--main-text-color) !important;
-}
-
-h1 {
-  color: var(--main-text-color) !important;
-}
-
-.sub-desc {
-  color: var(--main-text-color) !important;
-}
-
-.sub-desc a {
-  text-decoration: none !important;
-}
-
-.sub-desc a:hover {
-  text-decoration: underline !important;
+input {
+  background-color: var(--main-bg-color);
 }

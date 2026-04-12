@@ -1,16 +1,5 @@
 <!-- Modal Login -->
-<div class="modal fade" id="loginModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4 text-center">
-      <h5>Você precisa estar logado</h5>
-      <p>Faça login para comentar.</p>
-
-      <button class="btn btn-comment text-white" (click)="goToLogin()">
-        Ir para página de login
-      </button>
-    </div>
-  </div>
-</div>
+<app-login-modal #loginModal></app-login-modal>
 
 <div class="container">
   <div class="comment-section">
@@ -51,14 +40,14 @@
 
                   @if (comment.author.id === musicAuthorId) {
                     <span class="d-inline-flex ms-2 px-1 fw-semibold text-warning-emphasis bg-warning-subtle border border-warning-subtle rounded-2">
-                      Autor
+                      Author
                     </span>
                   }
 
                 </h6>
 
                 <span class="comment-time">
-                  {{ getTimeAgo(comment.createdAt) }}
+                  {{ comment.createdAt | timeAgo }}
                 </span>
               </div>
 
@@ -120,7 +109,7 @@
                             </h6>
 
                             <span class="comment-time">
-                              {{ getTimeAgo(reply.createdAt) }}
+                              {{ reply.createdAt | timeAgo }}
                             </span>
                           </div>
 

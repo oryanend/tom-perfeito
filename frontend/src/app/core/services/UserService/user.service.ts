@@ -8,7 +8,6 @@ import { map } from 'rxjs';
   providedIn: 'root',
 })
 export class UserService {
-  // use inject() instead of constructor injection to satisfy lint
   private http = inject(HttpClient);
 
   getMe() {

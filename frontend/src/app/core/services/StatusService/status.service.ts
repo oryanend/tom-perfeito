@@ -8,7 +8,6 @@ import { Status } from '../../../shared/models/status';
   providedIn: 'root',
 })
 export class StatusService {
-  // use inject() instead of constructor injection to satisfy lint
   private http = inject(HttpClient);
 
   getStatus(): Observable<Status> {

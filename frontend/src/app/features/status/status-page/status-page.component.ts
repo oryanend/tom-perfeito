@@ -9,10 +9,10 @@ import { Status } from '../../../shared/models/status';
   styleUrl: './status-page.component.css',
 })
 export class StatusPageComponent implements OnInit {
+  private statusService = inject(StatusService);
+
   status?: Status;
   latencies: number[] = [];
-
-  private statusService = inject(StatusService);
 
   ngOnInit(): void {
     this.statusService.getStatus().subscribe({

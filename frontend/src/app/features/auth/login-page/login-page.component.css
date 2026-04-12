@@ -6,27 +6,11 @@ input {
   background-color: var(--main-bg-color);
 }
 
-button {
-  background-color: var(--main-text-color) !important;
-  color: var(--main-bg-color) !important;
-}
-
-label {
-  color: var(--main-text-color) !important;
-}
-
 h1 {
   color: var(--main-text-color) !important;
 }
 
-.sub-desc {
-  color: var(--main-text-color) !important;
-}
-
-.sub-desc a {
-  text-decoration: none !important;
-}
-
-.sub-desc a:hover {
-  text-decoration: underline !important;
+button {
+  background-color: var(--main-text-color) !important;
+  color: var(--main-bg-color) !important;
 }

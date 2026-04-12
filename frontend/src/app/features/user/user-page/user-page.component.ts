@@ -6,6 +6,7 @@ import { CommentService } from '../../../core/services/CommentService/comment.se
 import { MusicService } from '../../../core/services/MusicService/music.service';
 import { Music } from '../../../shared/models/music';
 import { CommentMin } from '../../../shared/models/comment-min';
+import { PaginationState } from '../../../shared/models/pagination-state';
 
 @Component({
   selector: 'app-user-page',
@@ -21,20 +22,7 @@ export class UserPageComponent implements OnInit {
 
   public user?: User;
   commentsCount = 0;
-
   activeTab: 'music' | 'comments' = 'music';
-
-  currentPage = 0;
-  totalPages = 0;
-  pages: number[] = [];
-
-  public musics: Music[] = [];
-
-  public comments: CommentMin[] = [];
-
-  commentsPage = 0;
-  commentsTotalPages = 0;
-  commentsPages: number[] = [];
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
@@ -77,70 +65,63 @@ export class UserPageComponent implements OnInit {
     });
   }
 
+  public musicPagination: PaginationState<Music> = {
+    content: [],
+    currentPage: 0,
+    totalPages: 0,
+    pages: [],
+  };
+
+  public commentPagination: PaginationState<CommentMin> = {
+    content: [],
+    currentPage: 0,
+    totalPages: 0,
+    pages: [],
+  };
+
   loadMusics(page = 0) {
     this.musicService.getMusicByUserId(this.user!.id, page).subscribe((res) => {
-      this.musics = res.content;
-      this.totalPages = res.totalPages;
-      this.currentPage = res.number;
-      this.pages = Array.from({ length: this.totalPages }, (_, i) => i);
+      this.musicPagination = {
+        content: res.content,
+        currentPage: res.number,
+        totalPages: res.totalPages,
+        pages: Array.from({ length: res.totalPages }, (_, i) => i),
+      };
     });
   }
 
   loadComments(page = 0) {
     this.commentService.getCommentByUserId(this.user!.id, page).subscribe((res) => {
-      this.comments = res.content;
-      this.commentsTotalPages = res.totalPages;
-      this.commentsPage = res.number;
-      this.commentsPages = Array.from({ length: res.totalPages }, (_, i) => i);
+      this.commentPagination = {
+        content: res.content,
+        currentPage: res.number,
+        totalPages: res.totalPages,
+        pages: Array.from({ length: res.totalPages }, (_, i) => i),
+      };
     });
   }
 
-  goToPage(page: number) {
-    this.loadMusics(page);
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages - 1) {
-      this.loadMusics(this.currentPage + 1);
+  goToPage(type: 'music' | 'comments', page: number) {
+    if (type === 'music') {
+      this.loadMusics(page);
+    } else {
+      this.loadComments(page);
     }
   }
 
-  previousPage() {
-    if (this.currentPage > 0) {
-      this.loadMusics(this.currentPage - 1);
+  nextPage(type: 'music' | 'comments') {
+    const state = type === 'music' ? this.musicPagination : this.commentPagination;
+
+    if (state.currentPage < state.totalPages - 1) {
+      this.goToPage(type, state.currentPage + 1);
     }
   }
 
-  goToCommentsPage(page: number) {
-    this.loadComments(page);
-  }
+  previousPage(type: 'music' | 'comments') {
+    const state = type === 'music' ? this.musicPagination : this.commentPagination;
 
-  nextCommentsPage() {
-    if (this.commentsPage < this.commentsTotalPages - 1) {
-      this.loadComments(this.commentsPage + 1);
+    if (state.currentPage > 0) {
+      this.goToPage(type, state.currentPage - 1);
     }
-  }
-
-  previousCommentsPage() {
-    if (this.commentsPage > 0) {
-      this.loadComments(this.commentsPage - 1);
-    }
-  }
-
-  getTimeAgo(dateString: string): string {
-    const now = new Date();
-    const past = new Date(dateString);
-
-    const diffMs = now.getTime() - past.getTime();
-
-    const seconds = Math.floor(diffMs / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (seconds < 60) return 'Just right now';
-    if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-    if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    return `${days} day${days > 1 ? 's' : ''} ago`;
   }
 }

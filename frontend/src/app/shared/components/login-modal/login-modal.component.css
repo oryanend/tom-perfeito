@@ -1,0 +1,12 @@
+.btn-comment {
+  border-radius: 20px;
+  padding: 8px 25px;
+  background: var(--main-text-color);
+  border: none;
+  transition: all 0.3s;
+}
+
+.btn-comment:hover {
+  background: var(--secondary-text-color);
+  transform: translateY(-1px);
+}

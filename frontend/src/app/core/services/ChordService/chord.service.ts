@@ -9,8 +9,6 @@ import { PageResponse } from '../../../shared/models/page-response';
 })
 export class ChordService {
   private apiUrl = environment.apiUrl;
-
-  // use inject() instead of constructor injection to satisfy lint
   private http = inject(HttpClient);
 
   searchByNotes(notes: string[]) {

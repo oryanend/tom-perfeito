@@ -25,7 +25,7 @@ export class AuthErrorInterceptor implements HttpInterceptor {
         }
 
         if (httpError.status === 401 || httpError.status === 403) {
-          console.error('Token inválido');
+          console.error('Invalid Token');
           this.injector.get(AuthServiceService).logout();
         }
 

@@ -1,17 +1,9 @@
 <h1 class="text-center mb-4"><strong>Login</strong></h1>
 
-@if (alertType) {
-  <div
-    class="alert text-center"
-    [ngClass]="{
-      'alert-success': alertType === 'success',
-      'alert-warning': alertType === 'warning',
-      'alert-danger': alertType === 'error'
-    }"
-  >
-    {{ alertMessage }}
-  </div>
-}
+<app-alert
+  [type]="alertType"
+  [message]="alertMessage">
+</app-alert>
 
 <div id="login-label">
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="border p-4 shadow-sm" style="min-width: 435px;">

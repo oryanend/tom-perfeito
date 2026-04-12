@@ -1,9 +1,3 @@
-#window {
-  padding: 20px;
-  background: var(--secondary-bg-color);
-  border-radius: 10px;
-}
-
 h2 {
   text-align: left;
   font-weight: bold;
@@ -14,23 +8,10 @@ label {
   color: var(--main-text-color);
 }
 
-.btn-comment {
-  border-radius: 20px;
-  padding: 8px 25px;
-  background: var(--main-text-color);
-  border: none;
-  transition: all 0.3s;
-}
-
-.btn-comment:hover {
-  background: var(--secondary-text-color);
-  transform: translateY(-1px);
-}
-
 .char-container {
   display: inline-block;
   position: relative;
-  margin-right: 0.05em; /* mantém espaçamento mínimo entre caracteres */
+  margin-right: 0.05em;
 }
 
 .chord-badge {

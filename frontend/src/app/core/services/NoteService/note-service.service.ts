@@ -9,7 +9,6 @@ import { environment } from '../../../../environments/environment';
 })
 export class NoteServiceService {
   private apiUrl = environment.apiUrl;
-  // use inject() instead of constructor injection to satisfy lint
   private http = inject(HttpClient);
 
   findAll(): Observable<Note[]> {

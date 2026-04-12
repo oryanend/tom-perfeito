@@ -11,7 +11,6 @@ import { Lyric } from '../../../shared/models/lyric';
   providedIn: 'root',
 })
 export class MusicService {
-  // use inject() instead of constructor injection to satisfy lint
   private http = inject(HttpClient);
   private API = `${environment.apiUrl}/musics`;
 

@@ -1,9 +1,11 @@
 a:hover {
-  color: var(--secondary-text-color);
+  text-decoration: underline;
 }
 
 .navbar {
   position: relative;
+  background-color: var(--secondary-bg-color);
+  height: 4rem;
 }
 
 .navbar-collapse {
