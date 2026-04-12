@@ -33,4 +33,13 @@ p {
   color: var(--text-color);
 }
 
+.comment-user a{
+  font-style: italic;
+  text-decoration: none;
+  color: var(--main-text-color);
+  font-size: 1rem;
+}
 
+.comment-user a:hover{
+  text-decoration: underline;
+}
