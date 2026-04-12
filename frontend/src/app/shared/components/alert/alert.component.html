@@ -1,0 +1,12 @@
+@if (type) {
+  <div
+    class="alert text-center"
+    [ngClass]="{
+      'alert-success': type === 'success',
+      'alert-warning': type === 'warning',
+      'alert-danger': type === 'error'
+    }"
+  >
+    {{ message }}
+  </div>
+}

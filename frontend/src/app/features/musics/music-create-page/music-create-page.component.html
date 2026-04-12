@@ -1,15 +1,7 @@
-@if (alertType) {
-  <div
-    class="alert text-center"
-    [ngClass]="{
-      'alert-success': alertType === 'success',
-      'alert-warning': alertType === 'warning',
-      'alert-danger': alertType === 'error'
-    }"
-  >
-    {{ alertMessage }}
-  </div>
-}
+<app-alert
+  [type]="alertType"
+  [message]="alertMessage">
+</app-alert>
 
 <!-- Modal Login -->
 <div class="modal fade" id="loginModal" tabindex="-1">

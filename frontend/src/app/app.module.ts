@@ -23,6 +23,7 @@ import { CommentsComponent } from './features/musics/comments/comments.component
 import { UserPageComponent } from './features/user/user-page/user-page.component';
 import { MusicCreatePageComponent } from './features/musics/music-create-page/music-create-page.component';
 import { TimeAgoPipe } from './shared/utils/time-ago.pipe';
+import { AlertComponent } from './shared/components/alert/alert.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,14 @@ import { TimeAgoPipe } from './shared/utils/time-ago.pipe';
     MusicCreatePageComponent,
     TimeAgoPipe,
   ],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule, ReactiveFormsModule, FormsModule],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    ReactiveFormsModule,
+    FormsModule,
+    AlertComponent,
+  ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
