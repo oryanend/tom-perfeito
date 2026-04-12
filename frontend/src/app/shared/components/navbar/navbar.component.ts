@@ -11,15 +11,14 @@ import { User } from '../../models/user';
 })
 export class NavbarComponent {
   private authService = inject(AuthServiceService);
-  @ViewChild('navbarCollapse') navbarCollapse!: ElementRef;
 
   user$: Observable<User | null> = this.authService.user$;
+  isOpen = false;
+  @ViewChild('navbarCollapse') navbarCollapse!: ElementRef;
 
   logout() {
     this.authService.logout();
   }
-
-  isOpen = false;
 
   toggleNavbar() {
     this.isOpen = !this.isOpen;

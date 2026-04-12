@@ -2,12 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { MusicService } from '../../../../core/services/MusicService/music.service';
 import { debounceTime, Subject, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
-
-// 🔥 Crie um tipo para o autocomplete (mínimo necessário)
-interface MusicSearchItem {
-  id: string;
-  title: string;
-}
+import { MusicSearchItem } from '../../../models/music-search-item';
 
 @Component({
   selector: 'app-search-bar',
@@ -19,11 +14,10 @@ export class SearchBarComponent implements OnInit {
   private musicService = inject(MusicService);
   private router = inject(Router);
 
-  searchTerm = '';
-  showSuggestions = false;
-
-  musics: MusicSearchItem[] = [];
   search$ = new Subject<string>();
+  showSuggestions = false;
+  searchTerm = '';
+  musics: MusicSearchItem[] = [];
 
   ngOnInit() {
     this.search$
@@ -43,11 +37,6 @@ export class SearchBarComponent implements OnInit {
     }
 
     this.search$.next(this.searchTerm);
-  }
-
-  selectItem(music: MusicSearchItem) {
-    this.searchTerm = music.title;
-    this.showSuggestions = false;
   }
 
   hideSuggestions() {

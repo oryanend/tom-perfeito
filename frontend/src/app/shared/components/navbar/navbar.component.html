@@ -1,6 +1,7 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
   <div class="container-fluid">
 
+    <!-- Logo -->
     <a class="navbar-brand" routerLink="/home">
       <img src="favicon.png" alt="tom-perfeito-logo" height="40">
     </a>
@@ -18,53 +19,51 @@
 
     <div class="navbar-collapse collapse" [class.show]="isOpen">
       <div class="row w-100 align-items-center">
-
         <div class="col-lg-3 d-none d-lg-block"></div>
-
         <div class="col-12 col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
           <app-search-bar></app-search-bar>
         </div>
 
         <div class="col-12 col-lg-3 order-1 order-lg-2">
+          <!-- Username | Create | Logout -->
           @if (user$ | async; as user) {
             <ul class="navbar-nav justify-content-lg-end">
 
               <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/user', user.id]" (click)="closeNavbar()">
+                <a class="nav-link text-primary" [routerLink]="['/user', user.id]" (click)="closeNavbar()">
                   {{ user.username }}
                 </a>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" [routerLink]="['/create/music']" (click)="closeNavbar()">
+                <a class="nav-link text-primary" [routerLink]="['/create/music']" (click)="closeNavbar()">
                   Create
                 </a>
               </li>
 
               <li class="nav-item">
-                <button class="nav-link btn btn-link" (click)="logout(); closeNavbar()">
+                <button class="nav-link btn btn-link text-primary" (click)="logout(); closeNavbar()">
                   Logout
                 </button>
               </li>
 
             </ul>
           } @else {
+            <!-- Login | Sign Up -->
             <ul class="navbar-nav justify-content-lg-end">
 
               <li class="nav-item">
-                <a class="nav-link" routerLink="/login" (click)="closeNavbar()">Login</a>
+                <a class="nav-link text-primary" routerLink="/login" (click)="closeNavbar()">Login</a>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" routerLink="/signup" (click)="closeNavbar()">Sign Up</a>
+                <a class="nav-link text-primary" routerLink="/signup" (click)="closeNavbar()">Sign Up</a>
               </li>
 
             </ul>
           }
         </div>
-
       </div>
     </div>
-
   </div>
 </nav>

@@ -15,9 +15,7 @@ export class WelcomeModalComponent {
 
   closeModal() {
     this.isOpen = false;
-
     this.userService.updateFirstLogin().subscribe();
-
     this.closed.emit();
   }
 }
