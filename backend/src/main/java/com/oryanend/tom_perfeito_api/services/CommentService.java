@@ -96,6 +96,10 @@ public class CommentService {
       parentComment.addReply(entity);
     }
 
+    if (dto.getBody().length() > 280) {
+      throw new DatabaseException("Comment body exceeds maximum length of 280 characters");
+    }
+
     entity = repository.save(entity);
     return new CommentDTO(entity);
   }
