@@ -1,3 +1,9 @@
 p {
   color: var(--main-text-color);
 }
+
+#window {
+  box-sizing: border-box;
+  overflow: auto;
+  width: 500px;
+}
