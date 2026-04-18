@@ -37,6 +37,11 @@ export class CommentsComponent implements OnInit, OnChanges {
   alertType: 'success' | 'warning' | 'error' | null = null;
   alertMessage = '';
 
+  // Pagination
+  currentPage = 0;
+  totalPages = 0;
+  pages: number[] = [];
+
   ngOnInit() {
     this.loadComments();
   }
@@ -47,12 +52,12 @@ export class CommentsComponent implements OnInit, OnChanges {
     }
   }
 
-  loadComments() {
+  loadComments(page = 0) {
     if (!this.musicId) return;
 
     this.comments = [];
 
-    this.commentService.getCommentByMusic(this.musicId).subscribe({
+    this.commentService.getCommentByMusic(this.musicId, page).subscribe({
       next: (res: PageResponse<Comment>) => {
         this.comments = res.content
           .filter((c) => !c.parentId)
@@ -62,6 +67,13 @@ export class CommentsComponent implements OnInit, OnChanges {
             newReplyBody: '',
             expanded: false,
           })) as CommentUI[];
+
+        this.currentPage = res.number;
+        this.totalPages = res.totalPages;
+
+        this.pages = Array(this.totalPages)
+          .fill(0)
+          .map((x, i) => i);
       },
       error: (err) => console.error('Failed to load comments', err),
     });
@@ -151,5 +163,21 @@ export class CommentsComponent implements OnInit, OnChanges {
   clearAlert() {
     this.alertType = null;
     this.alertMessage = '';
+  }
+
+  goToPage(page: number) {
+    this.loadComments(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  nextPage() {
+    if (this.currentPage >= this.totalPages - 1) return;
+    this.loadComments(this.currentPage + 1);
+  }
+
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.loadComments(this.currentPage - 1);
+    }
   }
 }

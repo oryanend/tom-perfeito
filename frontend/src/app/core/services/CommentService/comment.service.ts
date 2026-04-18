@@ -14,8 +14,10 @@ export class CommentService {
   private ApiUrl = `${environment.apiUrl}/musics`;
   private http = inject(HttpClient);
 
-  getCommentByMusic(musicId: string): Observable<PageResponse<Comment>> {
-    return this.http.get<PageResponse<Comment>>(`${this.ApiUrl}/${musicId}/comments`);
+  getCommentByMusic(musicId: string, page = 0): Observable<PageResponse<Comment>> {
+    return this.http.get<PageResponse<Comment>>(
+      `${this.ApiUrl}/${musicId}/comments?page=${page}&size=10`
+    );
   }
 
   getCommentByUserId(userId: string, page = 0): Observable<PageResponse<CommentMin>> {
