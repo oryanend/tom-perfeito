@@ -14,7 +14,6 @@ import { CommentUI } from '../../../shared/models/comment-ui';
 import { AuthError } from '../../../core/errors/auth/auth-error';
 import { LoginModalComponent } from '../../../shared/components/login-modal/login-modal.component';
 import { NetworkError } from '../../../core/errors/network/network-error';
-import { InvalidRequestError } from '../../../core/errors/auth/invalid-request-error';
 import { ApiError } from '../../../core/errors/api/api-errors';
 
 @Component({
@@ -80,6 +79,7 @@ export class CommentsComponent implements OnInit, OnChanges {
           expanded: false,
         } as CommentUI);
         this.newCommentBody = '';
+        this.clearAlert();
       },
       error: (err) => {
         if (err instanceof AuthError) {
@@ -107,11 +107,18 @@ export class CommentsComponent implements OnInit, OnChanges {
     if (!parentComment.newReplyBody?.trim()) return;
 
     this.commentService
-      .insertCommentByMusic(this.musicId, parentComment.newReplyBody, parentComment.id)
+      .insertCommentByMusic(this.musicId, parentComment.newReplyBody!, parentComment.id)
       .subscribe({
         next: (reply: Comment) => {
           parentComment.replies = parentComment.replies || [];
-          parentComment.replies.push(reply);
+
+          parentComment.replies.push({
+            ...(reply as CommentUI),
+            expanded: false,
+            showReplyBox: false,
+            newReplyBody: '',
+          } as CommentUI);
+
           parentComment.newReplyBody = '';
           parentComment.showReplyBox = false;
         },

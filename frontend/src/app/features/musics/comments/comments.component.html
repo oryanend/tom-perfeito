@@ -128,7 +128,18 @@
                             </span>
                           </div>
 
-                          <p class="mb-2">{{ reply.body }}</p>
+                          <p class="mb-2">
+                            {{ reply.expanded ? reply.body : getShortText(reply.body) }}
+
+                            @if (reply.body.length > readMoreLimitComment) {
+                              <button
+                                class="read-more btn btn-link p-0"
+                                (click)="toggleExpand(reply)"
+                              >
+                                {{ reply.expanded ? '' : 'Read more' }}
+                              </button>
+                            }
+                          </p>
                         </div>
                       </div>
                     </div>
