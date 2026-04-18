@@ -2,6 +2,10 @@
 <app-login-modal #loginModal></app-login-modal>
 
 <div class="container">
+  <app-alert
+    [type]="alertType"
+    [message]="alertMessage">
+  </app-alert>
   <div class="comment-section">
 
     <!-- New Comment Input -->

@@ -5,10 +5,8 @@ import { LyricChord } from '../../../shared/models/lyric-chord';
 import { Lyric } from '../../../shared/models/lyric';
 import { Chord } from '../../../shared/models/chord';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NetworkError } from '../../../core/errors/network/network-error';
 import { InvalidRequestError } from '../../../core/errors/auth/invalid-request-error';
-import { Modal } from 'bootstrap';
 import { LoginModalComponent } from '../../../shared/components/login-modal/login-modal.component';
 
 @Component({
@@ -20,12 +18,10 @@ import { LoginModalComponent } from '../../../shared/components/login-modal/logi
 export class MusicCreatePageComponent implements OnInit {
   private musicService = inject(MusicService);
   private chordService = inject(ChordService);
-  private router = inject(Router);
   private fb = inject(FormBuilder);
 
   @ViewChild('loginModal') loginModal!: LoginModalComponent;
 
-  modalInstance!: Modal;
   currentStep = 1;
   signinForm!: FormGroup;
   isLoading = false;

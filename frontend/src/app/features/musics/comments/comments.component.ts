@@ -13,6 +13,9 @@ import { PageResponse } from '../../../shared/models/page-response';
 import { CommentUI } from '../../../shared/models/comment-ui';
 import { AuthError } from '../../../core/errors/auth/auth-error';
 import { LoginModalComponent } from '../../../shared/components/login-modal/login-modal.component';
+import { NetworkError } from '../../../core/errors/network/network-error';
+import { InvalidRequestError } from '../../../core/errors/auth/invalid-request-error';
+import { ApiError } from '../../../core/errors/api/api-errors';
 
 @Component({
   selector: 'app-comments',
@@ -30,6 +33,10 @@ export class CommentsComponent implements OnInit, OnChanges {
   newCommentBody = '';
   comments: CommentUI[] = [];
   readMoreLimitComment = 100;
+
+  // AlertType
+  alertType: 'success' | 'warning' | 'error' | null = null;
+  alertMessage = '';
 
   ngOnInit() {
     this.loadComments();
@@ -80,6 +87,14 @@ export class CommentsComponent implements OnInit, OnChanges {
         } else {
           console.error(err);
         }
+
+        if (err instanceof NetworkError) {
+          this.showAlert('error', 'Unable to connect to the server. Please try again later.');
+        }
+
+        if (err instanceof ApiError) {
+          this.showAlert('warning', err.message);
+        }
       },
     });
   }
@@ -100,7 +115,15 @@ export class CommentsComponent implements OnInit, OnChanges {
           parentComment.newReplyBody = '';
           parentComment.showReplyBox = false;
         },
-        error: (err) => console.log(err),
+        error: (err) => {
+          if (err instanceof NetworkError) {
+            this.showAlert('error', 'Unable to connect to the server. Please try again later.');
+          }
+
+          if (err instanceof ApiError) {
+            this.showAlert('warning', err.message);
+          }
+        },
       });
   }
 
@@ -111,5 +134,15 @@ export class CommentsComponent implements OnInit, OnChanges {
   getShortText(text: string, limit: number = this.readMoreLimitComment): string {
     if (!text) return '';
     return text.length > limit ? text.substring(0, limit) + '...' : text;
+  }
+
+  showAlert(type: 'success' | 'warning' | 'error', message: string) {
+    this.alertType = type;
+    this.alertMessage = message;
+  }
+
+  clearAlert() {
+    this.alertType = null;
+    this.alertMessage = '';
   }
 }
