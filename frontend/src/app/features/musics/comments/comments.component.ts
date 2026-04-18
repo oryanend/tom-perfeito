@@ -1,11 +1,9 @@
-import { Component, Input, OnInit, inject, ViewChild } from '@angular/core';
+import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { CommentService } from '../../../core/services/CommentService/comment.service';
 import { Comment } from '../../../shared/models/comment';
 import { PageResponse } from '../../../shared/models/page-response';
 import { CommentUI } from '../../../shared/models/comment-ui';
 import { AuthError } from '../../../core/errors/auth/auth-error';
-import { Modal } from 'bootstrap';
-import { Router } from '@angular/router';
 import { LoginModalComponent } from '../../../shared/components/login-modal/login-modal.component';
 
 @Component({
@@ -16,15 +14,14 @@ import { LoginModalComponent } from '../../../shared/components/login-modal/logi
 })
 export class CommentsComponent implements OnInit {
   private commentService = inject(CommentService);
-  private router = inject(Router);
 
   @ViewChild('loginModal') loginModal!: LoginModalComponent;
   @Input() musicId!: string;
   @Input() musicAuthorId!: string;
 
   newCommentBody = '';
-  modalInstance!: Modal;
   comments: CommentUI[] = [];
+  readMoreLimitComment = 100;
 
   ngOnInit() {
     this.loadComments();
@@ -41,6 +38,7 @@ export class CommentsComponent implements OnInit {
             ...c,
             showReplyBox: false,
             newReplyBody: '',
+            expanded: false,
           })) as CommentUI[];
       },
       error: (err) => console.error('Failed to load comments', err),
@@ -49,7 +47,6 @@ export class CommentsComponent implements OnInit {
 
   postComment() {
     if (!this.newCommentBody.trim()) return;
-    console.log(this.newCommentBody);
 
     this.commentService.insertCommentByMusic(this.musicId, this.newCommentBody).subscribe({
       next: (comment: Comment) => {
@@ -57,6 +54,7 @@ export class CommentsComponent implements OnInit {
           ...comment,
           showReplyBox: false,
           newReplyBody: '',
+          expanded: false,
         } as CommentUI);
         this.newCommentBody = '';
       },
@@ -88,5 +86,14 @@ export class CommentsComponent implements OnInit {
         },
         error: (err) => console.log(err),
       });
+  }
+
+  toggleExpand(comment: CommentUI) {
+    comment.expanded = !comment.expanded;
+  }
+
+  getShortText(text: string, limit: number = this.readMoreLimitComment): string {
+    if (!text) return '';
+    return text.length > limit ? text.substring(0, limit) + '...' : text;
   }
 }

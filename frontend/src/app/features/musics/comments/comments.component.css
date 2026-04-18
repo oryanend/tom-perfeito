@@ -71,6 +71,19 @@
   padding-left: 20px;
 }
 
+.read-more{
+  cursor: pointer;
+  color: var(--secondary-text-color);
+}
+
+.btn{
+  text-decoration: none;
+}
+
+.btn:hover{
+  text-decoration: underline;
+}
+
 a {
   cursor: pointer;
 }
