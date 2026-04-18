@@ -49,6 +49,7 @@ export class CommentsComponent implements OnInit {
 
   postComment() {
     if (!this.newCommentBody.trim()) return;
+    console.log(this.newCommentBody);
 
     this.commentService.insertCommentByMusic(this.musicId, this.newCommentBody).subscribe({
       next: (comment: Comment) => {
