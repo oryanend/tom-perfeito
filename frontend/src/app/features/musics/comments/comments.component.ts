@@ -1,4 +1,12 @@
-import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { CommentService } from '../../../core/services/CommentService/comment.service';
 import { Comment } from '../../../shared/models/comment';
 import { PageResponse } from '../../../shared/models/page-response';
@@ -12,7 +20,7 @@ import { LoginModalComponent } from '../../../shared/components/login-modal/logi
   templateUrl: './comments.component.html',
   styleUrl: './comments.component.css',
 })
-export class CommentsComponent implements OnInit {
+export class CommentsComponent implements OnInit, OnChanges {
   private commentService = inject(CommentService);
 
   @ViewChild('loginModal') loginModal!: LoginModalComponent;
@@ -27,8 +35,16 @@ export class CommentsComponent implements OnInit {
     this.loadComments();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['musicId'] && !changes['musicId'].firstChange) {
+      this.loadComments();
+    }
+  }
+
   loadComments() {
     if (!this.musicId) return;
+
+    this.comments = [];
 
     this.commentService.getCommentByMusic(this.musicId).subscribe({
       next: (res: PageResponse<Comment>) => {
