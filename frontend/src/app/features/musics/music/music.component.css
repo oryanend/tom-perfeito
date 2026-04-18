@@ -1,3 +1,13 @@
+#window{
+  width: 40rem;
+}
+
+@media (max-width: 991px) {
+  #window {
+    width: 30rem;
+  }
+}
+
 .lyric {
   font-family: monospace;
 }

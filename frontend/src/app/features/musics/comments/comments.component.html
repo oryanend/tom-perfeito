@@ -2,6 +2,10 @@
 <app-login-modal #loginModal></app-login-modal>
 
 <div class="container">
+  <app-alert
+    [type]="alertType"
+    [message]="alertMessage">
+  </app-alert>
   <div class="comment-section">
 
     <!-- New Comment Input -->
@@ -46,14 +50,25 @@
 
                 </h6>
 
-                <span class="comment-time">
+                <span class="comment-time" >
                   {{ comment.createdAt | timeAgo }}
                 </span>
               </div>
 
-              <p class="mb-2">{{ comment.body }}</p>
+              <p class="mb-2">
+                {{ comment.expanded ? comment.body : getShortText(comment.body) }}
 
-              <div class="comment-actions mb-2">
+                @if (comment.body.length > readMoreLimitComment) {
+                  <button
+                    class="read-more btn btn-link p-0"
+                    (click)="toggleExpand(comment)"
+                  >
+                    {{ comment.expanded ? '' : 'Read more' }}
+                  </button>
+                }
+              </p>
+
+              <div class="comment-actions mb-2 d-flex gap-3">
                 <button class="btn btn-link p-0">
                   <i class="bi bi-heart"></i> Like
                 </button>
@@ -113,7 +128,18 @@
                             </span>
                           </div>
 
-                          <p class="mb-2">{{ reply.body }}</p>
+                          <p class="mb-2">
+                            {{ reply.expanded ? reply.body : getShortText(reply.body) }}
+
+                            @if (reply.body.length > readMoreLimitComment) {
+                              <button
+                                class="read-more btn btn-link p-0"
+                                (click)="toggleExpand(reply)"
+                              >
+                                {{ reply.expanded ? '' : 'Read more' }}
+                              </button>
+                            }
+                          </p>
                         </div>
                       </div>
                     </div>

@@ -1,5 +1,6 @@
 import { UserMin } from './user-min';
 import { Music } from './music';
+import { CommentUI } from './comment-ui';
 
 export interface Comment {
   id: number;
@@ -14,5 +15,5 @@ export interface Comment {
   author: UserMin;
   music: Music;
 
-  replies: Comment[];
+  replies?: CommentUI[];
 }

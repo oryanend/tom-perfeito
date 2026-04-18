@@ -38,7 +38,7 @@ export class CommentService {
 
     return this.http.post<Comment>(
       `${this.ApiUrl}/${musicId}/comments`,
-      { body, parentId: parentId || null },
+      { body, parentId: parentId ?? null },
       { headers }
     );
   }

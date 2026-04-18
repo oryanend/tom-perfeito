@@ -11,9 +11,13 @@ body {
 ul {
   height: 16em;
   width: 28em;
-  margin: 3em auto;
+  margin: 1em auto;
   padding: 0;
   position: relative;
+}
+
+h4 {
+  color: var(--text-color);
 }
 
 /* Reset */

@@ -1,12 +1,20 @@
-import { Component, Input, OnInit, inject, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { CommentService } from '../../../core/services/CommentService/comment.service';
 import { Comment } from '../../../shared/models/comment';
 import { PageResponse } from '../../../shared/models/page-response';
 import { CommentUI } from '../../../shared/models/comment-ui';
 import { AuthError } from '../../../core/errors/auth/auth-error';
-import { Modal } from 'bootstrap';
-import { Router } from '@angular/router';
 import { LoginModalComponent } from '../../../shared/components/login-modal/login-modal.component';
+import { NetworkError } from '../../../core/errors/network/network-error';
+import { ApiError } from '../../../core/errors/api/api-errors';
 
 @Component({
   selector: 'app-comments',
@@ -14,24 +22,35 @@ import { LoginModalComponent } from '../../../shared/components/login-modal/logi
   templateUrl: './comments.component.html',
   styleUrl: './comments.component.css',
 })
-export class CommentsComponent implements OnInit {
+export class CommentsComponent implements OnInit, OnChanges {
   private commentService = inject(CommentService);
-  private router = inject(Router);
 
   @ViewChild('loginModal') loginModal!: LoginModalComponent;
   @Input() musicId!: string;
   @Input() musicAuthorId!: string;
 
   newCommentBody = '';
-  modalInstance!: Modal;
   comments: CommentUI[] = [];
+  readMoreLimitComment = 100;
+
+  // AlertType
+  alertType: 'success' | 'warning' | 'error' | null = null;
+  alertMessage = '';
 
   ngOnInit() {
     this.loadComments();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['musicId'] && !changes['musicId'].firstChange) {
+      this.loadComments();
+    }
+  }
+
   loadComments() {
     if (!this.musicId) return;
+
+    this.comments = [];
 
     this.commentService.getCommentByMusic(this.musicId).subscribe({
       next: (res: PageResponse<Comment>) => {
@@ -41,6 +60,7 @@ export class CommentsComponent implements OnInit {
             ...c,
             showReplyBox: false,
             newReplyBody: '',
+            expanded: false,
           })) as CommentUI[];
       },
       error: (err) => console.error('Failed to load comments', err),
@@ -56,14 +76,24 @@ export class CommentsComponent implements OnInit {
           ...comment,
           showReplyBox: false,
           newReplyBody: '',
+          expanded: false,
         } as CommentUI);
         this.newCommentBody = '';
+        this.clearAlert();
       },
       error: (err) => {
         if (err instanceof AuthError) {
           this.loginModal.openLoginModal();
         } else {
           console.error(err);
+        }
+
+        if (err instanceof NetworkError) {
+          this.showAlert('error', 'Unable to connect to the server. Please try again later.');
+        }
+
+        if (err instanceof ApiError) {
+          this.showAlert('warning', err.message);
         }
       },
     });
@@ -77,15 +107,49 @@ export class CommentsComponent implements OnInit {
     if (!parentComment.newReplyBody?.trim()) return;
 
     this.commentService
-      .insertCommentByMusic(this.musicId, parentComment.newReplyBody, parentComment.id)
+      .insertCommentByMusic(this.musicId, parentComment.newReplyBody!, parentComment.id)
       .subscribe({
         next: (reply: Comment) => {
           parentComment.replies = parentComment.replies || [];
-          parentComment.replies.push(reply);
+
+          parentComment.replies.push({
+            ...(reply as CommentUI),
+            expanded: false,
+            showReplyBox: false,
+            newReplyBody: '',
+          } as CommentUI);
+
           parentComment.newReplyBody = '';
           parentComment.showReplyBox = false;
         },
-        error: (err) => console.log(err),
+        error: (err) => {
+          if (err instanceof NetworkError) {
+            this.showAlert('error', 'Unable to connect to the server. Please try again later.');
+          }
+
+          if (err instanceof ApiError) {
+            this.showAlert('warning', err.message);
+          }
+        },
       });
+  }
+
+  toggleExpand(comment: CommentUI) {
+    comment.expanded = !comment.expanded;
+  }
+
+  getShortText(text: string, limit: number = this.readMoreLimitComment): string {
+    if (!text) return '';
+    return text.length > limit ? text.substring(0, limit) + '...' : text;
+  }
+
+  showAlert(type: 'success' | 'warning' | 'error', message: string) {
+    this.alertType = type;
+    this.alertMessage = message;
+  }
+
+  clearAlert() {
+    this.alertType = null;
+    this.alertMessage = '';
   }
 }

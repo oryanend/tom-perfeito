@@ -1,6 +1,7 @@
 import { Comment } from './comment';
 
 export interface CommentUI extends Comment {
-  showReplyBox: boolean;
-  newReplyBody: string;
+  expanded?: boolean;
+  showReplyBox?: boolean;
+  newReplyBody?: string;
 }
