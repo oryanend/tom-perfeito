@@ -42,6 +42,8 @@ export class CommentsComponent implements OnInit, OnChanges {
   totalPages = 0;
   pages: number[] = [];
 
+  likedByUser?: boolean;
+
   ngOnInit() {
     this.loadComments();
   }
@@ -66,6 +68,7 @@ export class CommentsComponent implements OnInit, OnChanges {
             showReplyBox: false,
             newReplyBody: '',
             expanded: false,
+            likedByUser: false,
           })) as CommentUI[];
 
         this.currentPage = res.number;
@@ -179,5 +182,22 @@ export class CommentsComponent implements OnInit, OnChanges {
     if (this.currentPage > 0) {
       this.loadComments(this.currentPage - 1);
     }
+  }
+
+  addLike(commentId: number, musicId: string) {
+    this.commentService.addLike(commentId, musicId).subscribe({
+      next: (res) => {
+        this.comments = this.comments.map((c) =>
+          c.id === commentId
+            ? {
+                ...c,
+                likes: res.likes,
+                likedByUser: res.likedByUser,
+              }
+            : c
+        );
+      },
+      error: (err) => console.error(err),
+    });
   }
 }

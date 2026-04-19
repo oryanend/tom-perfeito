@@ -6,6 +6,7 @@ import { Comment } from '../../../shared/models/comment';
 import { PageResponse } from '../../../shared/models/page-response';
 import { AuthError } from '../../errors/auth/auth-error';
 import { CommentMin } from '../../../shared/models/comment-min';
+import { CommentLikeResponse } from '../../../shared/models/comment-like-response';
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +42,25 @@ export class CommentService {
     return this.http.post<Comment>(
       `${this.ApiUrl}/${musicId}/comments`,
       { body, parentId: parentId ?? null },
+      { headers }
+    );
+  }
+
+  addLike(commentId: number, musicId: string): Observable<CommentLikeResponse> {
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+      return throwError(() => new AuthError());
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.post<CommentLikeResponse>(
+      `${this.ApiUrl}/${musicId}/comments/${commentId}/like`,
+      {},
       { headers }
     );
   }

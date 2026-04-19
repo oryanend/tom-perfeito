@@ -1,36 +1,21 @@
-import { Injectable, inject, Injector } from '@angular/core';
-import {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-  HttpErrorResponse,
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { AuthServiceService } from '../services/AuthService/auth-service.service';
+import { Injectable } from '@angular/core';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AuthErrorInterceptor implements HttpInterceptor {
-  private injector = inject(Injector);
-
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    return next.handle(req).pipe(
-      catchError((error: unknown) => {
-        const httpError = error as HttpErrorResponse;
+    const token = localStorage.getItem('access_token');
 
-        if (httpError.status === 0) {
-          console.error('Backend offline');
-          this.injector.get(AuthServiceService).logout();
-        }
+    if (token) {
+      const cloned = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return next.handle(cloned);
+    }
 
-        if (httpError.status === 401 || httpError.status === 403) {
-          console.error('Invalid Token');
-          this.injector.get(AuthServiceService).logout();
-        }
-
-        return throwError(() => error);
-      })
-    );
+    return next.handle(req);
   }
 }
