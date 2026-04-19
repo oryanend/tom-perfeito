@@ -6,3 +6,8 @@
 .text-music-description a{
   color: var(--text-color);
 }
+
+.placeholder {
+  color: var(--text-color);
+  border-radius: 3px;
+}

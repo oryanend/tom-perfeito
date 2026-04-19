@@ -15,6 +15,8 @@ export class MusicsPageComponent implements OnInit {
   totalPages = 0;
   pages: number[] = [];
 
+  isLoading = false;
+
   private musicService = inject(MusicService);
 
   ngOnInit(): void {
@@ -22,15 +24,25 @@ export class MusicsPageComponent implements OnInit {
   }
 
   loadMusics(page = 0) {
-    this.musicService.getAllMusics(page).subscribe((response) => {
-      this.musics = response.content;
+    this.isLoading = true;
 
-      this.currentPage = response.number;
-      this.totalPages = response.totalPages;
+    this.musicService.getAllMusics(page).subscribe({
+      next: (response) => {
+        this.musics = response.content;
 
-      this.pages = Array(this.totalPages)
-        .fill(0)
-        .map((x, i) => i);
+        this.currentPage = response.number;
+        this.totalPages = response.totalPages;
+
+        this.pages = Array(this.totalPages)
+          .fill(0)
+          .map((x, i) => i);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
     });
   }
 
