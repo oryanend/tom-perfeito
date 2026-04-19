@@ -1,6 +1,8 @@
 package com.oryanend.tom_perfeito_api.dto;
 
 import com.oryanend.tom_perfeito_api.entities.Comment;
+import com.oryanend.tom_perfeito_api.entities.User;
+import com.oryanend.tom_perfeito_api.repositories.CommentLikeRepository;
 import java.time.Instant;
 import java.util.List;
 
@@ -71,6 +73,23 @@ public class CommentDTO {
     }
 
     this.replies = entity.getReplies().stream().map(CommentDTO::new).toList();
+  }
+
+  public CommentDTO(Comment entity, User currentUser, CommentLikeRepository likeRepo) {
+    this.id = entity.getId();
+    this.body = entity.getBody();
+    this.likes = entity.getLikes();
+    this.author = new UserMinDTO(entity.getAuthor());
+    this.music = new MusicMinDTO(entity.getMusic());
+    this.parentId = entity.getParent() != null ? entity.getParent().getId() : null;
+
+    this.createdAt = entity.getCreatedAt() != null ? entity.getCreatedAt() : Instant.now();
+    this.updatedAt = entity.getUpdatedAt() != null ? entity.getUpdatedAt() : Instant.now();
+
+    this.replies =
+        entity.getReplies().stream()
+            .map(reply -> new CommentDTO(reply, currentUser, likeRepo))
+            .toList();
   }
 
   public Long getId() {

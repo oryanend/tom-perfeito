@@ -1,6 +1,7 @@
 package com.oryanend.tom_perfeito_api.controllers;
 
 import com.oryanend.tom_perfeito_api.dto.CommentDTO;
+import com.oryanend.tom_perfeito_api.dto.CommentLikeResponseDTO;
 import com.oryanend.tom_perfeito_api.services.CommentService;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -59,5 +60,13 @@ public class CommentController {
       @PathVariable Long id, @Valid @RequestBody CommentDTO dto) {
     dto = service.update(id, dto);
     return ResponseEntity.ok().body(dto);
+  }
+
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CLIENT')")
+  @PostMapping("/{commentId}/like")
+  public ResponseEntity<CommentLikeResponseDTO> addLike(
+      @PathVariable Long commentId, @PathVariable UUID musicId) {
+    CommentLikeResponseDTO commentLikeResponseDTO = service.addLike(commentId, musicId);
+    return ResponseEntity.ok().body(commentLikeResponseDTO);
   }
 }
