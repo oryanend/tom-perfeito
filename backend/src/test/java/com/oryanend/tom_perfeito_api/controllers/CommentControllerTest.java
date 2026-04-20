@@ -149,7 +149,10 @@ public class CommentControllerTest {
     existingId = createdMusic.getId();
 
     // Perform GET request to retrieve comments
-    ResultActions result = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments"));
+    ResultActions result =
+        mockMvc.perform(
+            get(musicUrl + "/" + existingId + "/comments")
+                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken));
 
     result
         .andExpect(status().isOk())
@@ -412,6 +415,87 @@ public class CommentControllerTest {
         .andExpect(
             jsonPath("$.path")
                 .value(musicUrl + "/" + existingId + "/comments/" + commentNonExistingId));
+  }
+
+  // Like System
+  @Test
+  @DisplayName("POST `/comments/{commentId}/like` should return void and update like value")
+  void postCommentLike() throws Exception {
+    // Create User
+    String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
+
+    // Create music
+    MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
+    existingId = createdMusic.getId();
+
+    // Insert comment
+    CommentDTO createdComment =
+        createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
+
+    ResultActions postResult =
+        mockMvc.perform(
+            post(musicUrl + "/" + existingId + "/comments/" + createdComment.getId() + "/like")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
+                .accept(MediaType.APPLICATION_JSON));
+
+    // Add like
+    postResult
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.commentId").value(createdComment.getId()))
+        .andExpect(jsonPath("$.likes").value(1))
+        .andExpect(jsonPath("$.likedByUser").value(true));
+
+    // Check if like was added
+    ResultActions getResult =
+        mockMvc.perform(get(musicUrl + "/" + existingId + "/comments/" + createdComment.getId()));
+
+    getResult
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(createdComment.getId()))
+        .andExpect(jsonPath("$.body").value(createdComment.getBody()))
+        .andExpect(jsonPath("$.likes").value(1))
+        .andExpect(jsonPath("$.createdAt").exists())
+        .andExpect(jsonPath("$.updatedAt").exists())
+        .andExpect(jsonPath("$.author").exists());
+  }
+
+  @Test
+  @DisplayName("POST `/comments/{commentId}/like` should return 404 when music doesn't exist")
+  void postCommentLikeNonExistingMusic() throws Exception {
+    // Create User
+    String registerUserAndObtainAcessToken = registerUserAndObtainAcessToken(validUserDTO);
+
+    // Create music
+    MusicDTO createdMusic = createMusic(validMusicDTO, registerUserAndObtainAcessToken);
+    existingId = createdMusic.getId();
+
+    // Insert comment
+    CommentDTO createdComment =
+        createComment(existingId, validCommentDTO, registerUserAndObtainAcessToken);
+
+    ResultActions postResult =
+        mockMvc.perform(
+            post(musicUrl + "/" + nonExistingId + "/comments/" + createdComment.getId() + "/like")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken)
+                .accept(MediaType.APPLICATION_JSON));
+
+    postResult
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.timestamp").exists())
+        .andExpect(jsonPath("$.status").value(404))
+        .andExpect(jsonPath("$.error").value("Resource not found"))
+        .andExpect(jsonPath("$.message").value("Music not found"))
+        .andExpect(
+            jsonPath("$.path")
+                .value(
+                    musicUrl
+                        + "/"
+                        + nonExistingId
+                        + "/comments/"
+                        + createdComment.getId()
+                        + "/like"));
   }
 
   // Methods to help tests

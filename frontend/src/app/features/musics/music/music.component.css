@@ -67,3 +67,12 @@ h2 {
   font-weight: bold;
   font-size: 14px;
 }
+
+.placeholder {
+  background-color: var(--main-text-color);
+  border-radius: 3px;
+}
+
+.title {
+  height: 2rem;
+}

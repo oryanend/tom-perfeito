@@ -13,6 +13,7 @@ import { ChordService } from '../../../core/services/ChordService/chord.service'
 export class PianoComponent {
   selectedKeys = new Set<string>();
   chords: Chord[] = [];
+  isLoading = false;
 
   keys = [
     { name: NoteName.C, accidental: Accidental.NATURAL, type: 'white' },
@@ -66,11 +67,22 @@ export class PianoComponent {
 
     if (notes.length < 2) {
       this.chords = [];
+      this.isLoading = false;
       return;
     }
 
-    this.chordService.searchByNotes(notes).subscribe((chords) => {
-      this.chords = chords;
+    this.isLoading = true;
+
+    this.chordService.searchByNotes(notes).subscribe({
+      next: (chords) => {
+        this.chords = chords;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
     });
   }
 

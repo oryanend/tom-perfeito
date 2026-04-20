@@ -69,8 +69,9 @@
               </p>
 
               <div class="comment-actions mb-2 d-flex gap-3">
-                <button class="btn btn-link p-0">
-                  <i class="bi bi-heart"></i> Like
+                <button class="btn btn-link p-0" (click)="addLike(comment.id, musicId)">
+                  {{ comment.likes }}
+                  Like
                 </button>
 
                 <button
@@ -151,5 +152,46 @@
         </div>
       }
     </div>
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <button
+              type="button"
+              class="page-link btn-plain"
+              (click)="previousPage()"
+              [attr.aria-disabled]="currentPage === 0"
+            >
+              &laquo;
+            </button>
+          </li>
+
+          @for (page of pages; track page) {
+            <li class="page-item" [class.active]="page === currentPage">
+              <button
+                type="button"
+                class="page-link btn-plain"
+                (click)="goToPage(page)"
+              >
+                {{ page + 1 }}
+              </button>
+            </li>
+          }
+
+          <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+            <button
+              type="button"
+              class="page-link btn-plain"
+              (click)="nextPage()"
+              [attr.aria-disabled]="currentPage === totalPages - 1"
+            >
+              &raquo;
+            </button>
+          </li>
+        </ul>
+      </nav>
+    }
   </div>
 </div>

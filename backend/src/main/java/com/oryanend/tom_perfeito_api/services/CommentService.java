@@ -1,10 +1,11 @@
 package com.oryanend.tom_perfeito_api.services;
 
-import com.oryanend.tom_perfeito_api.dto.CommentDTO;
-import com.oryanend.tom_perfeito_api.dto.CommentMinDTO;
+import com.oryanend.tom_perfeito_api.dto.*;
 import com.oryanend.tom_perfeito_api.entities.Comment;
+import com.oryanend.tom_perfeito_api.entities.CommentLike;
 import com.oryanend.tom_perfeito_api.entities.Music;
 import com.oryanend.tom_perfeito_api.entities.User;
+import com.oryanend.tom_perfeito_api.repositories.CommentLikeRepository;
 import com.oryanend.tom_perfeito_api.repositories.CommentRepository;
 import com.oryanend.tom_perfeito_api.repositories.MusicRepository;
 import com.oryanend.tom_perfeito_api.repositories.UserRepository;
@@ -12,6 +13,7 @@ import com.oryanend.tom_perfeito_api.services.exceptions.DatabaseException;
 import com.oryanend.tom_perfeito_api.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,6 +30,7 @@ public class CommentService {
   @Autowired private MusicRepository musicRepository;
   @Autowired private UserRepository userRepository;
   @Autowired private CommentRepository repository;
+  @Autowired private CommentLikeRepository commentLikeRepository;
 
   @Transactional(readOnly = true)
   public Page<CommentDTO> findByMusic(UUID musicId, Pageable pageable) {
@@ -37,9 +40,11 @@ public class CommentService {
             .findById(musicId)
             .orElseThrow(() -> new ResourceNotFoundException("Music not found"));
 
+    User user = userService.authenticated();
+
     Page<Comment> list = repository.findByMusic(music, pageable);
 
-    return list.map(CommentDTO::new);
+    return list.map(comment -> new CommentDTO(comment, user, commentLikeRepository));
   }
 
   @Transactional(readOnly = true)
@@ -137,6 +142,45 @@ public class CommentService {
     } catch (EntityNotFoundException e) {
       throw new ResourceNotFoundException("Comment not found");
     }
+  }
+
+  @Transactional
+  public CommentLikeResponseDTO addLike(Long commentId, UUID musicId) {
+
+    User user = userService.authenticated();
+
+    musicRepository
+        .findById(musicId)
+        .orElseThrow(() -> new ResourceNotFoundException("Music not found"));
+
+    Comment comment =
+        repository
+            .findById(commentId)
+            .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+
+    Optional<CommentLike> existing = commentLikeRepository.findByUserAndComment(user, comment);
+
+    boolean liked;
+
+    if (existing.isPresent()) {
+      commentLikeRepository.delete(existing.get());
+      comment.setLikes(comment.getLikes() - 1);
+      liked = false;
+
+    } else {
+      CommentLike like = new CommentLike();
+      like.setUser(user);
+      like.setComment(comment);
+
+      commentLikeRepository.save(like);
+
+      comment.setLikes(comment.getLikes() + 1);
+      liked = true;
+    }
+
+    repository.save(comment);
+
+    return new CommentLikeResponseDTO(comment.getId(), comment.getLikes(), liked);
   }
 
   private void copyPatchDtoToEntity(CommentDTO dto, Comment entity) {

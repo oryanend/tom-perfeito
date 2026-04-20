@@ -38,7 +38,7 @@ public class ChordControllerTest {
   void setUp() {
     chordUrl = "/chords";
 
-    validChordName = "A Minor";
+    validChordName = "AM";
     nonExistingChordName = "NonExistingChordName";
 
     validChordDTO = createValidChordDTO(noteRepository);

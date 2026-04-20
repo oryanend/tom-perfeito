@@ -2,68 +2,91 @@
   <h1><strong>Musics</strong></h1>
 </div>
 
-<div id="window" class="mb-3">
-
-  @for (music of musics; track music) {
+@if (isLoading) {
+  <div id="window" class="mb-3">
     <div class="mb-3">
-      <h3>
-        <strong>
-          <a [routerLink]="['/music', music.id]" rel="noopener noreferrer">
-            {{ music.title }}
-          </a>
-        </strong>
-      </h3>
-
-      <p class="text-music-description">
-        {{ music.createdAt | timeAgo }} | <a routerLink="/user/{{ music.createdBy.id }}">{{ music.createdBy.username }}</a> |
-        {{ music.description | slice:0:25 }}
-        @if (music.description.length > 25) {
-          <span>...</span>
-        }
+      <p class="placeholder-glow d-flex flex-column gap-2">
+        <span class="placeholder col-12 placeholder-lg d-block" style="width: 20rem;"></span>
+        <span class="placeholder col-12 placeholder-sm d-block mb-3" style="width: 10rem;"></span>
+        <span class="placeholder col-12 placeholder-lg d-block" style="width: 15rem;"></span>
+        <span class="placeholder col-12 placeholder-sm d-block mb-3" style="width: 5rem;"></span>
+        <span class="placeholder col-12 placeholder-lg d-block" style="width: 20rem;"></span>
+        <span class="placeholder col-12 placeholder-sm d-block" style="width: 12rem;"></span>
       </p>
-
     </div>
-  }
+  </div>
+} @else if (musics.length === 0) {
+  <div id="window" class="mb-3">
+    <div>
+      <p class="text-muted">No musics found.</p>
+    </div>
+  </div>
+} @else {
+  <div id="window" class="mb-3">
 
-</div>
+    @for (music of musics; track music) {
+      <div class="mb-3">
+        <h3>
+          <strong>
+            <a [routerLink]="['/music', music.id]" rel="noopener noreferrer">
+              {{ music.title }}
+            </a>
+          </strong>
+        </h3>
 
-@if (totalPages > 1) {
-  <nav aria-label="Page navigation example">
-    <ul class="pagination justify-content-center">
+        <p class="text-music-description">
+          {{ music.createdAt | timeAgo }} | <a routerLink="/user/{{ music.createdBy.id }}">{{ music.createdBy.username }}</a> |
+          {{ music.description | slice:0:25 }}
+          @if (music.description.length > 25) {
+            <span>...</span>
+          }
+        </p>
 
-      <li class="page-item" [class.disabled]="currentPage === 0">
-        <button
-          type="button"
-          class="page-link btn-plain"
-          (click)="previousPage()"
-          [attr.aria-disabled]="currentPage === 0"
-        >
-          &laquo;
-        </button>
-      </li>
+      </div>
+    }
 
-      @for (page of pages; track page) {
-        <li class="page-item" [class.active]="page === currentPage">
+  </div>
+
+  @if (totalPages > 1) {
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+
+        <li class="page-item" [class.disabled]="currentPage === 0">
           <button
             type="button"
             class="page-link btn-plain"
-            (click)="goToPage(page)"
+            (click)="previousPage()"
+            [attr.aria-disabled]="currentPage === 0"
           >
-            {{ page + 1 }}
+            &laquo;
           </button>
         </li>
-      }
 
-      <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
-        <button
-          type="button"
-          class="page-link btn-plain"
-          (click)="nextPage()"
-          [attr.aria-disabled]="currentPage === totalPages - 1"
-        >
-          &raquo;
-        </button>
-      </li>
-    </ul>
-  </nav>
+        @for (page of pages; track page) {
+          <li class="page-item" [class.active]="page === currentPage">
+            <button
+              type="button"
+              class="page-link btn-plain"
+              (click)="goToPage(page)"
+            >
+              {{ page + 1 }}
+            </button>
+          </li>
+        }
+
+        <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+          <button
+            type="button"
+            class="page-link btn-plain"
+            (click)="nextPage()"
+            [attr.aria-disabled]="currentPage === totalPages - 1"
+          >
+            &raquo;
+          </button>
+        </li>
+      </ul>
+    </nav>
+  }
 }
+
+
