@@ -1,6 +1,10 @@
 package com.oryanend.tom_perfeito_api.db.migration;
 
 import com.oryanend.tom_perfeito_api.db.migration.exceptions.PathNotFoundException;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.*;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
@@ -8,11 +12,6 @@ import org.flywaydb.core.api.resolver.ResolvedMigration;
 import org.flywaydb.core.extensibility.MigrationType;
 import org.flywaydb.core.internal.jdbc.StatementInterceptor;
 import org.springframework.stereotype.Component;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.*;
 
 @Component
 public class V21__InsertNewChords extends BaseJavaMigration {

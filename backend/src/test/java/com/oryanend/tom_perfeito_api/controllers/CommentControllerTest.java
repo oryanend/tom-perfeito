@@ -149,7 +149,10 @@ public class CommentControllerTest {
     existingId = createdMusic.getId();
 
     // Perform GET request to retrieve comments
-    ResultActions result = mockMvc.perform(get(musicUrl + "/" + existingId + "/comments"));
+    ResultActions result =
+        mockMvc.perform(
+            get(musicUrl + "/" + existingId + "/comments")
+                .header("Authorization", "Bearer " + registerUserAndObtainAcessToken));
 
     result
         .andExpect(status().isOk())
