@@ -18,12 +18,6 @@
   }
 </ul>
 
-@if (isLoading) {
-  <div class="text-center placeholder-glow d-flex flex-column gap-3 align-items-center">
-    <span class="placeholder col-12 placeholder-lg" style="width: 50%"></span>
-    <span class="placeholder col-12 placeholder-sm" style="width: 20%"></span>
-  </div>
-}
 
 @if (chords.length > 0) {
 
@@ -35,5 +29,10 @@
         {{ chord.name }}
       </div>
     }
+  </div>
+} @else if (isLoading) {
+  <div class="text-center placeholder-glow d-flex flex-column gap-3 align-items-center">
+    <span class="placeholder col-12 placeholder-lg" style="width: 50%"></span>
+    <span class="placeholder col-12 placeholder-sm" style="width: 20%"></span>
   </div>
 }

@@ -5,8 +5,8 @@
   [message]="alertMessage">
 </app-alert>
 
-<div id="login-label">
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="border p-4 shadow-sm" style="min-width: 435px;">
+<div id="window">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div class="mb-3">
       <label class="form-label" for="email">Email</label>
       <input

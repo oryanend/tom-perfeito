@@ -43,8 +43,7 @@ a:hover {
   }
 
   .navbar-collapse .nav-link:hover {
-    background-color: var(--main-text-color);
-    color: white;
+    background: var(--main-bg-color);
   }
 
   .navbar-nav .nav-item {

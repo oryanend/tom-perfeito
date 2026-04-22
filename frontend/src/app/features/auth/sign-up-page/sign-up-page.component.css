@@ -1,5 +1,6 @@
-#login-label {
-  background-color: var(--secondary-bg-color);
+#window {
+  border-radius: 5px;
+  width: 385px;
 }
 
 h1 {
@@ -13,4 +14,8 @@ button {
 
 input {
   background-color: var(--main-bg-color);
+}
+
+.sub-desc {
+  color: var(--text-color) !important;
 }

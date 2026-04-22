@@ -7,3 +7,9 @@ p {
   overflow: auto;
   width: 500px;
 }
+
+@media (max-width: 580px) {
+  #window {
+    width: 335px;
+  }
+}
