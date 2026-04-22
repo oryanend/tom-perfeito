@@ -134,3 +134,23 @@ li {
   border-radius: 20px;
   font-weight: bold;
 }
+
+
+@media (max-width: 580px) {
+  .piano {
+    font-size: 10px;
+  }
+
+  .white .note-label {
+    top: 9em;
+  }
+
+  .black .note-label {
+    top: 2em;
+  }
+
+  .note-label{
+    width: 25px;
+    height: 25px;
+  }
+}
