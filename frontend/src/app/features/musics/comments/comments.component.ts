@@ -138,6 +138,12 @@ export class CommentsComponent implements OnInit, OnChanges {
           parentComment.showReplyBox = false;
         },
         error: (err) => {
+          if (err instanceof AuthError) {
+            this.loginModal.openLoginModal();
+          } else {
+            console.error(err);
+          }
+
           if (err instanceof NetworkError) {
             this.showAlert('error', 'Unable to connect to the server. Please try again later.');
           }
@@ -197,7 +203,13 @@ export class CommentsComponent implements OnInit, OnChanges {
             : c
         );
       },
-      error: (err) => console.error(err),
+      error: (err) => {
+        if (err instanceof AuthError) {
+          this.loginModal.openLoginModal();
+        } else {
+          console.error(err);
+        }
+      },
     });
   }
 }

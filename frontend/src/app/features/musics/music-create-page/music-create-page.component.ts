@@ -167,12 +167,10 @@ export class MusicCreatePageComponent implements OnInit {
         this.isLoading = false;
 
         this.clearAlert();
-        console.log('Music successfully created!', res);
 
         this.showAlert('success', 'Music successfully created! 🎉');
 
         this.signinForm.reset();
-
         // reset
         this.music = {
           title: '',
