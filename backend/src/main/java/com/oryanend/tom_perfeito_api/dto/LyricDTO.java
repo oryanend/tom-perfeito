@@ -21,7 +21,8 @@ public class LyricDTO {
 
     if (entity.getChords() != null) {
       for (LyricChord lc : entity.getChords()) {
-        this.chords.add(new LyricChordDTO(lc.getChord().getId(), lc.getPosition()));
+        this.chords.add(
+            new LyricChordDTO(lc.getChord().getId(), lc.getPosition(), lc.getChord().getName()));
       }
     }
   }
@@ -42,7 +43,7 @@ public class LyricDTO {
     this.chords = chords;
   }
 
-  public void addChord(Long chordId, Integer position) {
-    this.chords.add(new LyricChordDTO(chordId, position));
+  public void addChord(Long chordId, Integer position, String name) {
+    this.chords.add(new LyricChordDTO(chordId, position, name));
   }
 }
