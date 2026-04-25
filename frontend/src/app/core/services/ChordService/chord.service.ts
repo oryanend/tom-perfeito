@@ -1,8 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Chord } from '../../../shared/models/chord';
 import { environment } from '../../../../environments/environment';
 import { PageResponse } from '../../../shared/models/page-response';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,13 @@ export class ChordService {
     return this.http.get<Chord[]>(`${this.apiUrl}/chords/search`, { params });
   }
 
-  getAll() {
-    return this.http.get<PageResponse<Chord>>(`${this.apiUrl}/chords`);
+  searchByName(name: string) {
+    const params = new HttpParams().set('name', name);
+
+    return this.http.get<Chord[]>(`${this.apiUrl}/chords/search`, { params });
+  }
+
+  getAll(page = 0): Observable<PageResponse<Chord>> {
+    return this.http.get<PageResponse<Chord>>(`${this.apiUrl}/chords?page=${page}&size=5`);
   }
 }

@@ -157,6 +157,7 @@
         <!-- POPUP -->
         @if (selectedPosition !== null) {
           <div
+            #popup
             class="card p-3"
             [ngStyle]="{
               position: 'fixed',
@@ -172,7 +173,7 @@
                 class="form-control"
                 [(ngModel)]="searchChord"
                 (input)="filterChords()"
-                placeholder="Buscar acorde..."
+                placeholder="Search chord..."
               />
             </div>
 
@@ -192,13 +193,45 @@
               }
             </ul>
 
-            <button
-              type="button"
-              class="btn btn-secondary btn-sm"
-              (click)="selectedPosition = null"
-            >
-              Fechar
-            </button>
+            @if (totalPagesChords > 1) {
+              <nav>
+                <ul class="pagination justify-content-center">
+
+                  <li class="page-item" [class.disabled]="currentPageChords === 0">
+                    <button
+                      type="button"
+                      class="page-link btn-plain"
+                      (click)="previousPageChords()"
+                    >
+                      &laquo;
+                    </button>
+                  </li>
+
+                  @for (page of visiblePagesChords; track page) {
+                    <li class="page-item" [class.active]="page === currentPageChords">
+                      <button
+                        type="button"
+                        class="page-link btn-plain"
+                        (click)="goToPageChords(page)"
+                      >
+                        {{ page + 1 }}
+                      </button>
+                    </li>
+                  }
+
+                  <li class="page-item" [class.disabled]="currentPageChords === totalPagesChords - 1">
+                    <button
+                      type="button"
+                      class="page-link btn-plain"
+                      (click)="nextPageChords()"
+                    >
+                      &raquo;
+                    </button>
+                  </li>
+
+                </ul>
+              </nav>
+            }
           </div>
         }
 
