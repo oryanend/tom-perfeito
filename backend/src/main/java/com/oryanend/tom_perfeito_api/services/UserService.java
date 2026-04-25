@@ -60,6 +60,15 @@ public class UserService implements UserDetailsService {
     }
   }
 
+  public User getAuthenticatedOrNull() {
+    try {
+      String username = customUserUtil.getLoggedUsername();
+      return repository.findByEmail(username).orElse(null);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   @Transactional(readOnly = true)
   public UserDTO getMe() {
     User entity = authenticated();

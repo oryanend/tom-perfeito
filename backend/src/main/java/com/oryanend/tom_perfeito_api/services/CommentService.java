@@ -40,7 +40,7 @@ public class CommentService {
             .findById(musicId)
             .orElseThrow(() -> new ResourceNotFoundException("Music not found"));
 
-    User user = userService.authenticated();
+    User user = userService.getAuthenticatedOrNull();
 
     Page<Comment> list = repository.findByMusic(music, pageable);
 
