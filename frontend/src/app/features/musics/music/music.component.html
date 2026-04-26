@@ -20,7 +20,7 @@
 
       <hr>
 
-      @if (hasChordsLoaded()) {
+      @if (music.lyric) {
         <div class="lyric">
 
           @for (line of getProcessedLyric(); track $index) {

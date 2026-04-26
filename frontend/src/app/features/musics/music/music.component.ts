@@ -1,9 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MusicService } from '../../../core/services/MusicService/music.service';
 import { ActivatedRoute } from '@angular/router';
 import { MusicPage } from '../../../shared/models/music-page';
-import { ChordService } from '../../../core/services/ChordService/chord.service';
-import { Chord } from '../../../shared/models/chord';
 import { CommentService } from '../../../core/services/CommentService/comment.service';
 
 @Component({
@@ -15,11 +13,9 @@ import { CommentService } from '../../../core/services/CommentService/comment.se
 export class MusicComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private musicService = inject(MusicService);
-  private chordService = inject(ChordService);
   private commentService = inject(CommentService);
 
   music!: MusicPage;
-  chordMap: Record<number, Chord> = {};
   commentsCount = 0;
 
   ngOnInit() {
@@ -37,12 +33,6 @@ export class MusicComponent implements OnInit {
           this.commentsCount = res.totalElements;
         });
       }
-
-      this.chordService.getAll().subscribe((response) => {
-        response.content.forEach((c) => {
-          this.chordMap[c.id] = c;
-        });
-      });
     });
   }
 
@@ -50,10 +40,6 @@ export class MusicComponent implements OnInit {
     this.musicService.getById(id).subscribe((response) => {
       this.music = response;
     });
-  }
-
-  getChordName(id: number): string {
-    return this.chordMap[id]?.name || '?';
   }
 
   getProcessedLyric() {
@@ -70,7 +56,7 @@ export class MusicComponent implements OnInit {
         .filter((c) => c.position >= currentIndex && c.position < currentIndex + line.length)
         .map((c) => ({
           position: c.position - currentIndex,
-          chord: this.getChordName(c.chordId),
+          chord: c.name,
         }));
 
       currentIndex += line.length + 1;
@@ -82,11 +68,7 @@ export class MusicComponent implements OnInit {
     });
   }
 
-  hasChordsLoaded(): boolean {
-    return Object.keys(this.chordMap).length > 0;
-  }
-
-  getUniqueChords(): string[] {
+  getUniqueChords(): (string | undefined)[] {
     if (!this.music?.lyric) return [];
 
     const uniqueIds = new Set<number>();
@@ -95,6 +77,6 @@ export class MusicComponent implements OnInit {
       uniqueIds.add(c.chordId);
     });
 
-    return Array.from(uniqueIds).map((id) => this.getChordName(id));
+    return Array.from(new Set(this.music.lyric.chords.map((c) => c.name)));
   }
 }

@@ -40,7 +40,7 @@ public class CommentService {
             .findById(musicId)
             .orElseThrow(() -> new ResourceNotFoundException("Music not found"));
 
-    User user = userService.authenticated();
+    User user = userService.getAuthenticatedOrNull();
 
     Page<Comment> list = repository.findByMusic(music, pageable);
 
@@ -110,8 +110,11 @@ public class CommentService {
   }
 
   @Transactional
-  public CommentDTO update(Long id, CommentDTO dto) {
+  public CommentDTO update(Long id, CommentDTO dto, UUID musicId) {
     try {
+      musicRepository
+          .findById(musicId)
+          .orElseThrow(() -> new ResourceNotFoundException("Music not found"));
       Comment entity = repository.getReferenceById(id);
       authService.validateCreatedCommentBySelfOrAdmin(entity);
       copyPatchDtoToEntity(dto, entity);

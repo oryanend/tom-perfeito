@@ -1,6 +1,9 @@
 package com.oryanend.tom_perfeito_api.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +29,9 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class ResourceServerConfig {
+
+  @Value("${app.cors.allowed-origins:}")
+  private String angularOrigin;
 
   @Bean
   @Profile("test")
@@ -64,16 +70,22 @@ public class ResourceServerConfig {
 
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
+    List<String> allowed = getStrings();
     CorsConfiguration corsConfig = new CorsConfiguration();
 
-    corsConfig.setAllowedOriginPatterns(List.of("*"));
-    corsConfig.setAllowedMethods(List.of("*"));
-    corsConfig.setAllowedHeaders(List.of("*"));
+    if (!allowed.isEmpty()) {
+      corsConfig.setAllowedOriginPatterns(allowed);
+      corsConfig.setAllowedOrigins(allowed);
+    } else {
+      corsConfig.setAllowedOriginPatterns(List.of("*"));
+    }
+
+    corsConfig.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH", "OPTIONS"));
     corsConfig.setAllowCredentials(true);
+    corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "*"));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", corsConfig);
-
     return source;
   }
 
@@ -83,5 +95,21 @@ public class ResourceServerConfig {
         new FilterRegistrationBean<>(new CorsFilter(corsConfigurationSource()));
     bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
     return bean;
+  }
+
+  private List<String> getStrings() {
+    List<String> allowed = new ArrayList<>();
+
+    if (angularOrigin != null && !angularOrigin.isBlank()) {
+      String[] ao = angularOrigin.split(",");
+      for (String o : ao) {
+        String trimmed = o.trim();
+        if (!trimmed.isEmpty() && !allowed.contains(trimmed)) {
+          allowed.add(trimmed);
+        }
+      }
+    }
+
+    return allowed;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { MusicService } from '../../../core/services/MusicService/music.service';
 import { ChordService } from '../../../core/services/ChordService/chord.service';
 import { LyricChord } from '../../../shared/models/lyric-chord';
@@ -21,10 +21,12 @@ export class MusicCreatePageComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   @ViewChild('loginModal') loginModal!: LoginModalComponent;
+  @ViewChild('popup') popupRef!: ElementRef;
 
   currentStep = 1;
   signinForm!: FormGroup;
   isLoading = false;
+  private searchTimeout!: ReturnType<typeof setTimeout>;
 
   music = {
     title: '',
@@ -40,9 +42,13 @@ export class MusicCreatePageComponent implements OnInit {
   hoverIndex: number | null = null;
   selectedPosition: number | null = null;
 
-  // POSIÇÃO DO POPUP
   popupX = 0;
   popupY = 0;
+
+  // Pop Pagination
+  currentPageChords = 0;
+  totalPagesChords = 0;
+  pagesChords: number[] = [];
 
   chords: LyricChord[] = [];
   allChords: Chord[] = [];
@@ -75,11 +81,18 @@ export class MusicCreatePageComponent implements OnInit {
     this.alertMessage = '';
   }
 
-  loadChords() {
-    this.chordService.getAll().subscribe({
+  loadChords(page = 0) {
+    this.chordService.getAll(page).subscribe({
       next: (res) => {
         this.allChords = res.content;
         this.filteredChords = this.allChords;
+
+        this.currentPageChords = res.number;
+        this.totalPagesChords = res.totalPages;
+
+        this.pagesChords = Array(this.totalPagesChords)
+          .fill(0)
+          .map((_, i) => i);
       },
       error: (err) => console.error('Failed to load chords', err),
     });
@@ -101,9 +114,34 @@ export class MusicCreatePageComponent implements OnInit {
   }
 
   filterChords() {
-    this.filteredChords = this.allChords.filter((c) =>
-      c.name.toLowerCase().includes(this.searchChord.toLowerCase())
-    );
+    clearTimeout(this.searchTimeout);
+
+    this.searchTimeout = setTimeout(() => {
+      if (!this.searchChord.trim()) {
+        this.loadChords(0);
+        return;
+      }
+
+      this.chordService.searchByName(this.searchChord).subscribe({
+        next: (res) => {
+          this.filteredChords = res;
+          this.totalPagesChords = 1;
+          this.currentPageChords = 0;
+        },
+        error: (err) => console.error(err),
+      });
+    }, 300);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent) {
+    if (!this.popupRef) return;
+
+    const clickedInside = this.popupRef.nativeElement.contains(event.target);
+
+    if (!clickedInside) {
+      this.selectedPosition = null;
+    }
   }
 
   selectChord(chord: Chord) {
@@ -113,7 +151,8 @@ export class MusicCreatePageComponent implements OnInit {
       this.chords.push({
         chordId: chord.id,
         position: this.selectedPosition,
-      } as LyricChord);
+        name: chord.name,
+      });
 
       this.selectedPosition = null;
       this.searchChord = '';
@@ -122,13 +161,7 @@ export class MusicCreatePageComponent implements OnInit {
 
   getChordAt(index: number): string {
     const chordMapping = this.chords.find((c) => c.position === index);
-
-    if (chordMapping) {
-      const chord = this.allChords.find((a) => a.id === chordMapping.chordId);
-      return chord ? chord.name : '';
-    }
-
-    return '';
+    return chordMapping?.name || '';
   }
 
   removeChord(position: number) {
@@ -163,16 +196,14 @@ export class MusicCreatePageComponent implements OnInit {
     }
 
     this.musicService.createMusic(this.music, token).subscribe({
-      next: (res) => {
+      next: () => {
         this.isLoading = false;
 
         this.clearAlert();
-        console.log('Music successfully created!', res);
 
         this.showAlert('success', 'Music successfully created! 🎉');
 
         this.signinForm.reset();
-
         // reset
         this.music = {
           title: '',
@@ -197,5 +228,29 @@ export class MusicCreatePageComponent implements OnInit {
         }
       },
     });
+  }
+
+  goToPageChords(page: number) {
+    this.loadChords(page);
+  }
+
+  nextPageChords() {
+    if (this.currentPageChords < this.totalPagesChords - 1) {
+      this.loadChords(this.currentPageChords + 1);
+    }
+  }
+
+  previousPageChords() {
+    if (this.currentPageChords > 0) {
+      this.loadChords(this.currentPageChords - 1);
+    }
+  }
+
+  get visiblePagesChords(): number[] {
+    const range = 2;
+    const start = Math.max(0, this.currentPageChords - range);
+    const end = Math.min(this.totalPagesChords, this.currentPageChords + range + 1);
+
+    return Array.from({ length: end - start }, (_, i) => start + i);
   }
 }
