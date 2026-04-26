@@ -57,7 +57,7 @@
                     {{ comment.createdAt | timeAgo }}
                   }
 
-                  @if (comment.author.username === loggedUserUsername) {
+                  @if (comment.author.email === loggedUserUsername) {
 
                     <button
                       class="btn btn-link p-0"
