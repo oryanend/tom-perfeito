@@ -44,6 +44,9 @@ export class CommentsComponent implements OnInit, OnChanges {
 
   loggedUserUsername!: string;
 
+  editingCommentId: number | null = null;
+  editBody = '';
+
   ngOnInit() {
     this.loadComments();
     this.loggedUserUsername = this.getUsernameFromToken()!;
@@ -231,6 +234,38 @@ export class CommentsComponent implements OnInit, OnChanges {
           this.showAlert('warning', err.message);
         }
       },
+    });
+  }
+
+  startEdit(comment: CommentUI) {
+    this.editingCommentId = comment.id;
+    this.editBody = comment.body;
+  }
+
+  saveEdit(comment: CommentUI) {
+    const newBody = this.editBody.trim();
+    const originalBody = comment.body.trim();
+
+    if (newBody === originalBody) {
+      this.editingCommentId = null;
+      this.editBody = '';
+      return;
+    }
+
+    if (newBody.length === 0) {
+      return this.deleteComment(comment.id, this.musicId);
+    }
+
+    this.commentService.updateCommentById(this.musicId, comment.id, newBody).subscribe({
+      next: (updated) => {
+        this.comments = this.comments.map((c) =>
+          c.id === comment.id ? { ...c, body: updated.body, updatedAt: updated.updatedAt } : c
+        );
+
+        this.editingCommentId = null;
+        this.editBody = '';
+      },
+      error: (err) => console.error(err),
     });
   }
 

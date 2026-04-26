@@ -391,6 +391,10 @@ public class CommentControllerTest {
     // Get token user
     String firstUserToken = registerUserAndObtainAcessToken(validUserDTO);
 
+    // Create music
+    MusicDTO createdMusic = createMusic(validMusicDTO, firstUserToken);
+    existingId = createdMusic.getId();
+
     // Patch comment
     String updatedBody = "This is an updated comment body.";
     CommentDTO patchDTO = new CommentDTO();
