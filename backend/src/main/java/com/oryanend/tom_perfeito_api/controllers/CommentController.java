@@ -57,8 +57,8 @@ public class CommentController {
   @PreAuthorize("hasRole('ROLE_CLIENT')")
   @PatchMapping(value = "/{id}")
   public ResponseEntity<CommentDTO> update(
-      @PathVariable Long id, @Valid @RequestBody CommentDTO dto) {
-    dto = service.update(id, dto);
+      @PathVariable Long id, @Valid @RequestBody CommentDTO dto, @PathVariable UUID musicId) {
+    dto = service.update(id, dto, musicId);
     return ResponseEntity.ok().body(dto);
   }
 

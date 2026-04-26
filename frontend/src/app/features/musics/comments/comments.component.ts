@@ -42,10 +42,11 @@ export class CommentsComponent implements OnInit, OnChanges {
   totalPages = 0;
   pages: number[] = [];
 
-  likedByUser?: boolean;
+  loggedUserUsername!: string;
 
   ngOnInit() {
     this.loadComments();
+    this.loggedUserUsername = this.getUsernameFromToken()!;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -211,5 +212,33 @@ export class CommentsComponent implements OnInit, OnChanges {
         }
       },
     });
+  }
+
+  deleteComment(commentId: number, musicId: string) {
+    this.commentService.deleteCommentById(musicId, commentId).subscribe({
+      next: () => {
+        this.comments = this.comments.filter((c) => c.id !== commentId);
+        this.clearAlert();
+      },
+      error: (err) => {
+        console.error(err);
+
+        if (err instanceof NetworkError) {
+          this.showAlert('error', 'Unable to connect to the server. Please try again later.');
+        }
+
+        if (err instanceof ApiError) {
+          this.showAlert('warning', err.message);
+        }
+      },
+    });
+  }
+
+  private getUsernameFromToken(): string | null {
+    const token = localStorage.getItem('access_token');
+    if (!token) return null;
+
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.username;
   }
 }

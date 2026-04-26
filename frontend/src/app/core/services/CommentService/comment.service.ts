@@ -27,6 +27,21 @@ export class CommentService {
     );
   }
 
+  deleteCommentById(musicId: string, commentId: number) {
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+      return throwError(() => new AuthError());
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.delete(`${this.ApiUrl}/${musicId}/comments/${commentId}`, { headers });
+  }
+
   insertCommentByMusic(musicId: string, body: string, parentId?: number): Observable<Comment> {
     const token = localStorage.getItem('access_token');
 
