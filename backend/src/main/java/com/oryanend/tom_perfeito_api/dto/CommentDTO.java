@@ -13,6 +13,7 @@ public class CommentDTO {
   private Long likes;
   private Instant createdAt;
   private Instant updatedAt;
+  private Boolean isEdited;
 
   private Long parentId;
   private UserMinDTO author;
@@ -50,6 +51,7 @@ public class CommentDTO {
     }
 
     this.replies = replies;
+    this.isEdited = false;
   }
 
   public CommentDTO(Comment entity) {
@@ -73,6 +75,7 @@ public class CommentDTO {
     }
 
     this.replies = entity.getReplies().stream().map(CommentDTO::new).toList();
+    this.isEdited = entity.getEdited();
   }
 
   public CommentDTO(Comment entity, User currentUser, CommentLikeRepository likeRepo) {
@@ -90,6 +93,8 @@ public class CommentDTO {
         entity.getReplies().stream()
             .map(reply -> new CommentDTO(reply, currentUser, likeRepo))
             .toList();
+
+    this.isEdited = entity.getEdited();
   }
 
   public Long getId() {
@@ -162,5 +167,13 @@ public class CommentDTO {
 
   public void addReply(CommentDTO reply) {
     this.replies.add(reply);
+  }
+
+  public Boolean getEdited() {
+    return isEdited;
+  }
+
+  public void setEdited(Boolean edited) {
+    isEdited = edited;
   }
 }
