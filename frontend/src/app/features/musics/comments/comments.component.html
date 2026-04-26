@@ -51,7 +51,7 @@
                 </h6>
 
                 <span class="comment-time" >
-                  @if (comment.updatedAt && comment.updatedAt !== comment.createdAt) {
+                  @if (comment.edited) {
                     {{ comment.updatedAt | timeAgo }} (edited)
                   } @else {
                     {{ comment.createdAt | timeAgo }}
@@ -170,8 +170,8 @@
                             </h6>
 
                             <span class="comment-time">
-                              @if (reply.updatedAt && reply.updatedAt !== reply.createdAt) {
-                                {{ reply.updatedAt | timeAgo }} (editado)
+                              @if (reply.edited || reply.updatedAt && reply.updatedAt !== reply.createdAt) {
+                                {{ reply.updatedAt | timeAgo }} (edited)
                               } @else {
                                 {{ reply.createdAt | timeAgo }}
                               }

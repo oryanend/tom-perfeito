@@ -11,6 +11,7 @@ export interface Comment {
   updatedAt: string;
 
   parentId: number | null;
+  edited: boolean;
 
   author: UserMin;
   music: Music;

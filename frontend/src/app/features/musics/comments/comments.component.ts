@@ -69,6 +69,7 @@ export class CommentsComponent implements OnInit, OnChanges {
           .filter((c) => !c.parentId)
           .map((c) => ({
             ...c,
+            edited: c.edited,
             showReplyBox: false,
             newReplyBody: '',
             expanded: false,
@@ -245,6 +246,7 @@ export class CommentsComponent implements OnInit, OnChanges {
   saveEdit(comment: CommentUI) {
     const newBody = this.editBody.trim();
     const originalBody = comment.body.trim();
+    console.log(comment);
 
     if (newBody === originalBody) {
       this.editingCommentId = null;
@@ -259,7 +261,9 @@ export class CommentsComponent implements OnInit, OnChanges {
     this.commentService.updateCommentById(this.musicId, comment.id, newBody).subscribe({
       next: (updated) => {
         this.comments = this.comments.map((c) =>
-          c.id === comment.id ? { ...c, body: updated.body, updatedAt: updated.updatedAt } : c
+          c.id === comment.id
+            ? { ...c, body: updated.body, updatedAt: updated.updatedAt, edited: true }
+            : c
         );
 
         this.editingCommentId = null;
