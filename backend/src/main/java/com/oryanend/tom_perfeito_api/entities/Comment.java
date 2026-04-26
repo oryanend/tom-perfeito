@@ -44,15 +44,19 @@ public class Comment {
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
   private List<Comment> replies = new ArrayList<>();
 
+  private Boolean isEdited;
+
   public Comment() {}
 
   public Comment(String body) {
     this.body = body;
+    this.isEdited = false;
   }
 
   public Comment(String body, Comment parent) {
     this.body = body;
     this.parent = parent;
+    this.isEdited = false;
   }
 
   public Long getId() {
@@ -118,6 +122,14 @@ public class Comment {
   public void addReply(Comment reply) {
     replies.add(reply);
     reply.setParent(this);
+  }
+
+  public Boolean getEdited() {
+    return isEdited;
+  }
+
+  public void setEdited(Boolean edited) {
+    isEdited = edited;
   }
 
   @Override

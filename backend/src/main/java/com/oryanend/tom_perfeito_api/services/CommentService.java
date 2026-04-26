@@ -90,6 +90,7 @@ public class CommentService {
     entity.setBody(dto.getBody());
     entity.setMusic(music);
     entity.setAuthor(user);
+    entity.setEdited(false);
 
     if (dto.getParentId() != null) {
       Comment parentComment =
@@ -191,5 +192,6 @@ public class CommentService {
       entity.setBody(dto.getBody());
     }
     entity.setUpdatedAt(Instant.now());
+    entity.setEdited(true);
   }
 }
