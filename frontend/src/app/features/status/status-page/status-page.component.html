@@ -1,5 +1,56 @@
 <div class="d-flex flex-column flex-lg-row gap-5">
-  @if (status) {
+  @if (isLoading){
+    <div id="window" class="placeholder-glow">
+      <div>
+        <span class="placeholder col-12 placeholder-lg d-block mb-3" style="width: 15rem; height: 2.5rem"></span>
+
+        <p>
+          <span class="placeholder col-12 placeholder-lg d-block" style="width: 10rem; height: 1rem"></span>
+        </p>
+
+        <p>
+          <span class="placeholder col-12 placeholder-lg d-block" style="width: 13rem; height: 1rem"></span>
+        </p>
+
+        <p>
+          <span class="placeholder col-12 placeholder-lg d-block" style="width: 15rem; height: 1rem"></span>
+        </p>
+
+        <p>
+          <span class="placeholder col-12 placeholder-lg d-block" style="width: 8rem; height: 1rem"></span>
+        </p>
+
+        <span class="placeholder col-12 placeholder-lg d-block mb-3" style="width: 5rem; height: 1rem"></span>
+        <div class="d-flex justify-content-start gap-3">
+          <span class="placeholder col-12 placeholder d-block" style="width: 3rem; height: 1rem"></span>
+          <span class="placeholder col-12 placeholder d-block" style="width: 3rem; height: 1rem"></span>
+          <span class="placeholder col-12 placeholder d-block" style="width: 3rem; height: 1rem"></span>
+        </div>
+      </div>
+    </div>
+
+    <div id="window" class="placeholder-glow">
+      <div>
+        <span class="placeholder col-12 placeholder-lg d-block mb-3" style="width: 15rem; height: 2.5rem"></span>
+
+        <p>
+          <span class="placeholder col-12 placeholder-lg d-block" style="width: 8rem; height: 1rem"></span>
+        </p>
+
+        <p>
+          <span class="placeholder col-12 placeholder-lg d-block" style="width: 9rem; height: 1rem"></span>
+        </p>
+
+        <p>
+          <span class="placeholder col-12 placeholder-lg d-block" style="width: 12rem; height: 1rem"></span>
+        </p>
+
+        <p>
+          <span class="placeholder col-12 placeholder-lg d-block" style="width: 10rem; height: 1rem"></span>
+        </p>
+      </div>
+    </div>
+  } @else if (status) {
     <div id="window">
       <div>
         <h2><strong>Database</strong></h2>

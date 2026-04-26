@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { StatusService } from '../../../core/services/StatusService/status.service';
 import { Status } from '../../../shared/models/status';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-status-page',
@@ -13,16 +14,26 @@ export class StatusPageComponent implements OnInit {
 
   status?: Status;
   latencies: number[] = [];
+  isLoading = false;
 
   ngOnInit(): void {
-    this.statusService.getStatus().subscribe({
-      next: (data) => {
-        this.status = data;
-        this.latencies = Object.values(data.dependencies.database.latency);
-      },
-      error: (err) => {
-        throw err;
-      },
-    });
+    this.isLoading = true;
+
+    this.statusService
+      .getStatus()
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.status = data;
+          this.latencies = Object.values(data.dependencies.database.latency);
+        },
+        error: (err) => {
+          console.error('Erro ao buscar status:', err);
+        },
+      });
   }
 }

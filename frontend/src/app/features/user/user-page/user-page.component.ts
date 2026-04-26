@@ -23,6 +23,7 @@ export class UserPageComponent implements OnInit {
   public user?: User;
   commentsCount = 0;
   activeTab: 'music' | 'comments' = 'music';
+  isLoading = false;
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
@@ -52,16 +53,36 @@ export class UserPageComponent implements OnInit {
   }
 
   loadMe() {
-    this.userService.getMe().subscribe((res) => {
-      this.user = res;
-      this.loadMusics();
+    this.isLoading = true;
+
+    this.userService.getMe().subscribe({
+      next: (res) => {
+        this.user = res;
+        this.loadMusics();
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
     });
   }
 
   loadUserById(id: string) {
-    this.userService.getUserById(id).subscribe((res) => {
-      this.user = res;
-      this.loadMusics();
+    this.isLoading = true;
+
+    this.userService.getUserById(id).subscribe({
+      next: (res) => {
+        this.user = res;
+        this.loadMusics();
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
     });
   }
 
