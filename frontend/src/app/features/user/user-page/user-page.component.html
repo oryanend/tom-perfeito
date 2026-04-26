@@ -1,5 +1,39 @@
 <div id="window">
-  @if (user) {
+  @if (isLoading) {
+    <div class="mb-3">
+      <div class="placeholder-glow d-flex flex-column gap-2">
+        <span class="placeholder col-12 placeholder-lg d-block " style="width: 22rem; height: 2rem"></span>
+
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              [class.active]="activeTab === 'music'"
+              (click)="setTab('music')"
+            >
+              <span class="placeholder col-12 placeholder-lg d-block" style="width: 5rem; height: 1rem"></span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              [class.active]="activeTab === 'comments'"
+              (click)="setTab('comments')"
+            >
+              <span class="placeholder col-12 placeholder-lg d-block" style="width: 5rem; height: 1rem"></span>
+            </button>
+          </li>
+        </ul>
+        <span class="placeholder col-12 placeholder-lg d-block" style="width: 18rem; height: 1rem"></span>
+        <span class="placeholder col-12 placeholder-sm d-block mb-3" style="width: 8rem;"></span>
+        <span class="placeholder col-12 placeholder-lg d-block" style="width: 12rem; height: 1rem"></span>
+        <span class="placeholder col-12 placeholder-sm d-block mb-3" style="width: 5rem;"></span>
+        <span class="placeholder col-12 placeholder-lg d-block" style="width: 10rem; height: 1rem"></span>
+        <span class="placeholder col-12 placeholder-sm d-block mb-3" style="width: 12rem;"></span>
+      </div>
+    </div>
+  } @else if (user) {
     <div>
 
       <h1 class="user-username">
@@ -89,10 +123,18 @@
               </nav>
             }
 
-          } @else {
+          } @else if (user.musics.length === 0) {
             <p>{{ user.username }} doesn't have any music yet.</p>
+          } @else {
+            <div class="placeholder-glow d-flex flex-column gap-2">
+              <span class="placeholder col-12 placeholder-lg d-block" style="width: 18rem; height: 1rem"></span>
+              <span class="placeholder col-12 placeholder-sm d-block mb-3" style="width: 8rem;"></span>
+              <span class="placeholder col-12 placeholder-lg d-block" style="width: 12rem; height: 1rem"></span>
+              <span class="placeholder col-12 placeholder-sm d-block mb-3" style="width: 5rem;"></span>
+              <span class="placeholder col-12 placeholder-lg d-block" style="width: 10rem; height: 1rem"></span>
+              <span class="placeholder col-12 placeholder-sm d-block mb-3" style="width: 12rem;"></span>
+            </div>
           }
-
         </div>
       }
 
@@ -165,8 +207,13 @@
               </nav>
             }
 
-          } @else {
+          } @else if (user.comments.length === 0) {
             <p>{{ user.username }} doesn't have any comments yet.</p>
+          } @else {
+            <div class="placeholder-glow d-flex flex-column gap-2">
+              <span class="placeholder col-12 placeholder-lg d-block" style="width: 18rem; height: 1rem"></span>
+              <span class="placeholder col-12 placeholder-sm d-block mb-3" style="width: 8rem;"></span>
+            </div>
           }
         </div>
       }

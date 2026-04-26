@@ -154,3 +154,8 @@ li {
     height: 25px;
   }
 }
+
+.placeholder {
+  background-color: var(--main-text-color);
+  border-radius: 3px;
+}
