@@ -2,7 +2,6 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { WaitingPageComponent } from './features/waiting/waiting-page/waiting-page.component';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { LoginPageComponent } from './features/auth/login-page/login-page.component';
@@ -29,7 +28,6 @@ import { LoginModalComponent } from './shared/components/login-modal/login-modal
 @NgModule({
   declarations: [
     AppComponent,
-    WaitingPageComponent,
     NavbarComponent,
     FooterComponent,
     LoginPageComponent,

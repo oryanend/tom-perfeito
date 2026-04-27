@@ -20,7 +20,7 @@
 
 .suggestion-item:hover {
   background: #f5f5f5;
-  color: var(--main-text-color); !important;
+  color: var(--main-text-color);
 }
 
 .suggestion-item a {
