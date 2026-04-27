@@ -9,7 +9,9 @@
 <div id="window">
   <div class="container my-4">
 
-    <h2 class="mb-4">New Music</h2>
+    <h2 class="mb-4">
+      {{ isEditMode ? 'Edit Music' : 'New Music' }}
+    </h2>
 
     <ul class="nav nav-tabs mb-3">
       <li class="nav-item">
@@ -107,6 +109,15 @@
             Add chords!
           </button>
 
+          @if (isEditMode) {
+            <button
+              type="button"
+              class="btn btn-danger w-100 btn-sm mt-2"
+              (click)="deleteMusic()"
+            >
+              Delete Music
+            </button>
+          }
         </form>
       </div>
     }
@@ -244,7 +255,7 @@
           @if (isLoading) {
             <span class="spinner-border spinner-border-sm me-2"></span>
           }
-          {{ isLoading ? 'Loading...' : 'Send it!' }}
+          {{ isLoading ? 'Loading...' : (isEditMode ? 'Update' : 'Send it!') }}
         </button>
       </div>
     }

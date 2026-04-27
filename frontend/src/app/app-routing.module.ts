@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WaitingPageComponent } from './features/waiting/waiting-page/waiting-page.component';
 import { LoginPageComponent } from './features/auth/login-page/login-page.component';
 import { SignUpPageComponent } from './features/auth/sign-up-page/sign-up-page.component';
 import { HomePageComponent } from './features/home/home-page/home-page.component';
@@ -13,13 +12,13 @@ import { MusicCreatePageComponent } from './features/musics/music-create-page/mu
 const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'signup', component: SignUpPageComponent },
-  { path: 'home', component: HomePageComponent },
+  { path: '', component: HomePageComponent },
   { path: 'status', component: StatusPageComponent },
   { path: 'musics', component: MusicsPageComponent },
   { path: 'music/:id', component: MusicComponent },
   { path: 'user/:id', component: UserPageComponent },
   { path: 'create/music', component: MusicCreatePageComponent },
-  { path: '', component: WaitingPageComponent },
+  { path: 'music/edit/:id', component: MusicCreatePageComponent },
 ];
 
 @NgModule({

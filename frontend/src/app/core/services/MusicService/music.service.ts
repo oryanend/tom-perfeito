@@ -1,11 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Music } from '../../../shared/models/music';
 import { MusicPage } from '../../../shared/models/music-page';
 import { PageResponse } from '../../../shared/models/page-response';
 import { Lyric } from '../../../shared/models/lyric';
+import { AuthError } from '../../errors/auth/auth-error';
+import { MusicUpdate } from '../../../shared/models/music-update';
 
 @Injectable({
   providedIn: 'root',
@@ -38,5 +40,34 @@ export class MusicService {
       Authorization: `Bearer ${token}`,
     });
     return this.http.post<MusicPage>(this.API, music, { headers });
+  }
+
+  updateMusic(id: string, music: MusicUpdate): Observable<MusicPage> {
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+      return throwError(() => new AuthError());
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.patch<MusicPage>(`${this.API}/${id}`, music, { headers });
+  }
+
+  deleteMusic(id: string): Observable<void> {
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+      return throwError(() => new AuthError());
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.delete<void>(`${this.API}/${id}`, { headers });
   }
 }

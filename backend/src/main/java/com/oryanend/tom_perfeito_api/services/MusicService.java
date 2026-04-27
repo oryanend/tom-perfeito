@@ -91,7 +91,10 @@ public class MusicService {
   @Transactional(propagation = Propagation.SUPPORTS)
   public void delete(UUID id) {
     try {
-      Music music = repository.getReferenceById(id);
+      Music music =
+          repository
+              .findById(id)
+              .orElseThrow(() -> new ResourceNotFoundException("Music not found"));
       authService.validateSelfOrAdmin(music.getCreatedBy());
 
       repository.deleteById(id);
