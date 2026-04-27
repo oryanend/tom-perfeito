@@ -19,6 +19,7 @@ const routes: Routes = [
   { path: 'music/:id', component: MusicComponent },
   { path: 'user/:id', component: UserPageComponent },
   { path: 'create/music', component: MusicCreatePageComponent },
+  { path: 'music/edit/:id', component: MusicCreatePageComponent },
   { path: '', component: WaitingPageComponent },
 ];
 

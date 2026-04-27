@@ -79,4 +79,12 @@ export class MusicComponent implements OnInit {
 
     return Array.from(new Set(this.music.lyric.chords.map((c) => c.name)));
   }
+
+  protected getUsernameFromToken(): string | null {
+    const token = localStorage.getItem('access_token');
+    if (!token) return null;
+
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.username;
+  }
 }

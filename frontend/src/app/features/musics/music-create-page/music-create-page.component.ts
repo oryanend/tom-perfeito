@@ -5,9 +5,8 @@ import { LyricChord } from '../../../shared/models/lyric-chord';
 import { Lyric } from '../../../shared/models/lyric';
 import { Chord } from '../../../shared/models/chord';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NetworkError } from '../../../core/errors/network/network-error';
-import { InvalidRequestError } from '../../../core/errors/auth/invalid-request-error';
 import { LoginModalComponent } from '../../../shared/components/login-modal/login-modal.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-music-create-page',
@@ -19,6 +18,7 @@ export class MusicCreatePageComponent implements OnInit {
   private musicService = inject(MusicService);
   private chordService = inject(ChordService);
   private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
 
   @ViewChild('loginModal') loginModal!: LoginModalComponent;
   @ViewChild('popup') popupRef!: ElementRef;
@@ -59,6 +59,9 @@ export class MusicCreatePageComponent implements OnInit {
   alertType: 'success' | 'warning' | 'error' | null = null;
   alertMessage = '';
 
+  isEditMode = false;
+  musicId: string | null = null;
+
   ngOnInit() {
     this.loadChords();
     this.clearAlert();
@@ -68,6 +71,41 @@ export class MusicCreatePageComponent implements OnInit {
       description: ['', Validators.required],
       releaseDate: ['', Validators.required],
       lyrics: ['', Validators.required],
+    });
+
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get('id');
+
+      if (id) {
+        this.isEditMode = true;
+        this.musicId = id;
+        this.loadMusic(id);
+      }
+    });
+  }
+
+  loadMusic(id: string) {
+    this.musicService.getById(id).subscribe((res) => {
+      this.music = {
+        title: res.title,
+        description: res.description,
+        releaseDate: res.releaseDate.split('T')[0],
+        lyric: {
+          text: res.lyric?.text || '',
+          chords: res.lyric?.chords || [],
+        },
+      };
+
+      this.chords = [...this.music.lyric.chords];
+
+      this.signinForm.patchValue({
+        title: this.music.title,
+        description: this.music.description,
+        releaseDate: this.music.releaseDate,
+        lyrics: this.music.lyric.text,
+      });
+
+      this.prepareEditor();
     });
   }
 
@@ -195,39 +233,50 @@ export class MusicCreatePageComponent implements OnInit {
       return;
     }
 
-    this.musicService.createMusic(this.music, token).subscribe({
+    const request = this.isEditMode
+      ? this.musicService.updateMusic(this.musicId!, this.music)
+      : this.musicService.createMusic(this.music, token);
+
+    request.subscribe({
       next: () => {
         this.isLoading = false;
 
-        this.clearAlert();
+        this.showAlert(
+          'success',
+          this.isEditMode ? 'Music updated successfully! ✏️' : 'Music created successfully! 🎉'
+        );
 
-        this.showAlert('success', 'Music successfully created! 🎉');
-
-        this.signinForm.reset();
-        // reset
-        this.music = {
-          title: '',
-          description: '',
-          releaseDate: '',
-          lyric: { text: '', chords: [] },
-        };
-
-        this.textArray = [];
-        this.chords = [];
-        this.currentStep = 1;
+        if (!this.isEditMode) {
+          this.resetForm();
+        }
       },
-      error: (err) => {
+      error: () => {
         this.isLoading = false;
-
-        if (err instanceof NetworkError) {
-          this.showAlert('error', 'Unable to connect to the server. Please try again later.');
-        }
-
-        if (err instanceof InvalidRequestError) {
-          this.showAlert('warning', err.message);
-        }
+        this.showAlert('error', 'Something went wrong.');
       },
     });
+  }
+
+  resetForm() {
+    this.signinForm.reset();
+
+    this.music = {
+      title: '',
+      description: '',
+      releaseDate: '',
+      lyric: {
+        text: '',
+        chords: [],
+      },
+    };
+
+    this.textArray = [];
+    this.chords = [];
+    this.filteredChords = [...this.allChords];
+    this.currentStep = 1;
+    this.searchChord = '';
+    this.selectedPosition = null;
+    this.hoverIndex = null;
   }
 
   goToPageChords(page: number) {
