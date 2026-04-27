@@ -6,7 +6,9 @@ import { Lyric } from '../../../shared/models/lyric';
 import { Chord } from '../../../shared/models/chord';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoginModalComponent } from '../../../shared/components/login-modal/login-modal.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NetworkError } from '../../../core/errors/network/network-error';
+import { ApiError } from '../../../core/errors/api/api-errors';
 
 @Component({
   selector: 'app-music-create-page',
@@ -18,7 +20,8 @@ export class MusicCreatePageComponent implements OnInit {
   private musicService = inject(MusicService);
   private chordService = inject(ChordService);
   private fb = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
+  private activatedRouter = inject(ActivatedRoute);
+  private router = inject(Router);
 
   @ViewChild('loginModal') loginModal!: LoginModalComponent;
   @ViewChild('popup') popupRef!: ElementRef;
@@ -73,7 +76,7 @@ export class MusicCreatePageComponent implements OnInit {
       lyrics: ['', Validators.required],
     });
 
-    this.route.paramMap.subscribe((params) => {
+    this.activatedRouter.paramMap.subscribe((params) => {
       const id = params.get('id');
 
       if (id) {
@@ -301,5 +304,31 @@ export class MusicCreatePageComponent implements OnInit {
     const end = Math.min(this.totalPagesChords, this.currentPageChords + range + 1);
 
     return Array.from({ length: end - start }, (_, i) => start + i);
+  }
+
+  deleteMusic() {
+    if (!this.musicId) return;
+
+    const confirmDelete = confirm('Are you sure you want to delete this music?');
+
+    if (!confirmDelete) return;
+
+    this.musicService.deleteMusic(this.musicId).subscribe({
+      next: () => {
+        this.showAlert('success', 'Music deleted successfully!');
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        console.error(err);
+
+        if (err instanceof NetworkError) {
+          this.showAlert('error', 'Unable to connect to the server.');
+        }
+
+        if (err instanceof ApiError) {
+          this.showAlert('warning', err.message);
+        }
+      },
+    });
   }
 }

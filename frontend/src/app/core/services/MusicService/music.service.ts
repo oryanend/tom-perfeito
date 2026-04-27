@@ -56,4 +56,18 @@ export class MusicService {
 
     return this.http.patch<MusicPage>(`${this.API}/${id}`, music, { headers });
   }
+
+  deleteMusic(id: string): Observable<void> {
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+      return throwError(() => new AuthError());
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.delete<void>(`${this.API}/${id}`, { headers });
+  }
 }

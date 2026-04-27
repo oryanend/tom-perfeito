@@ -109,6 +109,15 @@
             Add chords!
           </button>
 
+          @if (isEditMode) {
+            <button
+              type="button"
+              class="btn btn-danger w-100 btn-sm mt-2"
+              (click)="deleteMusic()"
+            >
+              Delete Music
+            </button>
+          }
         </form>
       </div>
     }
