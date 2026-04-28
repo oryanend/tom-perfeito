@@ -13,6 +13,7 @@ const routes: Routes = [
   { path: 'login', component: LoginPageComponent },
   { path: 'signup', component: SignUpPageComponent },
   { path: '', component: HomePageComponent },
+  { path: 'home', component: HomePageComponent },
   { path: 'status', component: StatusPageComponent },
   { path: 'musics', component: MusicsPageComponent },
   { path: 'music/:id', component: MusicComponent },
