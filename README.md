@@ -1,4 +1,4 @@
-<h1 align="center">Tom Perfeito</h1>
+<h1 align="center"><a href="https://tom-perfeito.vercel.app" target="_blank">Tom Perfeito</a></h1>
 <div align="center">
   <img src="docs/tom-perfeito-logo.png" alt="Tom Perfeito" style="height: 20rem; width: 20rem">
 </div>
@@ -6,7 +6,12 @@
     <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white"/>
     <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white"/>
     <img src="https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white"/>
+    <br>
+    <img src="https://sonarcloud.io/api/project_badges/quality_gate?project=oryanend_tom-perfeito">
+    <img src="https://sonarcloud.io/images/project_badges/sonarcloud-light.svg" alt="SonarCloud" style="height: 3.5rem; width: auto"> 
 </p>
+
+
 
 ## 🔍 Visão Geral
 
@@ -202,8 +207,8 @@ Responsável pelo registro e autenticação de usuários, retornando um JWT refe
 
 | Endpoint                         | Visão geral                                                   |
 | -------------------------------- | ------------------------------------------------------------- |
-| **POST** `/api/v1/auth/register` | Registra um novo usuário ao informar username, email e senha. |
-| **POST** `/api/v1/auth/login`    | Autentica o usuário com email e senha, retornando um JWT.     |
+| **POST** `/auth/register` | Registra um novo usuário ao informar username, email e senha. |
+| **POST** `/auth/login`    | Autentica o usuário com email e senha, retornando um JWT.     |
 
 ---
 
@@ -213,10 +218,10 @@ Responsável por gerenciar acordes, permitindo listagem, busca e criação.
 
 | Endpoint                                    | Visão geral                                          |
 | ------------------------------------------- | ---------------------------------------------------- |
-| **GET** `/api/v1/chords`                    | Retorna todos os acordes com paginação.              |
-| **GET** `/api/v1/chords/search?name=x`      | Retorna acordes que contenham o nome `x`.            |
-| **GET** `/api/v1/chords/search?notes=x,y,z` | Retorna acordes formados pelas notas `x`, `y` e `z`. |
-| **POST** `/api/v1/chords`                   | Cria um novo acorde informando nome, tipo e notas.   |
+| **GET** `/chords`                    | Retorna todos os acordes com paginação.              |
+| **GET** `/chords/search?name=x`      | Retorna acordes que contenham o nome `x`.            |
+| **GET** `/chords/search?notes=x,y,z` | Retorna acordes formados pelas notas `x`, `y` e `z`. |
+| **POST** `/chords`                   | Cria um novo acorde informando nome, tipo e notas.   |
 
 ---
 
@@ -226,12 +231,12 @@ Responsável pelo gerenciamento de comentários em músicas.
 
 | Endpoint                                                      | Visão geral                                         |
 | ------------------------------------------------------------- | --------------------------------------------------- |
-| **GET** `/api/v1/musics/{musicId}/comments`                   | Retorna os comentários da música com paginação.     |
-| **GET** `/api/v1/musics/{musicId}/comments/{id}`              | Retorna um comentário específico.                   |
-| **POST** `/api/v1/musics/{musicId}/comments`                  | Adiciona um comentário à música.                    |
-| **POST** `/api/v1/musics/{musicId}/comments/{commentId}/like` | Adiciona um like ao comentário (único por usuário). |
-| **PATCH** `/api/v1/musics/{musicId}/comments/{id}`            | Atualiza o comentário (apenas o autor).             |
-| **DELETE** `/api/v1/musics/{musicId}/comments/{id}`           | Remove o comentário (autor ou admin).               |
+| **GET** `/musics/{musicId}/comments`                   | Retorna os comentários da música com paginação.     |
+| **GET** `/musics/{musicId}/comments/{id}`              | Retorna um comentário específico.                   |
+| **POST** `/musics/{musicId}/comments`                  | Adiciona um comentário à música.                    |
+| **POST** `/musics/{musicId}/comments/{commentId}/like` | Adiciona um like ao comentário (único por usuário). |
+| **PATCH** `/musics/{musicId}/comments/{id}`            | Atualiza o comentário (apenas o autor).             |
+| **DELETE** `/musics/{musicId}/comments/{id}`           | Remove o comentário (autor ou admin).               |
 
 ---
 
@@ -241,13 +246,13 @@ Responsável pelo gerenciamento de músicas.
 
 | Endpoint                               | Visão geral                                                        |
 | -------------------------------------- | ------------------------------------------------------------------ |
-| **GET** `/api/v1/musics`               | Retorna todas as músicas com paginação.                            |
-| **GET** `/api/v1/musics?name=x`        | Busca músicas pelo nome `x`.                                       |
-| **GET** `/api/v1/musics/{id}`          | Retorna uma música específica.                                     |
-| **GET** `/api/v1/musics/user/{userId}` | Retorna músicas criadas por um usuário.                            |
-| **POST** `/api/v1/musics`              | Cria uma música com título, descrição, data de lançamento e letra. |
-| **PATCH** `/api/v1/musics/{id}`        | Atualiza dados da música.                                          |
-| **DELETE** `/api/v1/musics/{id}`       | Remove a música (autor ou admin).                                  |
+| **GET** `/musics`               | Retorna todas as músicas com paginação.                            |
+| **GET** `/musics?name=x`        | Busca músicas pelo nome `x`.                                       |
+| **GET** `/musics/{id}`          | Retorna uma música específica.                                     |
+| **GET** `/musics/user/{userId}` | Retorna músicas criadas por um usuário.                            |
+| **POST** `/musics`              | Cria uma música com título, descrição, data de lançamento e letra. |
+| **PATCH** `/musics/{id}`        | Atualiza dados da música.                                          |
+| **DELETE** `/musics/{id}`       | Remove a música (autor ou admin).                                  |
 
 ---
 
@@ -257,8 +262,8 @@ Responsável pelo gerenciamento de notas musicais.
 
 | Endpoint                 | Visão geral                               |
 | ------------------------ | ----------------------------------------- |
-| **GET** `/api/v1/notes`  | Retorna todas as notas.                   |
-| **POST** `/api/v1/notes` | Cria uma nota informando nome e acidente. |
+| **GET** `/notes`  | Retorna todas as notas.                   |
+| **POST** `/notes` | Cria uma nota informando nome e acidente. |
 
 ---
 
@@ -268,9 +273,9 @@ Responsável pelas operações relacionadas ao usuário.
 
 | Endpoint                                 | Visão geral                                   |
 | ---------------------------------------- | --------------------------------------------- |
-| **GET** `/api/v1/users/me`               | Retorna o usuário autenticado (via JWT).      |
-| **GET** `/api/v1/users/{id}`             | Retorna um usuário pelo ID.                   |
-| **PATCH** `/api/v1/users/me/first-login` | Atualiza o campo `isFirstLogin` para `false`. |
+| **GET** `/users/me`               | Retorna o usuário autenticado (via JWT).      |
+| **GET** `/users/{id}`             | Retorna um usuário pelo ID.                   |
+| **PATCH** `/users/me/first-login` | Atualiza o campo `isFirstLogin` para `false`. |
 
 ---
 
@@ -373,9 +378,7 @@ Dessa forma o banco de dados já possui uma base inicial de dados para o sistema
  
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white) ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white) ![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white) ![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) ![Apache Maven](https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white) ![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white) ![Redis](https://img.shields.io/badge/redis-CC0000.svg?&style=for-the-badge&logo=redis&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![Azure](https://img.shields.io/badge/Microsoft%20Azure-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white) ![Postgresql](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white) ![Sonar Cube](https://img.shields.io/badge/SonarQube-4E9BCD?style=for-the-badge&logo=sonarqube&logoColor=white) ![Typescript](https://img.shields.io/badge/Typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white) ![CommitLint](https://img.shields.io/badge/commitlint-white?style=for-the-badge&logo=commitlint&logoColor=3c3c43) ![IntelliJ IDEA](https://img.shields.io/badge/IntelliJIDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white)
 
-
 # 👥 Autor
 
 | [<img src="https://avatars.githubusercontent.com/u/135620793?v=4" width=115><br><sub>Ryan Oliveira</sub>](https://github.com/oryanend) |
 | :---: |
-
